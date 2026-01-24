@@ -139,12 +139,17 @@ export default function OfferPage() {
                             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Invitation from</div>
                             <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white italic">{offer.host_info?.pm_name || "Your Host"}</div>
                         </div>
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest">
-                            <span className="relative flex h-2 w-2">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
-                            </span>
-                            Exclusive Member Upgrade
+                        <div className="flex flex-col gap-3">
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest self-start">
+                                <span className="relative flex h-2 w-2">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                </span>
+                                Exclusive Member Upgrade
+                            </div>
+                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[9px] font-black uppercase tracking-widest self-start animate-pulse">
+                                High Demand: Offer shared with other guests
+                            </div>
                         </div>
                         <h1 className="text-5xl md:text-7xl font-black tracking-tighter italic uppercase leading-none">
                             Elevate<br />Your Stay
@@ -215,8 +220,14 @@ export default function OfferPage() {
                                 <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent"></div>
 
                                 {idx === 0 && (
-                                    <div className="absolute top-6 right-6 px-4 py-2 bg-orange-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
-                                        Editor's Choice
+                                    <div className="absolute top-6 right-6 flex flex-col items-end gap-2">
+                                        <div className="px-4 py-2 bg-orange-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-xl">
+                                            Editor's Choice
+                                        </div>
+                                        <div className="px-3 py-1 bg-blue-600/90 text-white rounded-full text-[8px] font-black uppercase tracking-widest shadow-xl flex items-center gap-1.5 backdrop-blur-md">
+                                            <div className="w-1.5 h-1.5 bg-blue-300 rounded-full animate-pulse" />
+                                            Tower Analysis Live
+                                        </div>
                                     </div>
                                 )}
 

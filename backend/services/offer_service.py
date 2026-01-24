@@ -12,6 +12,7 @@ import os
 from services.scoring_service import compute_score, filter_eligible_candidates
 from services.pricing_service import calculate_offer_pricing, validate_pricing
 from services.rag_service import generate_marketing_copy, generate_property_diffs, generate_full_offer_preview_copy
+from services.tower_service import get_tower_market_demand
 from database import get_db
 
 
@@ -172,9 +173,17 @@ def generate_offer(booking_id: str) -> Optional[str]:
         # 4. Score each candidate and calculate pricing
         print(f"[5/7] Scoring candidates and generating AI copy...")
         scored_options = []
+        
+        # Consult Tower for real-time market conditions
+        market_multiplier = get_tower_market_demand(original_prop.get("location", "Berlin"))
+        print(f"ℹ️ Tower.dev Market Multiplier for {original_prop.get('location')}: {market_multiplier:.2f}x")
+
         for candidate in candidates:
             # Compute viability score
             score = compute_score(original_prop, candidate, booking)
+            
+            # Apply Tower Market Demand Boost
+            final_score = score * market_multiplier
             
             # Calculate pricing
             pricing = calculate_offer_pricing(
@@ -218,7 +227,11 @@ def generate_offer(booking_id: str) -> Optional[str]:
                 "ranking": 0,  # Will be set after sorting
                 "prop_id": candidate["id"],
                 "prop_name": candidate["name"],
-                "viability_score": score,
+                "viability_score": final_score,
+                "tower_context": {
+                    "market_multiplier": market_multiplier,
+                    "pipeline": "tower.dev/real-time-demand-v4"
+                },
                 "pricing": pricing,
                 "diffs": ai_data.get("diff_bullets", diffs), # Use high-quality bullets
                 "headline": ai_data.get("landing_hero", headline),

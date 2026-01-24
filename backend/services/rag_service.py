@@ -385,6 +385,10 @@ def generate_full_offer_preview_copy(
     TASK:
     Generate a JSON response that feels premium, urgent, and tailored to {guest_name}.
     
+    SCARCITY & URGENCY (CRITICAL): 
+    - Clearly state in both the email and landing copy that this is a "LIMITED TIME OFFER" and "WHILE SUPPLIES LAST".
+    - Mention that this exclusive invitation has been "shared with other qualified guests" on overlapping dates, and the upgrade is granted on a "first-come, first-served" basis. This creates high conversion pressure.
+    
     FIELDS TO GENERATE:
     1. subject: (Max 60 chars) High-urgency, personalized benefit (e.g. {guest_name}, we've added a private pool to your Mallorca stay?)
     2. email_html: A stunning, modern 'Midnight' luxury HTML email.
@@ -393,13 +397,14 @@ def generate_full_offer_preview_copy(
        - HEADER: NO 'UPREZ' LOGO. Instead, show "{guest_context.get('pm_name', 'Luxury Stays')}" in small, elegant font (12px, color: #9ca3af).
        - Image: <img src="{hero_img_url}" style="display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);" alt="The Property">
        - Sales Hook: Use a <h1> like "Your Stay, Elevated."
-       - Narrative: Focus on how for *only a small daily amount*, they can upgrade from {original_prop['name']} to the luxury of {upgrade_prop['name']}.
+       - Narrative: Focus on how for *only a small daily amount*, they can upgrade from {original_prop['name']} to the luxury of {upgrade_prop['name']}. 
+       - SCARCITY NOTE: Explicitly mention that this unit is in high demand and has been offered to others—first to claim it wins.
        - Offer Card: A <div> with #EA580C background, white text, 48px padding, border-radius: 40px. 
          Prominently show "Only {price_delta_fmt}€ more / night" in 64px bold text.
        - CTA: A white button with black text: "UNLOCK UPGRADE". Link MUST be exactly "{{OFFER_URL}}".
        - FOOTER: At the very bottom, in small text (10px, color: #4b5563), show: "Upgrade offer powered by <img src=\"{image_base_url}/up-rez-logo-white.svg\" style=\"height:10px; vertical-align:middle; margin-bottom:2px;\"> UpRez".
     3. landing_hero: (8 words max) Catchy emotional headline.
-    4. landing_summary: 1 persuasive, high-prestige sentence.
+    4. landing_summary: 1 persuasive, high-prestige sentence that includes urgency.
     5. diff_bullets: 3 concrete improvements (e.g. "Private Rooftop Pool").
 
     Output ONLY raw JSON.

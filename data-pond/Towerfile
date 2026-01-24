@@ -1,0 +1,4 @@
+[app]
+name = "data-service"
+script = "pipelines/demand_pipeline.py"
+source = ["pipelines/", "sources/", "requirements.txt"]

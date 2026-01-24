@@ -3,6 +3,7 @@ Property comparison and upgrade viability scoring service.
 """
 from typing import Dict, List, Any
 import json
+from services.tower_service import engineer_guest_fit_features
 
 
 def compute_score(
@@ -12,16 +13,14 @@ def compute_score(
 ) -> float:
     """
     Compute viability score for upgrade candidate.
-    
-    Args:
-        original_prop: Original property dict
-        candidate_prop: Candidate upgrade property dict
-        booking: Booking details dict
-        
-    Returns:
-        Score from 0-10
+    Enhanced with Tower.dev Feature Engineering.
     """
     score = 0.0
+    
+    # Tower Feature Store Integration
+    tower_features = engineer_guest_fit_features(booking, candidate_prop)
+    tower_fit_bonus = tower_features.get("tower_fit_score", 0.0)
+    score += tower_fit_bonus * 5 # Scale the premium feature impact
     
     # Parse amenities if stored as JSON string
     orig_amenities = original_prop.get("amenities", [])
