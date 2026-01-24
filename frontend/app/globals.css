@@ -4,15 +4,18 @@
 
 @layer base {
   :root {
+    --background: 255 255 255;
+    --foreground: 10 10 15;
+  }
+
+  .dark {
     --background: 10 10 15;
-    /* Nearly black */
     --foreground: 255 255 255;
   }
 }
 
 body {
-  background-color: rgb(var(--background));
-  color: rgb(var(--foreground));
+  @apply bg-white text-slate-900 dark:bg-[#050505] dark:text-white;
   font-family: system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }

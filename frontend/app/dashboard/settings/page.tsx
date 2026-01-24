@@ -13,6 +13,8 @@ import {
 import { ConnectionError } from "@/components/ConnectionError";
 import { apiClient } from '@/lib/api';
 
+import DashboardLayout from '@/components/DashboardLayout';
+
 export default function HostSettingsDashboard() {
     const router = useRouter();
     const [settings, setSettings] = useState<any>(null);
@@ -61,10 +63,17 @@ export default function HostSettingsDashboard() {
         }
     };
 
-    if (loading) return <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">Loading Admin Core...</div>;
+    if (loading) return (
+        <div className="min-h-screen bg-white dark:bg-[#050505] flex items-center justify-center text-slate-900 dark:text-white">
+            <div className="flex flex-col items-center gap-4">
+                <RefreshCw className="w-8 h-8 animate-spin text-orange-600 opacity-50" />
+                <p className="text-xs font-black uppercase tracking-widest opacity-50">Syncing Admin Node...</p>
+            </div>
+        </div>
+    );
 
     if (error) return (
-        <div className="min-h-screen bg-[#050505] flex items-center justify-center text-white">
+        <div className="min-h-screen bg-white dark:bg-[#050505] flex items-center justify-center text-slate-900 dark:text-white">
             <ConnectionError onRetry={fetchData} />
         </div>
     );
@@ -73,52 +82,30 @@ export default function HostSettingsDashboard() {
     const landingTemplates = templates.filter(t => t.template_type === 'landing');
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white">
-            <header className="fixed top-0 w-full z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl px-6 h-20 flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                    <button onClick={() => router.push('/demo')} className="p-2 hover:bg-white/5 rounded-full text-gray-400 hover:text-white transition-colors">
-                        <ArrowLeft className="w-5 h-5" />
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <Settings className="w-6 h-6 text-orange-500" />
-                        <h1 className="font-bold text-xl tracking-tight">Host Admin Center</h1>
-                    </div>
+        <DashboardLayout>
+            <div className="mb-10 flex justify-between items-end">
+                <div>
+                    <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Host Control Plane</h2>
+                    <p className="text-slate-500 dark:text-gray-500 text-sm font-medium">Fine-tune the economics of your upgrade engine</p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                     <button
                         onClick={() => router.push('/demo/offer-editor')}
-                        className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-full text-xs font-bold text-gray-300 transition-all"
+                        className="px-6 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-gray-300 transition-all border border-slate-200 dark:border-white/10"
                     >
                         Visual Editor
                     </button>
-                    <div className="flex items-center bg-white/5 rounded-full px-2">
-                        <button
-                            onClick={() => router.push('/dashboard/settings')}
-                            className="p-2 bg-white/10 rounded-full text-white flex items-center gap-2"
-                        >
-                            <Settings className="w-4 h-4 text-orange-500" />
-                            <span className="text-[10px] font-bold uppercase hidden sm:block font-black">Admin</span>
-                        </button>
-                        <div className="w-px h-4 bg-white/10 mx-1" />
-                        <button
-                            onClick={() => router.push('/demo/settings')}
-                            className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white flex items-center gap-2"
-                        >
-                            <Sparkles className="w-4 h-4 text-blue-500" />
-                            <span className="text-[10px] font-bold uppercase hidden sm:block">AI Core</span>
-                        </button>
-                    </div>
                     <button
                         onClick={handleSave}
                         disabled={saving}
-                        className="ml-2 px-8 py-2.5 bg-orange-600 hover:bg-orange-500 rounded-full font-black text-xs uppercase tracking-widest transition-all active:scale-95 disabled:opacity-50"
+                        className="px-8 py-2.5 bg-orange-600 hover:bg-orange-500 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] text-white transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-orange-600/30"
                     >
                         {saving ? "Deploying..." : "Sync Cluster"}
                     </button>
                 </div>
-            </header>
+            </div>
 
-            <main className="max-w-7xl mx-auto pt-32 pb-20 px-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <main className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* Left Col: Core Economics */}
                 <div className="lg:col-span-8 space-y-8">
                     {/* Revenue Guardrails */}
@@ -322,6 +309,6 @@ export default function HostSettingsDashboard() {
                     </button>
                 </div>
             </main>
-        </div>
+        </DashboardLayout>
     );
 }

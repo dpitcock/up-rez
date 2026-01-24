@@ -12,6 +12,7 @@ import {
 
 import { ConnectionError } from "@/components/ConnectionError";
 import { apiClient } from '@/lib/api';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 interface ReadyBooking {
     id: string;
@@ -157,9 +158,9 @@ export default function DemoPage() {
     }
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white selection:bg-orange-500">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white selection:bg-orange-500 pb-20 transition-colors duration-300">
             {/* Nav */}
-            <nav className="fixed top-0 w-full z-50 border-b border-white/5 bg-[#050505]/80 backdrop-blur-xl">
+            <nav className="fixed top-0 w-full z-50 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-xl transition-colors">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => router.push('/')}>
                         <img src="/up-rez-logo-white.svg" alt="UpRez Logo" className="h-8 w-auto" />
@@ -189,24 +190,27 @@ export default function DemoPage() {
                             )}
                             {ngrokStatus?.status === 'online' ? "Tunnel Live" : "Check Tunnel"}
                         </button>
-                        <div className="flex items-center bg-white/5 rounded-full px-2">
-                            <button
-                                onClick={() => router.push('/dashboard/settings')}
-                                className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white flex items-center gap-2"
-                                title="Host Admin Center"
-                            >
-                                <Settings className="w-4 h-4 text-orange-500" />
-                                <span className="text-[10px] font-bold uppercase hidden sm:block">Admin</span>
-                            </button>
-                            <div className="w-px h-4 bg-white/10 mx-1" />
-                            <button
-                                onClick={() => router.push('/demo/settings')}
-                                className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white flex items-center gap-2"
-                                title="AI Core Settings"
-                            >
-                                <Sparkles className="w-4 h-4 text-blue-500" />
-                                <span className="text-[10px] font-bold uppercase hidden sm:block">AI Core</span>
-                            </button>
+                        <div className="flex items-center gap-3">
+                            <ThemeToggle />
+                            <div className="flex items-center bg-slate-100 dark:bg-white/5 rounded-full px-2 border border-slate-200 dark:border-white/10">
+                                <button
+                                    onClick={() => router.push('/dashboard/settings')}
+                                    className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2"
+                                    title="Host Admin Center"
+                                >
+                                    <Settings className="w-4 h-4 text-orange-500" />
+                                    <span className="text-[10px] font-bold uppercase hidden sm:block">Admin</span>
+                                </button>
+                                <div className="w-px h-4 bg-slate-300 dark:bg-white/10 mx-1" />
+                                <button
+                                    onClick={() => router.push('/demo/settings')}
+                                    className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2"
+                                    title="AI Core Settings"
+                                >
+                                    <Sparkles className="w-4 h-4 text-blue-500" />
+                                    <span className="text-[10px] font-bold uppercase hidden sm:block">AI Core</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -247,8 +251,15 @@ export default function DemoPage() {
                                 Templates
                             </button>
                             <button
-                                onClick={() => router.push('/demo/properties')}
+                                onClick={() => router.push('/demo/tower')}
                                 className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-blue-600/10 border border-blue-500/30 hover:bg-blue-600/20 text-blue-400 transition-all text-sm font-bold group"
+                            >
+                                <Database className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                                Intelligence Hub
+                            </button>
+                            <button
+                                onClick={() => router.push('/demo/properties')}
+                                className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all text-sm font-bold group"
                             >
                                 <Layout className="w-5 h-5 group-hover:scale-110 transition-transform" />
                                 Properties

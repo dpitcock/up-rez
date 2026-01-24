@@ -1,6 +1,5 @@
-'use client';
 import "./globals.css";
-import Image from "next/image";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 export default function RootLayout({
     children,
@@ -8,9 +7,11 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en" className="dark">
-            <body className="antialiased min-h-screen bg-slate-950 text-white">
-                {children}
+        <html lang="en">
+            <body className="antialiased min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-white transition-colors duration-300">
+                <ThemeProvider>
+                    {children}
+                </ThemeProvider>
             </body>
         </html>
     );

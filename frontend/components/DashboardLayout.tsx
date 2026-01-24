@@ -8,6 +8,8 @@ interface DashboardLayoutProps {
     children: React.ReactNode;
 }
 
+import { ThemeToggle } from './ThemeToggle';
+
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
     const router = useRouter();
     const pathname = usePathname();
@@ -21,11 +23,11 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     ];
 
     return (
-        <div className="min-h-screen bg-gray-50">
+        <div className="min-h-screen bg-slate-50 dark:bg-[#050505] transition-colors duration-300">
             {/* Mobile sidebar backdrop */}
             {sidebarOpen && (
                 <div
-                    className="fixed inset-0 bg-gray-900/50 z-40 lg:hidden"
+                    className="fixed inset-0 bg-slate-900/50 dark:bg-black/80 z-40 lg:hidden backdrop-blur-sm"
                     onClick={() => setSidebarOpen(false)}
                 />
             )}
@@ -33,17 +35,17 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             {/* Sidebar */}
             <aside
                 className={`fixed top-0 left-0 z-40 w-64 h-screen transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-                    } lg:translate-x-0 bg-white border-r border-gray-200`}
+                    } lg:translate-x-0 bg-white dark:bg-[#0A0A0A] border-r border-slate-200 dark:border-white/5 shadow-xl lg:shadow-none`}
             >
                 <div className="flex flex-col h-full">
                     {/* Logo */}
-                    <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-200">
-                        <Image src="/logo.svg" alt="UpRez" width={32} height={33} />
-                        <span className="text-xl font-bold text-gray-900">UpRez</span>
+                    <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-100 dark:border-white/5">
+                        <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-black text-xl">U</div>
+                        <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase">UpRez</span>
                     </div>
 
                     {/* Navigation */}
-                    <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                    <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
                         {navigation.map((item) => {
                             const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
                             return (
@@ -53,64 +55,72 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                                         router.push(item.href);
                                         setSidebarOpen(false);
                                     }}
-                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors ${isActive
-                                            ? 'bg-orange-50 text-orange-600 font-semibold'
-                                            : 'text-gray-700 hover:bg-gray-100'
+                                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left transition-all duration-200 ${isActive
+                                        ? 'bg-orange-600/10 text-orange-600 font-bold shadow-sm ring-1 ring-orange-600/20'
+                                        : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-900 dark:hover:text-white'
                                         }`}
                                 >
-                                    <span className="text-xl">{item.icon}</span>
-                                    <span>{item.name}</span>
+                                    <span className="text-xl group-hover:scale-110 transition-transform">{item.icon}</span>
+                                    <span className="text-sm uppercase tracking-widest font-black">{item.name}</span>
                                 </button>
                             );
                         })}
                     </nav>
 
                     {/* Footer */}
-                    <div className="p-4 border-t border-gray-200">
+                    <div className="p-4 border-t border-slate-100 dark:border-white/5">
                         <button
                             onClick={() => router.push('/')}
-                            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                            className="w-full flex items-center gap-2 px-4 py-3 text-xs font-black uppercase tracking-widest text-slate-500 hover:text-orange-600 dark:hover:text-orange-500 transition-colors rounded-xl hover:bg-orange-600/5"
                         >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
-                            Back to Marketing
+                            Exit Dashboard
                         </button>
                     </div>
                 </div>
             </aside>
 
             {/* Main content */}
-            <div className="lg:pl-64">
+            <div className="lg:pl-64 flex flex-col min-h-screen">
                 {/* Top header */}
-                <header className="sticky top-0 z-30 bg-white border-b border-gray-200 px-4 sm:px-6 lg:px-8 py-4">
+                <header className="sticky top-0 z-30 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 px-4 sm:px-8 py-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                             <button
                                 onClick={() => setSidebarOpen(true)}
-                                className="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+                                className="lg:hidden p-2 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400"
                             >
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                                 </svg>
                             </button>
-                            <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
+                            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter italic">
                                 {navigation.find(item => pathname.startsWith(item.href))?.name || 'Dashboard'}
                             </h1>
                         </div>
 
-                        <div className="flex items-center gap-3">
-                            <span className="hidden sm:inline text-sm text-gray-600">Demo Host</span>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center text-white font-semibold text-sm">
-                                DH
+                        <div className="flex items-center gap-6">
+                            <ThemeToggle />
+                            <div className="flex items-center gap-3 pl-6 border-l border-slate-200 dark:border-white/5">
+                                <div className="text-right hidden sm:block">
+                                    <div className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white">Demo Host</div>
+                                    <div className="text-[10px] text-orange-600 font-bold uppercase tracking-tighter">Premium Partner</div>
+                                </div>
+                                <div className="w-10 h-10 rounded-xl bg-orange-600 shadow-lg shadow-orange-600/30 flex items-center justify-center text-white font-black text-xs italic">
+                                    DH
+                                </div>
                             </div>
                         </div>
                     </div>
                 </header>
 
                 {/* Page content */}
-                <main className="p-4 sm:p-6 lg:p-8">
-                    {children}
+                <main className="flex-1 p-4 sm:p-8">
+                    <div className="max-w-7xl mx-auto">
+                        {children}
+                    </div>
                 </main>
             </div>
         </div>
