@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    environment:
+      - DATABASE_URL=sqlite:///./UpRez.db
+      - OLLAMA_URL=http://host.docker.internal:11434
+      - BACKEND_PORT=8080
+      - USE_OPENAI=${USE_OPENAI:-false}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+    volumes:
+      - ./backend:/app
+    command: uvicorn main:app --host 0.0.0.0 --port 8080 --reload
+    networks:
+      - uprez-network
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3030:3030"
+    environment:
+      - NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
+      - BACKEND_URL=http://backend:8080
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    depends_on:
+      - backend
+    command: npm run dev -- -p 3030
+    networks:
+      - uprez-network
+
+networks:
+  uprez-network:
+    driver: bridge

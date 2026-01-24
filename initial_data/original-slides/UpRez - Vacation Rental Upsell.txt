@@ -1,0 +1,313 @@
+UpRez
+Short-term rental up-and-cross selling platform
+Think of a whitelabel OTA only for those properties a PM has control of, and a email/sms marketing tool that triggers when a certain criteria is met, which has preset filters on the OTA query, that shows the difference in price and discount to what the user already paid.
+
+Look Familiar?
+
+Golden Beach Rentals
+ 4br, 2ba
+Asking€500 p/n
+ 4br, 2.5ba
+Asking€625 p/n
+ 4br, 2ba
+Asking€520 p/n
+ 6br, 3.5ba
+Asking
+€850 p/n
+
+ 4br, 2ba
+€500 p/n
+
+42 days 
+In advance
+ 4br, 2.5ba
+€625 p/n
+
+66 days 
+In advance
+ 4br, 2ba
+€495 p/n
+
+29 days 
+In advance
+ 6br, 3.5ba
+Asking
+€850 p/n
+Cheaper properties book up fast
+BOOKED
+BOOKED
+BOOKED
+More expensive properties go unbooked 
+
+emergency
+repairs
+hosting nextdoor’s bookings
+Unbooked, more-expensive properties get blocked... 
+BOOKED
+BOOKED
+BOOKED
+BLOCKED
+...to help with double-bookings, repairs, and more.
+
+How about this?
+
+SOLDOUT
+All the quality things to do, 
+places to eat, 
+and just about everything else 
+are all booked up 
+by the time 
+your guests arrive
+
+That’s leaving 
+money 
+on the table
+
+Solution
+market to your guests...
+...after they book and before they arrive
+Add your property data
+ and integrate your availability. Connect with us through a partnering company
+
+Step 1.. Assign your preferences (how many tiers, distance factor, mandatory amenity match, property-to-property rev-share settings)
+
+Step 2.. Create your messages and specs.. What to send, when to send
+
+Turn the machine on… get reservations… automatically upsell them when the conditions are right
+
+How it Works
+Booked
+Empty
+3 steps to get boost your revenue
+
+Set up an Account
+the more you give us,
+the more options you have
+Load Property Data
+
+Create & Assign Tiers
+
+Sync Availability
+
+Set Discounts
+
+Create Messages Templates
+
+2. Create Workflows
+Use triggers, actions and variables
+
+Trigger: Reservation
+Made
+Trigger: 30 Days to Arrival
+Checks: upper-tier-
+availability count
+Daily cron: check for upper-
+tier-availability
+Action: Send default-both sms
+Checks: If guest-country-origin is ESP
+Trigger: 30 Days to Arrival
+Checks: If upper-tier-availability & sms-sent & no-clicks
+Action: Send default-both email
+Action: Send just-for-you sms
+Action: Send exclusive-both email
+
+3. Power on and Process 
+Reservations come in like a booking on any other channel
+You must open availability for the originally-book property
+ (until we’re integrated with your management system)
+BOOKED
+AVAILABLE
+AVAILABLE
+BOOKED
+
+The UpRez difference:
+Rebooked at a higher price
++€75 p. night
++commissions from UpRez
+Booked via UpRez
++€135 p. night
++commissions
+
+The Breakdown
+The difference from 1 upgrade for a 1 week reservation
+€3,500
+Original lower tier booking
+($500 x 7)
+€945
+Upgrade sold at 40%
+($135 x 7)
+€4,025
+Rebooked original
+($500 x 7)
+€400
+Upgraded ancillary commissions - 11 people (admissions, rental car)
+€260
+Rebooked ancillary commissions - 8 people (park passes, kayaks, boats)
+€9,130
+Total from all bookings
+€(3,500)
+Original booking
+€5,630
+Potential revenue difference
+Using UpStay
+
+Care for an upgrade?
+Let’s get closer to the beach
+The kids would love the pool
+The kids can bring friends!
+Nice. We can bring the dog
+Think Cousin Rob would want to join?
+Let’s grab the passes now
+There’s currently a good choice of cars
+The early bird deal for admissions is great
+That’s the house I was talking about
+I could really use an office
+Now we can take grandma
+We can give each child their own room
+
+
+
+
+Why it works?
+Framing Effect
+Prices seem cheaper
+Discount is offered on the difference in price, not total amount
+Hot Market
+Current reservation confirms their intent and dates to travel
+Activities, attractions and tours are yet to be booked
+Better Info
+More decisions made
+Budgets and logistics determined
+Intent of other parties shown
+Framing affect
+Captive market
+better understanding
+
+
+
+Validation
+Prevalence in travel industries
+Airlines
+Rental Cars
+Hotel Brands
+Who use it effectively to
+Increase Revenue
+Improve Operations
+Boost Reviews
+Airlines do this. Rental cars do this. Hotels do this. 
+Major brands. Even upgrade for the reviews.
+OTAs are trying to do this… for hotels
+
+The impact of discounts
+Discount
+Conversion
+10%
+2.5%
+20%
+4.0%
+25%
+5.0%
+40%
+7.8%
+100%
+??
+Please Note:
+Typical booking-site conversion is 1%
+Thresholds can be set to auto-stop upgrades based off availability
+Restrictions can be set on who and when these discounts are offered
+Fee differences will also be added
+100% discount is still advantageous, as it increases reviews, still leads to ancillaries and opens up a hot selling property at a higher price. You cannot do that when ‘bumping’ the guest on arrival.
+https://vimeo.com/300854566 <- hotel discounting
+
+What does this cost?
+Free
+Basic
+Pro
+Price per property per month
+0
+€3
+€1
+Revenue share for upgraded properties
+10%
+5%
+3%
+Revenue share on self-hosted ancillaries
+10%
+5%
+Commission of third party ancillaries
+0
+35%
+50%
+Sms capabilities
+no
+limited
+yes
+integration
+self
+assisted
+assisted
+
+Who is this for?
+Have total control of all their properties
+Can convince owners to opt-in by offeringing a commission sharing option:
+Ancillaries booked
+Upgrades sold 
+Yes, their property is most likely to be rebooked and they can make more than just reservation revenue
+
+A Goal of Full Automation 
+Most popular management systems and channel managers as a booking channel
+Management systems for live sync for property-details and rate info to push changes as they occur
+Customer relation management systems
+Integration Into:
+Integrations, learning, and automation
+
+Who’s behind this?
+Currently developing property management software
+Decades of experience in online travel
+A decade of engineering experience
+Specialization in online marketing
+Integrations, learning, and automation
+
+FAQ’s
+How will I implement this?
+We’ll need your data, but we don’t need all the data your PMS holds. Ether you fill out the forms or fill out a spreadsheet and we’ll enter data. If you have an API we could consume your data there to
+How do I get the property owners on board?
+The fundamentals of revenue management states that those hot selling properties that book up fast are often selling at a cheaper price than the market allows. This gives .
+Actually better made as a supporting doc
+
+
+Workflows:
+Triggers
+Incoming Reservations
+Change in Tier Availability
+Adjustment in Filter Opportunities
+Dynamic Discounts Offerings
+Time until arrival
+And others….
+
+Variables
+Reservation Variables
+number-of-people
+length-of-stay
+booking-source
+guest-country-origin
+min-price-threshold-met
+...more
+Property Variables
+property-size
+number-rooms
+...more
+Custom Variables:
+message-type
+message-sent
+message-opened
+have-upgraded
+do-not-upsell
+...and more
+
+Actions
+Send Email
+Send Text Message
+Block (internal) Availability
+Chron Check
+Set alert
