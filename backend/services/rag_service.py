@@ -70,28 +70,34 @@ def retrieve_property_info(
 def answer_query_with_llm(
     question: str,
     property_context: str,
+    guest_context: Dict[str, Any] = {},
+    original_property_context: Optional[str] = None,
     use_openai: bool = False
 ) -> str:
     """
-    Answer guest question using LLM with property context.
-    
-    Args:
-        question: Guest's question
-        property_context: Property details as context
-        use_openai: Whether to use OpenAI (True) or Ollama/Gemma (False)
-        
-    Returns:
-        LLM-generated answer
+    Answer guest question using LLM with property and guest context.
     """
-    prompt = f"""You are a helpful assistant for vacation rental property information.
-
-Property Context:
-{property_context}
-
-Guest Question: {question}
-
-Answer concisely (1-2 sentences max). Be honest - if the information isn't in the context, say "I'm not sure about that specific detail. Please contact the host to confirm."
-"""
+    guest_name = guest_context.get("guest_name", "Valued Guest").split()[0]
+    
+    prompt = f"""You are a helpful concierge for a luxury vacation rental. 
+    You are speaking with {guest_name} who is considering an upgrade for their {guest_context.get('nights', '')} night stay.
+    
+    GUEST STAYS: {guest_context.get('arrival_date', 'soon')} to {guest_context.get('departure_date', '')}
+    PARTY: {guest_context.get('adults', 2)} adults, {guest_context.get('children', 0)} children
+    
+    ORIGINAL PROPERTY DETAILS:
+    {original_property_context if original_property_context else "Not available"}
+    
+    UPGRADE PROPERTY DETAILS:
+    {property_context}
+    
+    GUEST QUESTION: {question}
+    
+    TASK: Answer {guest_name}'s question concisely (2-3 sentences max). 
+    If they ask about details not in the context, be honest but encouraging. 
+    Focus on comparing the upgrade property to their original choice if relevant.
+    Highlight why the upgrade is a superior choice for their specific needs.
+    """
     
     try:
         if use_openai:
@@ -338,9 +344,24 @@ def generate_full_offer_preview_copy(
     
     # Important: In Email templates, images MUST be fully qualified URLs
     # Priority: FRONTEND_URL -> NEXT_PUBLIC_FRONTEND_URL -> local
-    frontend_url = os.getenv("FRONTEND_URL") or os.getenv("NEXT_PUBLIC_FRONTEND_URL") or "http://localhost:3030"
-    frontend_url = frontend_url.rstrip('/')
-    hero_img_url = f"{frontend_url}{up_imgs[0]}" if (up_imgs and up_imgs[0].startswith('/')) else (up_imgs[0] if up_imgs else "")
+    frontend_url = (os.getenv("FRONTEND_URL") or 
+                    os.getenv("NEXT_PUBLIC_FRONTEND_URL") or 
+                    "http://localhost:3030").rstrip('/')
+
+    # Allow specific override for images/assets (e.g. CDN or custom domain)
+    image_base_url = (os.getenv("IMAGE_BASE_URL") or frontend_url).rstrip('/')
+    
+    # Ensure image path has single slash
+    img_path = up_imgs[0] if up_imgs else ""
+    if not img_path.startswith('/'):
+        img_path = f"/{img_path}"
+        
+    hero_img_url = f"{image_base_url}{img_path}" if img_path else ""
+    print(f"[DEBUG] Email Assets: hero={hero_img_url} logo_base={image_base_url} app_base={frontend_url}")
+    
+    # Calculate price difference for "Only X more" messaging
+    price_delta = pricing['offer_adr'] - pricing['from_adr']
+    price_delta_fmt = f"{price_delta:.0f}"
 
     prompt = f"""You are a luxury hospitality AI assigned to {guest_context.get('pm_name', 'your host')}. Generate a professional upgrade offer email and landing page copy. 
     The offer MUST appear to come directly from {guest_context.get('pm_name', 'the property manager')}, not from UpRez. UpRez is only the enabling technology.
@@ -367,14 +388,16 @@ def generate_full_offer_preview_copy(
     FIELDS TO GENERATE:
     1. subject: (Max 60 chars) High-urgency, personalized benefit (e.g. {guest_name}, we've added a private pool to your Mallorca stay?)
     2. email_html: A stunning, modern 'Midnight' luxury HTML email.
+       - IMPORTANT: USE ONLY DOUBLE QUOTES (") FOR ALL HTML ATTRIBUTES. DO NOT USE SINGLE QUOTES.
        - Body: #050505 background, white text (#ffffff), 24px horizontal padding.
-       - HEADER: NO 'UPREZ' LOGO. Instead, show "{guest_context.get('pm_name', 'Luxury Stays')}" in a small, elegant font (12px, gray-500).
-       - Image: <img src="{hero_img_url}" style="width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);" alt="The Property">
+       - HEADER: NO 'UPREZ' LOGO. Instead, show "{guest_context.get('pm_name', 'Luxury Stays')}" in small, elegant font (12px, color: #9ca3af).
+       - Image: <img src="{hero_img_url}" style="display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);" alt="The Property">
        - Sales Hook: Use a <h1> like "Your Stay, Elevated."
-       - Narrative: Emotional contrast between their current booking ({original_prop['name']}) and the luxury of {upgrade_prop['name']}.
-       - Offer Card: A <div> with #EA580C background, white text, 48px padding, border-radius: 40px. Show {pricing['offer_adr']}€/night in 64px bold text. Show {pricing['to_adr_list']}€ strikethrough in 24px.
-       - CTA: A white button with black text: "VIEW EXCLUSIVE OFFER".
-       - FOOTER: At the very bottom, in small text (10px, gray-600), show: "Upgrade offer powered by <img src='{frontend_url}/up-rez-logo-white.svg' style='height:10px; vertical-align:middle; margin-bottom:2px;'> UpRez".
+       - Narrative: Focus on how for *only a small daily amount*, they can upgrade from {original_prop['name']} to the luxury of {upgrade_prop['name']}.
+       - Offer Card: A <div> with #EA580C background, white text, 48px padding, border-radius: 40px. 
+         Prominently show "Only {price_delta_fmt}€ more / night" in 64px bold text.
+       - CTA: A white button with black text: "UNLOCK UPGRADE". Link MUST be exactly "{{OFFER_URL}}".
+       - FOOTER: At the very bottom, in small text (10px, color: #4b5563), show: "Upgrade offer powered by <img src=\"{image_base_url}/up-rez-logo-white.svg\" style=\"height:10px; vertical-align:middle; margin-bottom:2px;\"> UpRez".
     3. landing_hero: (8 words max) Catchy emotional headline.
     4. landing_summary: 1 persuasive, high-prestige sentence.
     5. diff_bullets: 3 concrete improvements (e.g. "Private Rooftop Pool").
@@ -425,20 +448,19 @@ def generate_full_offer_preview_copy(
             "email_html": f"""
             <div style="background-color: #050505; color: #ffffff; font-family: -apple-system, system-ui, sans-serif; padding: 60px 40px; text-align: center; max-width: 600px; margin: 0 auto; border-radius: 48px;">
                 <div style="font-size: 12px; font-weight: 700; letter-spacing: 2px; margin-bottom: 40px; color: #666666; text-transform: uppercase;">A message from {guest_context.get('pm_name', 'Luxury Stays')}</div>
-                <img src="{hero_img_url}" style="width: 100%; border-radius: 40px; margin-bottom: 40px; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);" alt="Exclusive View">
+                <img src="{hero_img_url}" style="display: block; margin-left: auto; margin-right: auto; width: 100%; border-radius: 40px; margin-bottom: 40px; box-shadow: 0 40px 80px -20px rgba(0,0,0,0.8);" alt="Exclusive View">
                 <h1 style="font-size: 48px; font-weight: 900; letter-spacing: -3px; margin-bottom: 24px; line-height: 1.1; color: #ffffff;">Experience<br>the Extraordinary.</h1>
                 <p style="color: #a0a0a0; font-size: 20px; line-height: 1.6; margin-bottom: 48px; max-width: 460px; margin-left: auto; margin-right: auto;">
                     Hi {guest_name}, we've unlocked a private invitation for you to upgrade your stay to the breathtaking <b>{upgrade_prop['name']}</b>.
                 </p>
                 <div style="background-color: #EA580C; padding: 56px 40px; border-radius: 40px; margin-bottom: 48px; box-shadow: 0 30px 60px -15px rgba(234, 88, 12, 0.4);">
-                    <div style="font-size: 14px; font-weight: 900; text-transform: uppercase; opacity: 0.8; letter-spacing: 2px; margin-bottom: 12px; color: #ffffff;">Exclusive Invite Rate</div>
-                    <div style="font-size: 72px; font-weight: 900; letter-spacing: -4px; line-height: 1; color: #ffffff;">{pricing['offer_adr']}€<span style="font-size: 22px; font-weight: 400; opacity: 0.7; letter-spacing: 0;">/nt</span></div>
-                    <div style="text-decoration: line-through; opacity: 0.6; font-size: 26px; font-weight: 700; margin-top: 12px; color: #ffffff;">{pricing['to_adr_list']}€</div>
+                    <div style="font-size: 14px; font-weight: 900; text-transform: uppercase; opacity: 0.8; letter-spacing: 2px; margin-bottom: 12px; color: #ffffff;">Upgrade today for only</div>
+                    <div style="font-size: 72px; font-weight: 900; letter-spacing: -4px; line-height: 1; color: #ffffff;">{price_delta_fmt}€<span style="font-size: 22px; font-weight: 400; opacity: 0.7; letter-spacing: 0;">/night</span></div>
                 </div>
-                <a href="{frontend_url}/offer/preview" style="display: inline-block; background-color: #ffffff; color: #000000; padding: 26px 64px; border-radius: 24px; font-weight: 900; text-decoration: none; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; box-shadow: 0 20px 40px rgba(255,255,255,0.15); margin-bottom: 60px;">Unlock Upgrade</a>
+                <a href="{{OFFER_URL}}" style="display: inline-block; background-color: #ffffff; color: #000000; padding: 26px 64px; border-radius: 24px; font-weight: 900; text-decoration: none; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; box-shadow: 0 20px 40px rgba(255,255,255,0.15); margin-bottom: 60px;">Unlock Upgrade</a>
                 
-                <div style="font-size: 10px; color: #444444; border-top: 1px solid #1a1a1a; pt: 30px;">
-                    Upgrade offer powered by <img src="{frontend_url}/up-rez-logo-white.svg" style="height: 10px; vertical-align: middle; margin-bottom: 2px; opacity: 0.3;"> UpRez
+                <div style="font-size: 10px; color: #444444; border-top: 1px solid #1a1a1a; padding-top: 30px;">
+                    Upgrade offer powered by <img src="{image_base_url}/up-rez-logo-white.svg" style="height: 10px; vertical-align: middle; margin-bottom: 2px; opacity: 0.3;"> UpRez
                 </div>
             </div>
             """,

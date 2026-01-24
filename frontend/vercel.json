@@ -1,0 +1,8 @@
+{
+    "rewrites": [
+        {
+            "source": "/offer/:match*",
+            "destination": "https://trypanosomal-surflike-carmelia.ngrok-free.dev/offer/:match*"
+        }
+    ]
+}

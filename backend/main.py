@@ -9,7 +9,10 @@ import os
 from dotenv import load_dotenv
 
 # Load environment variables
-load_dotenv()
+from pathlib import Path
+root_dir = Path(__file__).parent.parent
+load_dotenv(root_dir / ".env.local")
+load_dotenv() # Fallback to default .env behavior
 
 # Import routers
 from routers import webhook, offers, bot, demo, host

@@ -18,7 +18,7 @@ UpRez is an AI-powered upgrade engine for vacation rentals that:
 - **Frontend**: Next.js 15 (React)
 - **LLMs**: Gemma3 (Ollama) for dev, OpenAI GPT-4o-mini for production
 - **RAG**: Property metadata retrieval for bot Q&A
-- **Email**: Resend API for HTML emails
+- **Email**: SendGrid (recommended) or Resend API
 - **Deployment**: Docker Compose + Vercel + Ngrok
 
 ## Quick Start
@@ -27,9 +27,40 @@ UpRez is an AI-powered upgrade engine for vacation rentals that:
 
 - Docker and Docker Compose
 - Ollama installed with `gemma3:latest` model (for local LLM)
-- Resend API key (free tier available)
+- **Email Provider** (choose one):
+  - **SendGrid** (recommended for demos - fast delivery, ~1-2 seconds)
+  - **Resend** (alternative - slower delivery, ~5 minutes, sandbox restrictions)
 - OpenAI API key (optional, for production mode)
 - **Ngrok** (for local development with public exposure)
+
+### Email Provider Setup
+
+#### Option 1: SendGrid (Recommended for Demos)
+
+1. Sign up at [SendGrid](https://sendgrid.com/)
+2. Create an API key with "Mail Send" permissions
+3. Verify a sender email address or domain
+4. Add to `.env.local`:
+```env
+EMAIL_PROVIDER=sendgrid
+SENDGRID_API_KEY=SG.your-key-here
+SENDGRID_FROM_EMAIL=noreply@yourdomain.com
+SENDGRID_FROM_NAME=UpRez Demo
+CONTACT_EMAIL=your-email@example.com
+```
+
+#### Option 2: Resend (Alternative)
+
+1. Sign up at [Resend](https://resend.com/)
+2. Create an API key
+3. Add to `.env.local`:
+```env
+EMAIL_PROVIDER=resend
+RESEND_API_KEY=re_your-key-here
+CONTACT_EMAIL=your-verified-email@example.com
+```
+
+**Note**: Resend's free tier has sandbox restrictions (must send from `onboarding@resend.dev` to your verified email only) and slower delivery times (~5 minutes).
 
 ### Setup
 

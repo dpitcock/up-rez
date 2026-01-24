@@ -18,6 +18,10 @@ def export_db_to_json(write_to_file=True):
     cursor = conn.cursor()
 
     data = {
+        "metadata": {
+            "snapshot_at": datetime.utcnow().isoformat() + "Z",
+            "version": "1.1-temporal"
+        },
         "properties": [],
         "host_settings": {},
         "offers": {},

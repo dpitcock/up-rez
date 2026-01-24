@@ -3,12 +3,14 @@
 import { useState, useEffect } from 'react';
 import { fetchOffer } from '@/lib/api';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { AlertCircle, Clock, CheckCircle2, ChevronRight, Home } from 'lucide-react';
 import { ConnectionError } from "@/components/ConnectionError";
+import Chatbot from '@/components/Chatbot';
 
 export default function OfferPage() {
     const params = useParams();
+    const router = useRouter();
     const id = params.id as string;
 
     const [offer, setOffer] = useState<any>(null);
@@ -242,27 +244,34 @@ export default function OfferPage() {
                                     </div>
 
                                     {/* Price Card */}
-                                    <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/5">
+                                    <div className="p-6 rounded-3xl bg-white/[0.03] border border-white/5 relative group/card">
                                         <div className="flex justify-between items-start mb-4">
                                             <div>
-                                                <div className="text-[10px] font-black uppercase text-gray-500 tracking-widest mb-1">Upgrade Rate</div>
-                                                <div className="flex items-end gap-2">
-                                                    <span className="text-4xl font-black tracking-tight text-white">€{option.pricing.offer_adr}</span>
-                                                    <span className="text-gray-500 text-[10px] font-bold uppercase mb-2">/ night</span>
+                                                <div className="text-[10px] font-black uppercase text-orange-500 tracking-[0.2em] mb-1">Limited Offer</div>
+                                                <div className="flex items-baseline gap-1">
+                                                    <span className="text-[10px] font-black text-gray-500 uppercase">Only</span>
+                                                    <span className="text-4xl font-black tracking-tight text-white">€{Math.round(option.pricing.offer_adr - (original_booking.current_adr || 0))}</span>
+                                                    <span className="text-gray-500 text-[10px] font-bold uppercase">more / night</span>
                                                 </div>
                                             </div>
                                             <div className="px-3 py-1 rounded-lg bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-black uppercase tracking-widest">
-                                                -{Math.round((1 - option.pricing.offer_adr / option.pricing.to_adr_list) * 100)}%
+                                                -{Math.round((1 - option.pricing.offer_adr / (option.pricing.to_adr_list || 1)) * 100)}%
                                             </div>
                                         </div>
 
                                         <div className="flex justify-between items-center pt-4 border-t border-white/5">
-                                            <div className="text-[10px] font-bold text-gray-500 uppercase">Total Difference</div>
-                                            <div className="text-sm font-black text-white">+€{option.pricing.offer_total - original_booking.current_total}</div>
+                                            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total due now</div>
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-[10px] line-through text-gray-600 font-bold">€{(option.pricing.to_adr_list * original_booking.nights).toFixed(0)}</span>
+                                                <span className="text-sm font-black text-white italic">€{(option.pricing.offer_total - original_booking.current_total).toFixed(0)}</span>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    <button className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs tracking-[0.2em] hover:bg-orange-500 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-3">
+                                    <button
+                                        onClick={() => router.push(`/pay/${id}`)}
+                                        className="w-full py-5 rounded-2xl bg-white text-black font-black uppercase text-xs tracking-[0.2em] hover:bg-orange-500 hover:text-white transition-all active:scale-95 flex items-center justify-center gap-3"
+                                    >
                                         Confirm Upgrade
                                         <ChevronRight className="w-4 h-4" />
                                     </button>
@@ -292,6 +301,14 @@ export default function OfferPage() {
                     </div>
                 </div>
             </footer>
+
+            {/* AI Concierge Chatbot */}
+            <Chatbot
+                offerId={id}
+                propId={options[0]?.prop_id}
+                propName={options[0]?.prop_name}
+                guestName={original_booking.guest_name}
+            />
         </main>
     );
 }

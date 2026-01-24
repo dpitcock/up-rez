@@ -6,7 +6,8 @@ import { cn } from "@/lib/utils";
 import {
     Zap, RefreshCcw, Database,
     Play, Settings, Activity,
-    CheckCircle2, AlertCircle, Clock, Sparkles, Layout
+    CheckCircle2, AlertCircle, Clock, Sparkles, Layout,
+    Globe, Network, Link, ExternalLink
 } from "lucide-react";
 
 import { ConnectionError } from "@/components/ConnectionError";
@@ -31,6 +32,8 @@ export default function DemoPage() {
     const [selectedCron, setSelectedCron] = useState<string>("");
     const [selectedCancel, setSelectedCancel] = useState<string>("");
     const [error, setError] = useState(false);
+    const [ngrokStatus, setNgrokStatus] = useState<any>(null);
+    const [checkingNgrok, setCheckingNgrok] = useState(false);
 
     useEffect(() => {
         refreshData();
@@ -103,6 +106,27 @@ export default function DemoPage() {
         }
     };
 
+    const handleCheckNgrok = async () => {
+        setCheckingNgrok(true);
+        addLog("Testing ngrok tunnel connectivity...", "info");
+        try {
+            const data = await apiClient(`/demo/check-ngrok`);
+            setNgrokStatus(data);
+            if (data.status === 'online') {
+                addLog(`Ngrok is ONLINE [${data.url}]`, "success");
+            } else {
+                addLog("Ngrok is OFFLINE or not configured", "error");
+            }
+        } catch (err) {
+            addLog("Backend unreachable for tunnel check", "error");
+            setNgrokStatus({ status: 'offline', message: 'Could not connect to backend' });
+        } finally {
+            setCheckingNgrok(false);
+            // Hide status after 5 seconds
+            setTimeout(() => setNgrokStatus(null), 5000);
+        }
+    };
+
     const handleEnableOpenAI = async () => {
         try {
             const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'}/demo/settings`, {
@@ -148,6 +172,23 @@ export default function DemoPage() {
                         )}>
                             {status?.demo_ready ? "System Ready" : "Run Normalize"}
                         </div>
+                        <button
+                            onClick={handleCheckNgrok}
+                            disabled={checkingNgrok}
+                            className={cn(
+                                "flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all",
+                                ngrokStatus?.status === 'online'
+                                    ? "bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-[0_0_15px_-5px_rgba(59,130,246,0.5)]"
+                                    : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10"
+                            )}
+                        >
+                            {checkingNgrok ? (
+                                <RefreshCcw className="w-3 h-3 animate-spin" />
+                            ) : (
+                                <Globe className="w-3 h-3" />
+                            )}
+                            {ngrokStatus?.status === 'online' ? "Tunnel Live" : "Check Tunnel"}
+                        </button>
                         <div className="flex items-center bg-white/5 rounded-full px-2">
                             <button
                                 onClick={() => router.push('/dashboard/settings')}
@@ -213,6 +254,14 @@ export default function DemoPage() {
                                 Properties
                             </button>
                         </div>
+
+                        <button
+                            onClick={() => router.push('/dashboard/offers')}
+                            className="w-full mt-3 flex items-center justify-center gap-2 p-4 rounded-2xl bg-green-600/10 border border-green-500/30 hover:bg-green-600/20 text-green-400 transition-all text-sm font-bold group"
+                        >
+                            <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            View Sent Offers
+                        </button>
                     </div>
 
                     {/* Stats */}

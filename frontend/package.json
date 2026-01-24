@@ -12,6 +12,7 @@
     "dependencies": {
         "@ai-sdk/openai": "^0.0.20",
         "ai": "^3.0.0",
+        "canvas-confetti": "^1.9.4",
         "class-variance-authority": "^0.7.0",
         "clsx": "^2.1.0",
         "lucide-react": "^0.460.0",
@@ -22,6 +23,7 @@
         "tailwindcss-animate": "^1.0.7"
     },
     "devDependencies": {
+        "@types/canvas-confetti": "^1.9.0",
         "@types/node": "^20",
         "@types/react": "^19",
         "@types/react-dom": "^19",

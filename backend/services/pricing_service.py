@@ -45,10 +45,12 @@ def calculate_offer_pricing(
         "from_adr": round(from_adr, 2),
         "to_adr_list": round(to_adr, 2),
         "offer_adr": round(offer_adr, 2),
+        "extra_per_night": round(offer_adr - from_adr, 2), # The 'Only X more' value
         "nights": nights,
         "from_total": round(from_total, 2),
         "offer_total": round(offer_total, 2),
         "list_total": round(to_adr * nights, 2),
+        "total_extra": round(offer_total - from_total, 2),
         "discount_percent": discount_pct,
         "discount_amount_total": round(discount_amount, 2),
         "revenue_lift": round(revenue_lift, 2)

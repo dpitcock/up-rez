@@ -236,10 +236,45 @@ async def normalize_demo_dates():
 @router.post("/trigger/cron")
 async def trigger_cron(booking_id: str = Query(..., description="Booking ID to trigger for")):
     """Trigger a 7-day pre-arrival upsell offer."""
+    # 1. Check if booking exists first to give better error
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT id FROM bookings WHERE id = ?", (booking_id,))
+        if not cursor.fetchone():
+            raise HTTPException(status_code=404, detail=f"Booking {booking_id} not found in database.")
+
+    # 2. Try to generate
     offer_id = generate_offer(booking_id)
     if offer_id:
-        return {"status": "ok", "offer_id": offer_id, "message": "Cron offer generated"}
-    throw_offer_error()
+        # In demo mode, immediately trigger the email
+        # Retrieve the offer details to get subject/body
+        with get_db() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM offers WHERE id = ?", (offer_id,))
+            offer_row = cursor.fetchone()
+            if offer_row:
+                offer_data = dict(offer_row)
+                
+                # Fetch guest email
+                cursor.execute("SELECT guest_email FROM bookings WHERE id = ?", (booking_id,))
+                guest_res = cursor.fetchone()
+                guest_email = guest_res[0] if guest_res else "guest@example.com"
+
+                from services.email_service import send_test_email
+                print(f"Sending cron offer email to {guest_email}...")
+                send_test_email(
+                    to_email=guest_email,
+                    subject=offer_data["email_subject"],
+                    html_content=offer_data["email_body_html"]
+                )
+
+        return {"status": "ok", "offer_id": offer_id, "message": "Cron offer generated and email sent"}
+    
+    # If no offer, it's usually because eligibility filters (e.g. no luxury props available)
+    raise HTTPException(
+        status_code=400, 
+        detail="No suitable upgrade options found for this booking (filters: capacity, location, or price delta may have failed)."
+    )
 
 @router.post("/trigger/cancellation")
 async def trigger_cancellation(booking_id: str = Query(..., description="Premium booking ID to cancel")):
@@ -300,3 +335,66 @@ async def export_snapshot():
         return {"status": "ok", "data": data}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
+
+@router.get("/check-ngrok")
+async def check_ngrok():
+    """Checks if the ngrok tunnel is correctly configured and reachable."""
+    import requests
+    import os
+    
+    # 1. Check local ngrok API if possible
+    ngrok_apis = ["http://localhost:4040/api/tunnels", "http://host.docker.internal:4040/api/tunnels"]
+    
+    tunnels = []
+    found_api = False
+    for api_url in ngrok_apis:
+        try:
+            res = requests.get(api_url, timeout=2)
+            if res.status_code == 200:
+                tunnels = res.json().get("tunnels", [])
+                found_api = True
+                break
+        except:
+            continue
+            
+    # 2. Check environment variable
+    public_url = os.getenv("NGROK_PUBLIC_URL") or os.getenv("NEXT_PUBLIC_BACKEND_URL")
+    
+    if found_api and tunnels:
+        active_url = tunnels[0].get("public_url")
+        return {
+            "status": "online",
+            "source": "api",
+            "url": active_url,
+            "tunnels_count": len(tunnels)
+        }
+    elif public_url and "ngrok" in public_url:
+        return {
+            "status": "online",
+            "source": "env",
+            "url": public_url,
+            "note": "Detected via configuration"
+        }
+    else:
+        return {
+            "status": "offline",
+            "message": "No active ngrok tunnels found."
+        }
+
+@router.post("/send-test-email")
+async def send_email_endpoint(payload: dict):
+    """Sends a test email with content from the editor."""
+    from services.email_service import send_test_email
+    
+    to_email = payload.get("to")
+    subject = payload.get("subject")
+    html = payload.get("html")
+    
+    if not to_email or not subject or not html:
+        raise HTTPException(status_code=400, detail="Missing email parameters")
+        
+    success = send_test_email(to_email, subject, html)
+    if success:
+        return {"status": "ok", "message": f"Test email sent to {to_email}"}
+    else:
+        raise HTTPException(status_code=500, detail="Failed to send email via Resend")

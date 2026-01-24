@@ -41,11 +41,18 @@ async def handle_webhook(payload: WebhookPayload):
             }
     
     elif payload.event == "cancellation":
-        # TODO: Find overlapping bookings and generate offers
-        # For now, return success
+        if not payload.booking_id:
+            raise HTTPException(status_code=400, detail="booking_id required for cancellation events")
+            
+        # Trigger cancellation orchestration
+        from services.offer_service import handle_cancellation
+        offer_ids = handle_cancellation(payload.booking_id)
+        
         return {
             "status": "ok",
-            "message": "Cancellation webhook received. Offer generation not yet implemented for cancellations."
+            "recovered": len(offer_ids) > 0,
+            "offers_generated": offer_ids,
+            "message": f"Cancellation processed. {len(offer_ids)} recovery offers dispatched."
         }
     
     else:

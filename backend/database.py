@@ -82,6 +82,11 @@ def init_db():
             email_sent_to TEXT,
             email_opened_at TEXT,
             email_clicked_at TEXT,
+            accepted_at TEXT,
+            confirmation_number TEXT,
+            selected_prop_id TEXT,
+            payment_status TEXT DEFAULT 'pending',
+            payment_amount REAL,
             created_at TEXT NOT NULL,
             updated_at TEXT,
             FOREIGN KEY (booking_id) REFERENCES bookings(id)

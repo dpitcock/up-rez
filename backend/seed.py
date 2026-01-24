@@ -164,7 +164,7 @@ def load_bookings(conn):
         booking_id = booking.get("id") or f"book_{secrets.token_hex(4)}"
         
         cursor.execute("""
-        INSERT INTO bookings 
+        INSERT OR REPLACE INTO bookings 
         (id, prop_id, arrival_date, departure_date, nights,
          guest_name, guest_email, guest_country,
          adults, children, infants, has_car,

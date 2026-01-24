@@ -2,147 +2,189 @@
   {
     "type": "booking_normalized",
     "booking_id": "book_ea53ae77",
-    "old_arrival": "2026-02-10",
-    "new_arrival": "2026-02-05",
-    "days_to_arrival": 12
+    "old_arrival": "2026-02-05",
+    "new_arrival": "2026-01-28",
+    "days_to_arrival": 4
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_c3b0924e",
-    "old_arrival": "2026-02-20",
-    "new_arrival": "2026-02-05",
-    "days_to_arrival": 12
+    "old_arrival": "2026-02-05",
+    "new_arrival": "2026-01-28",
+    "days_to_arrival": 4
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_ffcc4819",
-    "old_arrival": "2026-03-23",
+    "old_arrival": "2026-01-31",
     "new_arrival": "2026-01-31",
     "days_to_arrival": 7
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_690178c0",
-    "old_arrival": "2026-03-10",
-    "new_arrival": "2026-02-05",
-    "days_to_arrival": 12
-  },
-  {
-    "type": "booking_normalized",
-    "booking_id": "book_a0ef56ca",
-    "old_arrival": "2026-03-23",
-    "new_arrival": "2026-02-18",
-    "days_to_arrival": 25
-  },
-  {
-    "type": "booking_normalized",
-    "booking_id": "book_654f0826",
-    "old_arrival": "2026-03-17",
-    "new_arrival": "2026-02-18",
-    "days_to_arrival": 25
-  },
-  {
-    "type": "booking_normalized",
-    "booking_id": "book_bafe364d",
-    "old_arrival": "2026-02-22",
+    "old_arrival": "2026-02-05",
     "new_arrival": "2026-01-31",
     "days_to_arrival": 7
   },
   {
     "type": "booking_normalized",
+    "booking_id": "book_a0ef56ca",
+    "old_arrival": "2026-02-18",
+    "new_arrival": "2026-01-28",
+    "days_to_arrival": 4
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "book_654f0826",
+    "old_arrival": "2026-02-18",
+    "new_arrival": "2026-01-28",
+    "days_to_arrival": 4
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "book_bafe364d",
+    "old_arrival": "2026-01-31",
+    "new_arrival": "2026-02-18",
+    "days_to_arrival": 25
+  },
+  {
+    "type": "booking_normalized",
     "booking_id": "book_22ca250e",
-    "old_arrival": "2026-02-11",
+    "old_arrival": "2026-01-31",
     "new_arrival": "2026-01-31",
     "days_to_arrival": 7
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_4ef7272f",
-    "old_arrival": "2026-02-07",
-    "new_arrival": "2026-01-31",
-    "days_to_arrival": 7
-  },
-  {
-    "type": "booking_normalized",
-    "booking_id": "book_5283bb59",
-    "old_arrival": "2026-03-10",
+    "old_arrival": "2026-01-31",
     "new_arrival": "2026-01-25",
     "days_to_arrival": 1
   },
   {
     "type": "booking_normalized",
+    "booking_id": "book_5283bb59",
+    "old_arrival": "2026-01-25",
+    "new_arrival": "2026-02-18",
+    "days_to_arrival": 25
+  },
+  {
+    "type": "booking_normalized",
     "booking_id": "book_3af3aa90",
-    "old_arrival": "2026-03-11",
+    "old_arrival": "2026-01-28",
     "new_arrival": "2026-01-28",
     "days_to_arrival": 4
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_81764727",
-    "old_arrival": "2026-03-17",
-    "new_arrival": "2026-02-05",
-    "days_to_arrival": 12
+    "old_arrival": "2026-02-05",
+    "new_arrival": "2026-01-25",
+    "days_to_arrival": 1
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_db803ab1",
-    "old_arrival": "2026-02-25",
+    "old_arrival": "2026-01-25",
     "new_arrival": "2026-01-25",
     "days_to_arrival": 1
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_7a3ef40d",
-    "old_arrival": "2026-03-05",
+    "old_arrival": "2026-01-28",
     "new_arrival": "2026-01-28",
     "days_to_arrival": 4
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_3c582d16",
-    "old_arrival": "2026-03-01",
-    "new_arrival": "2026-01-31",
-    "days_to_arrival": 7
+    "old_arrival": "2026-01-31",
+    "new_arrival": "2026-01-25",
+    "days_to_arrival": 1
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_b70bf9f0",
-    "old_arrival": "2026-03-23",
+    "old_arrival": "2026-01-31",
     "new_arrival": "2026-01-31",
     "days_to_arrival": 7
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_cb6d1568",
-    "old_arrival": "2026-02-15",
-    "new_arrival": "2026-01-28",
-    "days_to_arrival": 4
+    "old_arrival": "2026-01-28",
+    "new_arrival": "2026-01-31",
+    "days_to_arrival": 7
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_16e45beb",
-    "old_arrival": "2026-03-04",
-    "new_arrival": "2026-01-28",
-    "days_to_arrival": 4
-  },
-  {
-    "type": "booking_normalized",
-    "booking_id": "book_d8c47e07",
-    "old_arrival": "2026-03-13",
+    "old_arrival": "2026-01-28",
     "new_arrival": "2026-01-25",
     "days_to_arrival": 1
   },
   {
     "type": "booking_normalized",
+    "booking_id": "book_d8c47e07",
+    "old_arrival": "2026-01-25",
+    "new_arrival": "2026-01-31",
+    "days_to_arrival": 7
+  },
+  {
+    "type": "booking_normalized",
     "booking_id": "book_d8b77da3",
-    "old_arrival": "2026-02-12",
+    "old_arrival": "2026-02-05",
     "new_arrival": "2026-02-05",
     "days_to_arrival": 12
   },
   {
     "type": "booking_normalized",
     "booking_id": "book_13597d98",
-    "old_arrival": "2026-03-06",
+    "old_arrival": "2026-02-05",
+    "new_arrival": "2026-01-31",
+    "days_to_arrival": 7
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "demo_budget_prop_xsf",
+    "old_arrival": "2026-01-31",
+    "new_arrival": "2026-01-31",
+    "days_to_arrival": 7
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "demo_prem_prop_8b8",
+    "old_arrival": "2026-01-31",
+    "new_arrival": "2026-01-28",
+    "days_to_arrival": 4
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "demo_budget_prop_odd",
+    "old_arrival": "2026-01-31",
+    "new_arrival": "2026-01-28",
+    "days_to_arrival": 4
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "demo_prem_prop_wd9",
+    "old_arrival": "2026-01-31",
+    "new_arrival": "2026-02-18",
+    "days_to_arrival": 25
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "demo_budget_prop_3nr",
+    "old_arrival": "2026-01-31",
+    "new_arrival": "2026-01-31",
+    "days_to_arrival": 7
+  },
+  {
+    "type": "booking_normalized",
+    "booking_id": "demo_prem_prop_ohk",
+    "old_arrival": "2026-01-31",
     "new_arrival": "2026-02-05",
     "days_to_arrival": 12
   },

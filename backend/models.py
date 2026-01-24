@@ -115,6 +115,10 @@ class BotQueryResponse(BaseModel):
     source: Optional[Dict[str, Any]] = None
 
 
+class AcceptOffer(BaseModel):
+    prop_id: str
+
+
 class RegenRequest(BaseModel):
     exclude_prop_ids: Optional[List[str]] = []
     reason: str = "user_requested_regen"
