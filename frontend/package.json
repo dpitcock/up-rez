@@ -4,8 +4,9 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "build": "npm run snapshot && next build",
+        "build": "npm run snapshot && npm run verify && next build",
         "snapshot": "node scripts/snapshot.js",
+        "verify": "node scripts/verify-data.js",
         "start": "next start",
         "lint": "next lint"
     },

@@ -18,7 +18,7 @@ export function ThemeToggle({ className }: { className?: string }) {
                 "border border-slate-200 dark:border-white/10",
                 className
             )}
-            title={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            data-tooltip={theme === 'dark' ? "Switch to Light Mode" : "Switch to Dark Mode"}
         >
             {theme === 'dark' ? (
                 <Sun className="w-5 h-5 transition-transform hover:rotate-45" />

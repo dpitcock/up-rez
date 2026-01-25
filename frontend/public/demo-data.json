@@ -1,4 +1,8 @@
 {
+  "metadata": {
+    "snapshot_at": "2026-01-25T21:22:15.600729Z",
+    "version": "1.1-temporal"
+  },
   "properties": [
     {
       "id": "prop_xsf7c1",
@@ -8,11 +12,23 @@
       "baths": 1,
       "list_nightly_rate": 150,
       "amenities": "[\"air_conditioning\", \"wifi\", \"basic_kitchen\", \"fridge\", \"coffee_machine\", \"smart_tv\"]",
+      "type": "apartment",
+      "category": "budget",
+      "max_guests": 2,
+      "bedrooms": 1,
+      "size_sqm": 38,
+      "floor": 2,
+      "elevator": 0,
+      "view": "partial_sea",
+      "noise_level": "medium",
+      "suitability": "{\"families\": false, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"15:00\", \"checkOutUntil\": \"11:00\", \"selfCheckIn\": false, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 21}",
+      "description_short": "Compact one-bedroom apartment steps from Playa de Palma, ideal for budget-conscious couples who want easy beach access and reliable AC and WiFi.",
+      "description_long": "A practical one-bedroom apartment located just one street back from Playa de Palma’s seafront promenade. The space offers a small living area with a sofa and smart TV, a basic but functional kitchenette with fridge and coffee machine, and a double bedroom with blackout blinds and air conditioning. A modest balcony overlooks a side street with glimpses of the sea. This is a no-frills base for guests who plan to spend most of their time at the beach or exploring the island, rather than staying indoors.",
       "metadata": "{}",
       "images": "[\"/properties/prop_xsf7c1.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "budget"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_3nrojh",
@@ -22,11 +38,23 @@
       "baths": 1,
       "list_nightly_rate": 120,
       "amenities": "[\"wifi\", \"air_conditioning\", \"kitchenette\", \"microwave\", \"coffee_machine\", \"smart_tv\", \"desk\"]",
+      "type": "studio",
+      "category": "budget",
+      "max_guests": 2,
+      "bedrooms": 0,
+      "size_sqm": 30,
+      "floor": 4,
+      "elevator": 1,
+      "view": "city",
+      "noise_level": "high",
+      "suitability": "{\"families\": false, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": false}",
+      "house_rules": "{\"checkInFrom\": \"16:00\", \"checkOutUntil\": \"10:00\", \"selfCheckIn\": true, \"quietHours\": \"23:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 21}",
+      "description_short": "Compact central studio a few minutes’ walk from Palma’s old town and shopping streets, perfect for solo travellers or couples who want to stay in the city.",
+      "description_long": "Bright fourth-floor studio in a residential building just off one of Palma Centro’s main streets. The open-plan space combines a double bed, a small seating area, and a kitchenette with induction hob, microwave, and coffee machine. A narrow balcony faces the street, bringing in plenty of daylight and classic city views. With strong WiFi and a small desk, the studio suits short work trips as well as city breaks. Expect some street noise from bars and buses, especially at weekends.",
       "metadata": "{}",
       "images": "[\"/properties/prop_3nrojh.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "budget"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_odd9x1",
@@ -36,11 +64,23 @@
       "baths": 1,
       "list_nightly_rate": 220,
       "amenities": "[\"air_conditioning\", \"wifi\", \"full_kitchen\", \"dishwasher\", \"washing_machine\", \"balcony\", \"smart_tv\", \"baby_crib_on_request\"]",
+      "type": "apartment",
+      "category": "midrange",
+      "max_guests": 4,
+      "bedrooms": 2,
+      "size_sqm": 65,
+      "floor": 3,
+      "elevator": 1,
+      "view": "partial_sea_and_city",
+      "noise_level": "medium",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"15:00\", \"checkOutUntil\": \"11:00\", \"selfCheckIn\": true, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 21}",
+      "description_short": "Comfortable two-bedroom apartment in El Terreno, ideal for small families wanting easy access to Palma, the harbour, and nearby beaches.",
+      "description_long": "This family-friendly apartment is set on a quiet side street in El Terreno, a hillside neighborhood between Palma’s center and the seafront. The open-plan living and dining area connects to a small balcony with glimpses of the harbour. A fully equipped kitchen with dishwasher and washing machine makes longer stays more convenient. One bedroom features a queen bed while the second has two single beds, both with air conditioning. Underground parking is included, and you can reach both Bellver Park and the Paseo Marítimo within a short walk.",
       "metadata": "{}",
       "images": "[\"/properties/prop_odd9x1.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "midrange"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_8b867z",
@@ -50,11 +90,23 @@
       "baths": 2,
       "list_nightly_rate": 350,
       "amenities": "[\"private_pool\", \"air_conditioning\", \"wifi\", \"full_kitchen\", \"dishwasher\", \"washing_machine\", \"garden\", \"bbq\", \"outdoor_dining\", \"fireplace\"]",
+      "type": "villa",
+      "category": "upper_midrange",
+      "max_guests": 6,
+      "bedrooms": 3,
+      "size_sqm": 160,
+      "floor": 0,
+      "elevator": 0,
+      "view": "hills_and_golf_partial",
+      "noise_level": "low",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"16:00\", \"checkOutUntil\": \"10:00\", \"selfCheckIn\": false, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 25}",
+      "description_short": "Comfortable villa with private pool and garden in the Son Vida hills, offering a quiet base close to Palma and nearby golf courses.",
+      "description_long": "This three-bedroom villa combines the privacy of a standalone house with easy access to Palma and the Son Vida golf courses. The single-level layout features an open living and dining room with fireplace, leading directly onto a covered terrace and lawned garden. The rectangular pool is bordered by sun loungers and a small BBQ area, creating a relaxed outdoor space for families or groups of friends. Interiors are simple but practical, with air conditioning in all bedrooms and a fully equipped kitchen suited to longer stays.",
       "metadata": "{}",
       "images": "[\"/properties/prop_8b867z.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "upper_midrange"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_wd9nox",
@@ -64,11 +116,23 @@
       "baths": 3,
       "list_nightly_rate": 500,
       "amenities": "[\"private_pool\", \"beach_access\", \"air_conditioning\", \"wifi\", \"bbq\", \"outdoor_shower\", \"outdoor_dining\", \"dishwasher\", \"washing_machine\", \"smart_tv\"]",
+      "type": "house",
+      "category": "luxury",
+      "max_guests": 8,
+      "bedrooms": 4,
+      "size_sqm": 220,
+      "floor": 0,
+      "elevator": 0,
+      "view": "sea_and_street",
+      "noise_level": "medium",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"16:00\", \"checkOutUntil\": \"10:00\", \"selfCheckIn\": false, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 25}",
+      "description_short": "Stylish beach house with small private pool and direct access to Cala Major’s sandy cove, ideal for families or groups seeking a higher-end seaside stay.",
+      "description_long": "Set just one row back from the seafront, this four-bedroom house puts Cala Major’s beach, cafés, and beach clubs practically on your doorstep. The ground floor flows from a modern open kitchen into a light-filled dining and living area, opening onto a patio with a plunge pool, sun loungers, and gas BBQ. Upstairs, most bedrooms feature partial sea views and individual air-conditioning units. While you are within walking distance of shops and restaurants, the enclosed terrace and private garage add an extra sense of comfort and privacy for longer stays.",
       "metadata": "{}",
       "images": "[\"/properties/prop_wd9nox.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "luxury"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_c88oq1",
@@ -78,11 +142,23 @@
       "baths": 2,
       "list_nightly_rate": 400,
       "amenities": "[\"rooftop_terrace\", \"air_conditioning\", \"wifi\", \"gym_in_building\", \"full_kitchen\", \"dishwasher\", \"washing_machine\", \"smart_tv\", \"outdoor_dining\"]",
+      "type": "apartment",
+      "category": "upper_midrange",
+      "max_guests": 6,
+      "bedrooms": 3,
+      "size_sqm": 130,
+      "floor": 6,
+      "elevator": 1,
+      "view": "old_town_rooftops",
+      "noise_level": "medium",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"15:00\", \"checkOutUntil\": \"11:00\", \"selfCheckIn\": true, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 23}",
+      "description_short": "Design-led penthouse on the edge of Palma’s old town with a large private terrace and access to a small building gym.",
+      "description_long": "Located on the top floor of a modern building just outside the pedestrianised streets of the old town, this penthouse is all about outdoor space and natural light. Floor-to-ceiling windows open onto a generous rooftop terrace with lounge seating, dining table, and views across tiled rooftops towards the cathedral. Inside, a sleek kitchen and island sit at the heart of the open-plan living area, with three compact but well-planned bedrooms and two bathrooms leading off the hallway. Guests have access to a small shared gym on the first floor, making the apartment suited to longer city stays and remote work setups.",
       "metadata": "{}",
       "images": "[\"/properties/prop_c88oq1.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "upper_midrange"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_0f4a8i",
@@ -92,11 +168,23 @@
       "baths": 1,
       "list_nightly_rate": 100,
       "amenities": "[\"wifi\", \"ceiling_fan\", \"basic_kitchen\", \"fridge\", \"washing_machine\", \"smart_tv\"]",
+      "type": "apartment",
+      "category": "budget",
+      "max_guests": 2,
+      "bedrooms": 1,
+      "size_sqm": 40,
+      "floor": 1,
+      "elevator": 0,
+      "view": "residential_street",
+      "noise_level": "low",
+      "suitability": "{\"families\": false, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": false}",
+      "house_rules": "{\"checkInFrom\": \"15:00\", \"checkOutUntil\": \"11:00\", \"selfCheckIn\": false, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 21}",
+      "description_short": "Simple inland apartment in Son Rapinya, good value for guests with a car or those visiting nearby schools and sports facilities.",
+      "description_long": "This first-floor apartment sits in a quiet residential block in Son Rapinya, a local neighborhood north of Palma’s center. The interior is basic but clean, with a separate bedroom, small living room, and compact kitchen. A washing machine and reliable WiFi make it a practical choice for medium-length stays or digital nomads looking for a lower-cost base. You are not within walking distance of the beach, but frequent buses connect to Palma and the road access is convenient for exploring the rest of the island by car.",
       "metadata": "{}",
       "images": "[\"/properties/prop_0f4a8i.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "budget"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_ohkebg",
@@ -106,11 +194,23 @@
       "baths": 3,
       "list_nightly_rate": 450,
       "amenities": "[\"private_pool\", \"golf_view\", \"air_conditioning\", \"wifi\", \"full_kitchen\", \"dishwasher\", \"washing_machine\", \"bbq\", \"outdoor_dining\", \"smart_tv\"]",
+      "type": "villa",
+      "category": "luxury",
+      "max_guests": 8,
+      "bedrooms": 4,
+      "size_sqm": 240,
+      "floor": 0,
+      "elevator": 0,
+      "view": "golf_course_and_hills",
+      "noise_level": "low",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"16:00\", \"checkOutUntil\": \"10:00\", \"selfCheckIn\": false, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 25}",
+      "description_short": "Spacious villa overlooking the fairways of Son Vida, combining a private pool and garden with quick access to Palma’s golf and city lifestyle.",
+      "description_long": "Positioned along one of Son Vida’s golf courses, this four-bedroom villa is tailored to guests who value both calm surroundings and easy access to Palma. Large sliding doors link the open-plan living space to a deep covered terrace, pool area, and a lawn with views over the fairway. The bedrooms are distributed across two levels, providing more privacy for mixed groups or families with older children. While the style is more classic than ultra-modern, the villa is well-equipped and benefits from strong WiFi and multiple shaded outdoor seating areas.",
       "metadata": "{}",
       "images": "[\"/properties/prop_ohkebg.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "luxury"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_08y3id",
@@ -120,11 +220,23 @@
       "baths": 2,
       "list_nightly_rate": 280,
       "amenities": "[\"sea_view\", \"air_conditioning\", \"wifi\", \"balcony\", \"full_kitchen\", \"washing_machine\", \"smart_tv\"]",
+      "type": "apartment",
+      "category": "midrange",
+      "max_guests": 4,
+      "bedrooms": 2,
+      "size_sqm": 75,
+      "floor": 1,
+      "elevator": 0,
+      "view": "front_sea",
+      "noise_level": "medium",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"15:00\", \"checkOutUntil\": \"11:00\", \"selfCheckIn\": true, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 21}",
+      "description_short": "First-line apartment on Port de Pollença’s Pine Walk with uninterrupted sea views and two en-suite bedrooms.",
+      "description_long": "This seafront apartment sits directly on the pedestrian Pine Walk, with the beach and shallow water just across the promenade. The living area opens onto a covered balcony that comfortably seats four for outdoor meals with panoramic bay views. Both bedrooms feature their own bathrooms, making the layout practical for two couples travelling together or parents wanting extra privacy. Interiors are simple and bright, with AC units in the living room and bedrooms, a well-equipped kitchen, and a washing machine for longer holiday stays.",
       "metadata": "{}",
       "images": "[\"/properties/prop_08y3id.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "midrange"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_g0ppb2",
@@ -134,11 +246,23 @@
       "baths": 4,
       "list_nightly_rate": 800,
       "amenities": "[\"private_pool\", \"jacuzzi\", \"gym\", \"air_conditioning\", \"wifi\", \"bbq\", \"outdoor_kitchen\", \"outdoor_dining\", \"fireplace\", \"office_space\", \"smart_tv\"]",
+      "type": "villa",
+      "category": "high_luxury",
+      "max_guests": 10,
+      "bedrooms": 5,
+      "size_sqm": 380,
+      "floor": 0,
+      "elevator": 0,
+      "view": "sea_and_hills_partial",
+      "noise_level": "low",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": true, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"17:00\", \"checkOutUntil\": \"10:00\", \"selfCheckIn\": false, \"quietHours\": \"23:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": true, \"minimumAge\": 28}",
+      "description_short": "Expansive high-end estate with large pool, Jacuzzi, and dedicated gym, set in a quiet coastal residential area near the southwest of Mallorca.",
+      "description_long": "Conceived as a private retreat, this estate offers generous indoor and outdoor living spaces spread across a landscaped plot with mature trees. The heart of the property is the pool terrace, where an integrated Jacuzzi, loungers, and an outdoor kitchen with gas BBQ create a resort-like feel. Inside, an open living and dining area flows into a fully fitted kitchen, with an additional TV lounge and a small office that can double as a workspace. Bedrooms are distributed between the ground and first floors, each with individually controlled AC and plenty of wardrobe space, making the house well suited to multi-generational stays or small retreats.",
       "metadata": "{}",
       "images": "[\"/properties/prop_g0ppb2.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "high_luxury"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_le1jwd",
@@ -148,11 +272,23 @@
       "baths": 1,
       "list_nightly_rate": 180,
       "amenities": "[\"air_conditioning\", \"wifi\", \"terrace\", \"full_kitchen\", \"washing_machine\", \"smart_tv\"]",
+      "type": "townhouse",
+      "category": "midrange",
+      "max_guests": 4,
+      "bedrooms": 2,
+      "size_sqm": 85,
+      "floor": 0,
+      "elevator": 0,
+      "view": "neighborhood_rooftops",
+      "noise_level": "medium_high",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"15:00\", \"checkOutUntil\": \"11:00\", \"selfCheckIn\": true, \"quietHours\": \"23:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 23}",
+      "description_short": "Traditional two-level townhouse with sunny terrace in Santa Catalina, steps from cafés, bars, and the famous market hall.",
+      "description_long": "Tucked into a narrow side street, this compact townhouse offers an authentic Santa Catalina stay with restaurants and nightlife right around the corner. The ground floor holds a small living room and kitchen, while the two bedrooms and bathroom are located upstairs. A private rooftop terrace with dining table and lounge chairs becomes the main living area on warm days and evenings. The layout suits couples or small families who want a characterful base in one of Palma’s liveliest neighborhoods, accepting a bit of urban noise in exchange for proximity to everything.",
       "metadata": "{}",
       "images": "[\"/properties/prop_le1jwd.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "midrange"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     },
     {
       "id": "prop_saud8h",
@@ -162,17 +298,29 @@
       "baths": 2,
       "list_nightly_rate": 250,
       "amenities": "[\"shared_pool\", \"air_conditioning\", \"wifi\", \"full_kitchen\", \"washing_machine\", \"dishwasher\", \"terrace\", \"smart_tv\"]",
+      "type": "apartment",
+      "category": "midrange",
+      "max_guests": 4,
+      "bedrooms": 2,
+      "size_sqm": 70,
+      "floor": 0,
+      "elevator": 0,
+      "view": "pool_and_garden",
+      "noise_level": "low_medium",
+      "suitability": "{\"families\": true, \"couples\": true, \"remoteWorkers\": true, \"petsAllowed\": false, \"eventsAllowed\": false, \"childrenAllowed\": true}",
+      "house_rules": "{\"checkInFrom\": \"15:00\", \"checkOutUntil\": \"11:00\", \"selfCheckIn\": false, \"quietHours\": \"22:00-08:00\", \"smokingAllowed\": false, \"partiesAllowed\": false, \"minimumAge\": 21}",
+      "description_short": "Ground-floor apartment opening directly onto a shared pool and garden area, a short walk from the rocky coves of Es Forti near Cala d’Or.",
+      "description_long": "Situated in a low-rise complex with Mediterranean-style gardens, this poolside apartment is designed for relaxed family holidays. The open living and dining space connects to a covered terrace just steps from the shared pool, letting you supervise children from the shade. Both bedrooms have their own bathrooms, and the kitchen is well-equipped for self-catering. With several small beaches and coves within walking distance, plus easy parking on surrounding streets, the apartment offers a practical balance between comfort and budget.",
       "metadata": "{}",
       "images": "[\"/properties/prop_saud8h.png\"]",
-      "created_at": "2026-01-24T14:00:06.344198Z",
-      "updated_at": null,
-      "category": "midrange"
+      "created_at": "2026-01-25T17:14:59.111824Z",
+      "updated_at": null
     }
   ],
   "host_settings": {
     "id": 1,
     "host_id": "demo_host_001",
-    "host_name": "Palma Properties",
+    "host_name": "Palma Properties Demo",
     "min_revenue_lift_eur_per_night": 30,
     "max_discount_pct": 0.4,
     "min_adr_ratio": 1.1,
@@ -191,14 +339,12 @@
     "offers_sent_this_month": 0,
     "revenue_lifted_this_month": 0,
     "conversion_rate_pct": null,
-    "created_at": "2026-01-24T14:00:06.347432Z",
-    "updated_at": "2026-01-24T15:58:54.787299+00:00Z",
+    "created_at": "2026-01-25T17:14:59.114754Z",
+    "updated_at": "2026-01-25T17:14:59.114754Z",
     "last_login_at": null,
-    "local_llm_model": "gemma2:2b",
-    "active_email_template_id": null,
-    "active_landing_template_id": null,
-    "pm_company_name": "@luxury_stays",
-    "host_phone": "+34 123 456 789"
+    "pm_company_name": null,
+    "host_phone": null,
+    "local_llm_model": "gemma3:latest"
   },
   "offers": {},
   "bookings": [
@@ -206,8 +352,8 @@
       "id": "book_ea53ae77",
       "host_id": "demo_host_001",
       "prop_id": "prop_xsf7c1",
-      "arrival_date": "2026-02-05",
-      "departure_date": "2026-02-15",
+      "arrival_date": "2026-02-06",
+      "departure_date": "2026-02-16",
       "nights": 10,
       "guest_name": "Ian McKellen",
       "guest_email": "dpitcock.dev+book_ea53ae77@gmail.com",
@@ -221,15 +367,19 @@
       "total_paid": 1500,
       "channel": "direct",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.839303Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.195862Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_c3b0924e",
       "host_id": "demo_host_001",
       "prop_id": "prop_xsf7c1",
-      "arrival_date": "2026-02-05",
-      "departure_date": "2026-02-09",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-05",
       "nights": 4,
       "guest_name": "Fiona Gallagher",
       "guest_email": "dpitcock.dev+book_c3b0924e@gmail.com",
@@ -243,15 +393,19 @@
       "total_paid": 600,
       "channel": "direct",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.839940Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196631Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_ffcc4819",
       "host_id": "demo_host_001",
       "prop_id": "prop_xsf7c1",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-10",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-11",
       "nights": 10,
       "guest_name": "Evan Wright",
       "guest_email": "dpitcock.dev+book_ffcc4819@gmail.com",
@@ -265,15 +419,19 @@
       "total_paid": 1500,
       "channel": "booking",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.839952Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196647Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_690178c0",
       "host_id": "demo_host_001",
       "prop_id": "prop_3nrojh",
-      "arrival_date": "2026-02-05",
-      "departure_date": "2026-02-15",
+      "arrival_date": "2026-01-29",
+      "departure_date": "2026-02-08",
       "nights": 10,
       "guest_name": "Fiona Gallagher",
       "guest_email": "dpitcock.dev+book_690178c0@gmail.com",
@@ -287,15 +445,19 @@
       "total_paid": 1200,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.839959Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196659Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_a0ef56ca",
       "host_id": "demo_host_001",
       "prop_id": "prop_3nrojh",
-      "arrival_date": "2026-02-18",
-      "departure_date": "2026-02-25",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-08",
       "nights": 7,
       "guest_name": "Fiona Gallagher",
       "guest_email": "dpitcock.dev+book_a0ef56ca@gmail.com",
@@ -309,15 +471,19 @@
       "total_paid": 840,
       "channel": "direct",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.839966Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196668Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_654f0826",
       "host_id": "demo_host_001",
       "prop_id": "prop_3nrojh",
-      "arrival_date": "2026-02-18",
-      "departure_date": "2026-02-24",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-07",
       "nights": 6,
       "guest_name": "Evan Wright",
       "guest_email": "dpitcock.dev+book_654f0826@gmail.com",
@@ -331,15 +497,19 @@
       "total_paid": 720,
       "channel": "booking",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.839972Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196676Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_bafe364d",
       "host_id": "demo_host_001",
       "prop_id": "prop_odd9x1",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-06",
+      "arrival_date": "2026-01-26",
+      "departure_date": "2026-02-01",
       "nights": 6,
       "guest_name": "Julia Roberts",
       "guest_email": "dpitcock.dev+book_bafe364d@gmail.com",
@@ -353,15 +523,19 @@
       "total_paid": 1320,
       "channel": "booking",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.839978Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196684Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_22ca250e",
       "host_id": "demo_host_001",
       "prop_id": "prop_odd9x1",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-19",
+      "departure_date": "2026-02-26",
       "nights": 7,
       "guest_name": "Charlie Brown",
       "guest_email": "dpitcock.dev+book_22ca250e@gmail.com",
@@ -375,15 +549,19 @@
       "total_paid": 1540,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840144Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196890Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_4ef7272f",
       "host_id": "demo_host_001",
       "prop_id": "prop_8b867z",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-08",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-09",
       "nights": 8,
       "guest_name": "Hannah Abbott",
       "guest_email": "dpitcock.dev+book_4ef7272f@gmail.com",
@@ -397,15 +575,19 @@
       "total_paid": 2800,
       "channel": "direct",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840154Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196906Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_5283bb59",
       "host_id": "demo_host_001",
       "prop_id": "prop_8b867z",
-      "arrival_date": "2026-01-25",
-      "departure_date": "2026-01-31",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-07",
       "nights": 6,
       "guest_name": "Fiona Gallagher",
       "guest_email": "dpitcock.dev+book_5283bb59@gmail.com",
@@ -419,15 +601,19 @@
       "total_paid": 2100,
       "channel": "direct",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840160Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196916Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_3af3aa90",
       "host_id": "demo_host_001",
       "prop_id": "prop_wd9nox",
-      "arrival_date": "2026-01-28",
-      "departure_date": "2026-02-02",
+      "arrival_date": "2026-01-29",
+      "departure_date": "2026-02-03",
       "nights": 5,
       "guest_name": "Charlie Brown",
       "guest_email": "dpitcock.dev+book_3af3aa90@gmail.com",
@@ -441,15 +627,19 @@
       "total_paid": 2500,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840165Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196924Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_81764727",
       "host_id": "demo_host_001",
       "prop_id": "prop_wd9nox",
-      "arrival_date": "2026-02-05",
-      "departure_date": "2026-02-12",
+      "arrival_date": "2026-02-19",
+      "departure_date": "2026-02-26",
       "nights": 7,
       "guest_name": "Charlie Brown",
       "guest_email": "dpitcock.dev+book_81764727@gmail.com",
@@ -463,15 +653,19 @@
       "total_paid": 3500,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840170Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196932Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_db803ab1",
       "host_id": "demo_host_001",
       "prop_id": "prop_c88oq1",
-      "arrival_date": "2026-01-25",
-      "departure_date": "2026-02-04",
+      "arrival_date": "2026-02-06",
+      "departure_date": "2026-02-16",
       "nights": 10,
       "guest_name": "Hannah Abbott",
       "guest_email": "dpitcock.dev+book_db803ab1@gmail.com",
@@ -485,15 +679,19 @@
       "total_paid": 4000,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840176Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196939Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_7a3ef40d",
       "host_id": "demo_host_001",
       "prop_id": "prop_0f4a8i",
-      "arrival_date": "2026-01-28",
-      "departure_date": "2026-01-31",
+      "arrival_date": "2026-02-19",
+      "departure_date": "2026-02-22",
       "nights": 3,
       "guest_name": "Julia Roberts",
       "guest_email": "dpitcock.dev+book_7a3ef40d@gmail.com",
@@ -507,15 +705,19 @@
       "total_paid": 300,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840180Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196945Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_3c582d16",
       "host_id": "demo_host_001",
       "prop_id": "prop_ohkebg",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-09",
+      "arrival_date": "2026-01-26",
+      "departure_date": "2026-02-04",
       "nights": 9,
       "guest_name": "Alice Johnson",
       "guest_email": "dpitcock.dev+book_3c582d16@gmail.com",
@@ -529,15 +731,19 @@
       "total_paid": 4050,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840185Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196952Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_b70bf9f0",
       "host_id": "demo_host_001",
       "prop_id": "prop_08y3id",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-06",
+      "departure_date": "2026-02-13",
       "nights": 7,
       "guest_name": "Ian McKellen",
       "guest_email": "dpitcock.dev+book_b70bf9f0@gmail.com",
@@ -551,15 +757,19 @@
       "total_paid": 1960,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840190Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196958Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_cb6d1568",
       "host_id": "demo_host_001",
       "prop_id": "prop_g0ppb2",
-      "arrival_date": "2026-01-28",
-      "departure_date": "2026-02-05",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-09",
       "nights": 8,
       "guest_name": "Charlie Brown",
       "guest_email": "dpitcock.dev+book_cb6d1568@gmail.com",
@@ -573,15 +783,19 @@
       "total_paid": 6400,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840194Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196965Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_16e45beb",
       "host_id": "demo_host_001",
       "prop_id": "prop_le1jwd",
-      "arrival_date": "2026-01-28",
-      "departure_date": "2026-02-05",
+      "arrival_date": "2026-01-26",
+      "departure_date": "2026-02-03",
       "nights": 8,
       "guest_name": "Alice Johnson",
       "guest_email": "dpitcock.dev+book_16e45beb@gmail.com",
@@ -595,15 +809,19 @@
       "total_paid": 1440,
       "channel": "booking",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840199Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196971Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_d8c47e07",
       "host_id": "demo_host_001",
       "prop_id": "prop_le1jwd",
-      "arrival_date": "2026-01-25",
-      "departure_date": "2026-01-30",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-06",
       "nights": 5,
       "guest_name": "Alice Johnson",
       "guest_email": "dpitcock.dev+book_d8c47e07@gmail.com",
@@ -617,15 +835,19 @@
       "total_paid": 900,
       "channel": "airbnb",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840205Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196983Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_d8b77da3",
       "host_id": "demo_host_001",
       "prop_id": "prop_saud8h",
-      "arrival_date": "2026-02-05",
-      "departure_date": "2026-02-14",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-10",
       "nights": 9,
       "guest_name": "Hannah Abbott",
       "guest_email": "dpitcock.dev+book_d8b77da3@gmail.com",
@@ -639,15 +861,19 @@
       "total_paid": 2250,
       "channel": "booking",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840210Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196990Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "book_13597d98",
       "host_id": "demo_host_001",
       "prop_id": "prop_saud8h",
-      "arrival_date": "2026-02-05",
-      "departure_date": "2026-02-10",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-06",
       "nights": 5,
       "guest_name": "Julia Roberts",
       "guest_email": "dpitcock.dev+book_13597d98@gmail.com",
@@ -661,15 +887,19 @@
       "total_paid": 1250,
       "channel": "booking",
       "status": "confirmed",
-      "created_at": "2026-01-24T14:00:06.346132Z",
-      "updated_at": "2026-01-24T14:01:22.840216Z"
+      "created_at": "2026-01-25T17:14:59.113732Z",
+      "updated_at": "2026-01-25T17:15:01.196996Z",
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "demo_budget_prop_xsf",
       "host_id": "demo_host_001",
       "prop_id": "prop_xsf7c1",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-08",
       "nights": 7,
       "guest_name": "Budget Demo Guest",
       "guest_email": "dpitcock.dev+budget_xsf7c1@gmail.com",
@@ -683,15 +913,19 @@
       "total_paid": 1050,
       "channel": null,
       "status": "confirmed",
-      "created_at": "2026-01-24T14:01:22.840223Z",
-      "updated_at": null
+      "created_at": "2026-01-25T17:15:01.197004Z",
+      "updated_at": null,
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "demo_prem_prop_8b8",
       "host_id": "demo_host_001",
       "prop_id": "prop_8b867z",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-08",
       "nights": 7,
       "guest_name": "Premium Demo Guest",
       "guest_email": "dpitcock.dev+prem_8b867z@gmail.com",
@@ -705,15 +939,19 @@
       "total_paid": 2800,
       "channel": null,
       "status": "confirmed",
-      "created_at": "2026-01-24T14:01:22.840399Z",
-      "updated_at": null
+      "created_at": "2026-01-25T17:15:01.197220Z",
+      "updated_at": null,
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "demo_budget_prop_odd",
       "host_id": "demo_host_001",
       "prop_id": "prop_odd9x1",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-08",
       "nights": 7,
       "guest_name": "Budget Demo Guest",
       "guest_email": "dpitcock.dev+budget_odd9x1@gmail.com",
@@ -727,15 +965,19 @@
       "total_paid": 1050,
       "channel": null,
       "status": "confirmed",
-      "created_at": "2026-01-24T14:01:22.840424Z",
-      "updated_at": null
+      "created_at": "2026-01-25T17:15:01.197237Z",
+      "updated_at": null,
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "demo_prem_prop_wd9",
       "host_id": "demo_host_001",
       "prop_id": "prop_wd9nox",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-08",
       "nights": 7,
       "guest_name": "Premium Demo Guest",
       "guest_email": "dpitcock.dev+prem_wd9nox@gmail.com",
@@ -749,15 +991,19 @@
       "total_paid": 2800,
       "channel": null,
       "status": "confirmed",
-      "created_at": "2026-01-24T14:01:22.840430Z",
-      "updated_at": null
+      "created_at": "2026-01-25T17:15:01.197241Z",
+      "updated_at": null,
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "demo_budget_prop_3nr",
       "host_id": "demo_host_001",
       "prop_id": "prop_3nrojh",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-08",
       "nights": 7,
       "guest_name": "Budget Demo Guest",
       "guest_email": "dpitcock.dev+budget_3nrojh@gmail.com",
@@ -771,15 +1017,19 @@
       "total_paid": 1050,
       "channel": null,
       "status": "confirmed",
-      "created_at": "2026-01-24T14:01:22.840436Z",
-      "updated_at": null
+      "created_at": "2026-01-25T17:15:01.197250Z",
+      "updated_at": null,
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
     },
     {
       "id": "demo_prem_prop_ohk",
       "host_id": "demo_host_001",
       "prop_id": "prop_ohkebg",
-      "arrival_date": "2026-01-31",
-      "departure_date": "2026-02-07",
+      "arrival_date": "2026-02-01",
+      "departure_date": "2026-02-08",
       "nights": 7,
       "guest_name": "Premium Demo Guest",
       "guest_email": "dpitcock.dev+prem_ohkebg@gmail.com",
@@ -793,7 +1043,1163 @@
       "total_paid": 2800,
       "channel": null,
       "status": "confirmed",
-      "created_at": "2026-01-24T14:01:22.840439Z",
+      "created_at": "2026-01-25T17:15:01.197253Z",
+      "updated_at": null,
+      "upgraded_from_prop_id": null,
+      "original_base_rate": null,
+      "original_total_paid": null,
+      "upgrade_at": null
+    }
+  ],
+  "offer_templates": [
+    {
+      "template_id": "template_budget_to_mid",
+      "scenario": "Budget to Midrange",
+      "top3": [
+        {
+          "ranking": 1,
+          "prop_id": "prop_8b867z",
+          "prop_name": "Mid-Tier Villa",
+          "location": "Son Vida (hills), Palma de Mallorca",
+          "beds": 4,
+          "baths": 2,
+          "type": "villa",
+          "category": "upper_midrange",
+          "max_guests": 6,
+          "bedrooms": 3,
+          "size_sqm": 160,
+          "floor": 0,
+          "elevator": 0,
+          "view": "hills_and_golf_partial",
+          "noise_level": "low",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "16:00",
+            "checkOutUntil": "10:00",
+            "selfCheckIn": false,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 25
+          },
+          "description_short": "Comfortable villa with private pool and garden in the Son Vida hills, offering a quiet base close to Palma and nearby golf courses.",
+          "description_long": "This three-bedroom villa combines the privacy of a standalone house with easy access to Palma and the Son Vida golf courses. The single-level layout features an open living and dining room with fireplace, leading directly onto a covered terrace and lawned garden. The rectangular pool is bordered by sun loungers and a small BBQ area, creating a relaxed outdoor space for families or groups of friends. Interiors are simple but practical, with air conditioning in all bedrooms and a fully equipped kitchen suited to longer stays.",
+          "viability_score": 5.876008470570353,
+          "tower_context": {
+            "market_multiplier": 1.4690021176425883,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 150,
+            "to_adr_list": 350,
+            "offer_adr": 270,
+            "extra_per_night": 120,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 1890,
+            "floor_total": 1417.5,
+            "floor_adr": 202.5,
+            "list_total": 2450,
+            "total_extra": 840,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 560,
+            "revenue_lift": 840
+          },
+          "diffs": [
+            "Private Rooftop Pool & Sun Terrace",
+            "Three Extra Bedrooms (4 Beds)",
+            "Dedicated Garden Space"
+          ],
+          "headline": "Unlock Unrivaled Mallorca Luxury",
+          "summary": "Transform your getaway with a spacious villa boasting extra bedrooms and a private garden – an investment in unforgettable memories.",
+          "ai_copy": {
+            "subject": "Budget, Elevate Your Mallorca Escape",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_8b867z.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; font-weight:bold;\">Only 120€ more / night</h1>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>This exclusive invitation has been shared with other qualified guests on overlapping dates.  Demand for this unit is exceptionally high.</p>\n  <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:20px; border-radius:40px;\">UNLOCK UPGRADE</a>\n  <div style=\"font-size:10px; color:#4b5563; text-align:center; margin-top:20px;\">Upgrade offer powered by UpRez</div>\n</div>",
+            "landing_hero": "Unlock Unrivaled Mallorca Luxury",
+            "landing_summary": "Transform your getaway with a spacious villa boasting extra bedrooms and a private garden – an investment in unforgettable memories.",
+            "diff_bullets": [
+              "Private Rooftop Pool & Sun Terrace",
+              "Three Extra Bedrooms (4 Beds)",
+              "Dedicated Garden Space"
+            ],
+            "offer_url": "https://uprez.dpitcock.dev/properties/prop_8b867z",
+            "property": "Mid-Tier Villa",
+            "rate": 270,
+            "savings": 560
+          },
+          "images": [
+            "/properties/prop_8b867z.png"
+          ],
+          "amenities": [
+            "private_pool",
+            "air_conditioning",
+            "wifi",
+            "full_kitchen",
+            "dishwasher",
+            "washing_machine",
+            "garden",
+            "bbq",
+            "outdoor_dining",
+            "fireplace"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        },
+        {
+          "ranking": 2,
+          "prop_id": "prop_08y3id",
+          "prop_name": "Seafront 2BR",
+          "location": "Pine Walk, Port de Pollença",
+          "beds": 3,
+          "baths": 2,
+          "type": "apartment",
+          "category": "midrange",
+          "max_guests": 4,
+          "bedrooms": 2,
+          "size_sqm": 75,
+          "floor": 1,
+          "elevator": 0,
+          "view": "front_sea",
+          "noise_level": "medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "15:00",
+            "checkOutUntil": "11:00",
+            "selfCheckIn": true,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 21
+          },
+          "description_short": "First-line apartment on Port de Pollença’s Pine Walk with uninterrupted sea views and two en-suite bedrooms.",
+          "description_long": "This seafront apartment sits directly on the pedestrian Pine Walk, with the beach and shallow water just across the promenade. The living area opens onto a covered balcony that comfortably seats four for outdoor meals with panoramic bay views. Both bedrooms feature their own bathrooms, making the layout practical for two couples travelling together or parents wanting extra privacy. Interiors are simple and bright, with AC units in the living room and bedrooms, a well-equipped kitchen, and a washing machine for longer holiday stays.",
+          "viability_score": 4.407006352927764,
+          "tower_context": {
+            "market_multiplier": 1.4690021176425883,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 150,
+            "to_adr_list": 280,
+            "offer_adr": 228,
+            "extra_per_night": 78,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 1596,
+            "floor_total": 1197,
+            "floor_adr": 171,
+            "list_total": 1960,
+            "total_extra": 546,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 364,
+            "revenue_lift": 546
+          },
+          "diffs": [
+            "Private Balcony with Stunning Sea Views",
+            "Two Extra Bedrooms (3 Beds Total)",
+            "One Additional Bathroom for Seamless Family Living"
+          ],
+          "headline": "Unlock Unparalleled Mallorca Views",
+          "summary": "Experience the epitome of beachfront luxury with a spacious 2-bedroom apartment, designed for ultimate relaxation and convenience.",
+          "ai_copy": {
+            "subject": "Budget, Elevate Your Mallorca Escape",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_08y3id.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; font-weight:bold;\">Only 78€ more / night</h1>\n    <a href=\"{OFFER_URL}\" style=\"background:white; color:black; padding:0; border:none; text-decoration:none; font-size:24px; font-weight:bold; display:block; margin-top:40px;\">UNLOCK UPGRADE</a>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>For only a small daily amount, you can transform your stay from the Budget Beach Apt to the luxurious Seafront 2BR, boasting an extra bedroom and bathroom!</p>\n  <div style=\"background:#050505; color:#ffffff; padding:24px;\">\n    <p style=\"font-size:10px; color:#4b5563; text-align:center;\">Upgrade offer powered by UpRez</p>\n  </div>\n</div>",
+            "landing_hero": "Unlock Unparalleled Mallorca Views",
+            "landing_summary": "Experience the epitome of beachfront luxury with a spacious 2-bedroom apartment, designed for ultimate relaxation and convenience.",
+            "diff_bullets": [
+              "Private Balcony with Stunning Sea Views",
+              "Two Extra Bedrooms (3 Beds Total)",
+              "One Additional Bathroom for Seamless Family Living"
+            ],
+            "offer_url": "{OFFER_URL}",
+            "property": "Seafront 2BR",
+            "rate": "228.0€/night",
+            "total_savings": "364.0€"
+          },
+          "images": [
+            "/properties/prop_08y3id.png"
+          ],
+          "amenities": [
+            "sea_view",
+            "air_conditioning",
+            "wifi",
+            "balcony",
+            "full_kitchen",
+            "washing_machine",
+            "smart_tv"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        },
+        {
+          "ranking": 3,
+          "prop_id": "prop_saud8h",
+          "prop_name": "Poolside Apt",
+          "location": "Es Forti, Cala d'Or",
+          "beds": 3,
+          "baths": 2,
+          "type": "apartment",
+          "category": "midrange",
+          "max_guests": 4,
+          "bedrooms": 2,
+          "size_sqm": 70,
+          "floor": 0,
+          "elevator": 0,
+          "view": "pool_and_garden",
+          "noise_level": "low_medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "15:00",
+            "checkOutUntil": "11:00",
+            "selfCheckIn": false,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 21
+          },
+          "description_short": "Ground-floor apartment opening directly onto a shared pool and garden area, a short walk from the rocky coves of Es Forti near Cala d’Or.",
+          "description_long": "Situated in a low-rise complex with Mediterranean-style gardens, this poolside apartment is designed for relaxed family holidays. The open living and dining space connects to a covered terrace just steps from the shared pool, letting you supervise children from the shade. Both bedrooms have their own bathrooms, and the kitchen is well-equipped for self-catering. With several small beaches and coves within walking distance, plus easy parking on surrounding streets, the apartment offers a practical balance between comfort and budget.",
+          "viability_score": 4.407006352927764,
+          "tower_context": {
+            "market_multiplier": 1.4690021176425883,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 150,
+            "to_adr_list": 250,
+            "offer_adr": 210,
+            "extra_per_night": 60,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 1470,
+            "floor_total": 1190,
+            "floor_adr": 170,
+            "list_total": 1750,
+            "total_extra": 420,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 280,
+            "revenue_lift": 420
+          },
+          "diffs": [
+            "Private Rooftop Pool & Sun Deck",
+            "Spacious 3-Bedroom Apartment (3 Beds)",
+            "Enhanced Bathroom Facilities"
+          ],
+          "headline": "Unlock Unparalleled Luxury in Mallorca",
+          "summary": "Transform your Mallorca escape with a private pool and breathtaking views – a truly indulgent experience awaits.",
+          "ai_copy": {
+            "subject": "Budget, we've added a private pool to your Mallorca stay?",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <h1 style=\"text-align:center;\">Your Stay, Elevated.</h1>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_saud8h.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:#ffffff; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; font-weight:bold; color:#ffffff;\">Only 60€ more / night</h1>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>This exclusive invitation has been shared with other qualified guests on overlapping dates, and this unit is in high demand.</p>\n  <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:10px 20px; border-radius:40px; text-decoration:none;\">UNLOCK UPGRADE</a>\n  <p style=\"font-size:10px; color:#4b5563; text-align:right;\">Upgrade offer powered by UpRez</p>\n</div>",
+            "landing_hero": "Unlock Unparalleled Luxury in Mallorca",
+            "landing_summary": "Transform your Mallorca escape with a private pool and breathtaking views – a truly indulgent experience awaits.",
+            "diff_bullets": [
+              "Private Rooftop Pool & Sun Deck",
+              "Spacious 3-Bedroom Apartment (3 Beds)",
+              "Enhanced Bathroom Facilities"
+            ]
+          },
+          "images": [
+            "/properties/prop_saud8h.png"
+          ],
+          "amenities": [
+            "shared_pool",
+            "air_conditioning",
+            "wifi",
+            "full_kitchen",
+            "washing_machine",
+            "dishwasher",
+            "terrace",
+            "smart_tv"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        }
+      ],
+      "email_subject": "Budget, Elevate Your Mallorca Escape",
+      "email_body_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_8b867z.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; font-weight:bold;\">Only 120€ more / night</h1>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>This exclusive invitation has been shared with other qualified guests on overlapping dates.  Demand for this unit is exceptionally high.</p>\n  <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:20px; border-radius:40px;\">UNLOCK UPGRADE</a>\n  <div style=\"font-size:10px; color:#4b5563; text-align:center; margin-top:20px;\">Upgrade offer powered by UpRez</div>\n</div>",
+      "status": "active",
+      "expires_at": null,
+      "created_at": null,
+      "updated_at": null
+    },
+    {
+      "template_id": "template_budget_to_upper",
+      "scenario": "Budget to Upper Midrange",
+      "top3": [
+        {
+          "ranking": 1,
+          "prop_id": "prop_08y3id",
+          "prop_name": "Seafront 2BR",
+          "location": "Pine Walk, Port de Pollença",
+          "beds": 3,
+          "baths": 2,
+          "type": "apartment",
+          "category": "midrange",
+          "max_guests": 4,
+          "bedrooms": 2,
+          "size_sqm": 75,
+          "floor": 1,
+          "elevator": 0,
+          "view": "front_sea",
+          "noise_level": "medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "15:00",
+            "checkOutUntil": "11:00",
+            "selfCheckIn": true,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 21
+          },
+          "description_short": "First-line apartment on Port de Pollença’s Pine Walk with uninterrupted sea views and two en-suite bedrooms.",
+          "description_long": "This seafront apartment sits directly on the pedestrian Pine Walk, with the beach and shallow water just across the promenade. The living area opens onto a covered balcony that comfortably seats four for outdoor meals with panoramic bay views. Both bedrooms feature their own bathrooms, making the layout practical for two couples travelling together or parents wanting extra privacy. Interiors are simple and bright, with AC units in the living room and bedrooms, a well-equipped kitchen, and a washing machine for longer holiday stays.",
+          "viability_score": 4.465699602835576,
+          "tower_context": {
+            "market_multiplier": 1.4885665342785253,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 120,
+            "to_adr_list": 280,
+            "offer_adr": 216,
+            "extra_per_night": 96,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 1512,
+            "floor_total": 1190,
+            "floor_adr": 170,
+            "list_total": 1960,
+            "total_extra": 462,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 448,
+            "revenue_lift": 462
+          },
+          "diffs": [
+            "Private Balcony with Sea Views",
+            "Spacious Layout Perfect for Two",
+            "Uninterrupted Ocean Views"
+          ],
+          "headline": "Unlock Your Dream Mallorca Escape",
+          "summary": "Transform your City Studio experience into a luxurious Seafront 2BR, indulging in unparalleled comfort and breathtaking views – chat with our concierge to tailor your stay.",
+          "ai_copy": {
+            "subject": "Budget, Your Mallorca Upgrade Awaits!",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_08y3id.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; text-align:center;\">Only 96€ more / night</h1>\n    <a href=\"{OFFER_URL}\" style=\"background:white; color:black; padding:20px; border-radius:40px; text-decoration:none; display:block; margin-top:40px; text-align:center;\">UNLOCK UPGRADE</a>\n  </div>\n  <p style=\"margin-bottom:20px;\">Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p style=\"margin-bottom:20px;\">This unit is in high demand and has been offered to others—first to claim it wins.</p>\n  <div style=\"margin-bottom:40px;\">\n    <p style=\"margin-bottom:20px;\">Here’s what awaits you:</p>\n    <ul>\n      <li>+2 extra bedrooms (3 beds vs 1)</li>\n      <li>+1 extra bathroom</li>\n      <li>Includes Balcony</li>\n    </ul>\n  </div>\n  <div style=\"text-align:center; font-size:10px; color:#4b5563; margin-top:40px;\">Upgrade offer powered by UpRez</div>\n</div>",
+            "landing_hero": "Unlock Your Dream Mallorca Escape",
+            "landing_summary": "Transform your City Studio experience into a luxurious Seafront 2BR, indulging in unparalleled comfort and breathtaking views – chat with our concierge to tailor your stay.",
+            "diff_bullets": [
+              "Private Balcony with Sea Views",
+              "Spacious Layout Perfect for Two",
+              "Uninterrupted Ocean Views"
+            ],
+            "offer_url": "https://uprez.dpitcock.dev/offers/prop_08y3id",
+            "OFFER_URL": "https://uprez.dpitcock.dev/offers/prop_08y3id"
+          },
+          "images": [
+            "/properties/prop_08y3id.png"
+          ],
+          "amenities": [
+            "sea_view",
+            "air_conditioning",
+            "wifi",
+            "balcony",
+            "full_kitchen",
+            "washing_machine",
+            "smart_tv"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        },
+        {
+          "ranking": 2,
+          "prop_id": "prop_saud8h",
+          "prop_name": "Poolside Apt",
+          "location": "Es Forti, Cala d'Or",
+          "beds": 3,
+          "baths": 2,
+          "type": "apartment",
+          "category": "midrange",
+          "max_guests": 4,
+          "bedrooms": 2,
+          "size_sqm": 70,
+          "floor": 0,
+          "elevator": 0,
+          "view": "pool_and_garden",
+          "noise_level": "low_medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "15:00",
+            "checkOutUntil": "11:00",
+            "selfCheckIn": false,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 21
+          },
+          "description_short": "Ground-floor apartment opening directly onto a shared pool and garden area, a short walk from the rocky coves of Es Forti near Cala d’Or.",
+          "description_long": "Situated in a low-rise complex with Mediterranean-style gardens, this poolside apartment is designed for relaxed family holidays. The open living and dining space connects to a covered terrace just steps from the shared pool, letting you supervise children from the shade. Both bedrooms have their own bathrooms, and the kitchen is well-equipped for self-catering. With several small beaches and coves within walking distance, plus easy parking on surrounding streets, the apartment offers a practical balance between comfort and budget.",
+          "viability_score": 4.465699602835576,
+          "tower_context": {
+            "market_multiplier": 1.4885665342785253,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 120,
+            "to_adr_list": 250,
+            "offer_adr": 198,
+            "extra_per_night": 78,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 1386,
+            "floor_total": 1190,
+            "floor_adr": 170,
+            "list_total": 1750,
+            "total_extra": 336,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 364,
+            "revenue_lift": 336
+          },
+          "diffs": [
+            "Private Rooftop Pool & Sun Deck",
+            "Three Spacious Bedrooms (3 Beds)",
+            "Two Full Bathrooms"
+          ],
+          "headline": "Unlock a Private Pool in Mallorca",
+          "summary": "Indulge in unparalleled comfort and luxury – transforming your Palma de Mallorca experience with a private oasis.",
+          "ai_copy": {
+            "subject": "Budget, Your Mallorca Stay Just Got Better!",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <header style=\"font-size:12px; color:#9ca3af;\">Luxury Stays</header>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_saud8h.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <h1 style=\"font-size:36px;\">Your Stay, Elevated.</h1>\n  <p style=\"font-size:18px;\">Dear Budget,</p>\n  <p style=\"font-size:18px;\">We've noticed you're considering a stay at City Studio in Palma Centro, and we wanted to offer you an exclusive opportunity to transform your trip into something truly special.</p>\n  <p style=\"font-size:18px;\">For just 78€ more per night, you can upgrade to our stunning Poolside Apt, complete with a private rooftop pool, two extra bedrooms, and an additional bathroom. Imagine relaxing by the water after a day of exploring the vibrant city.</p>\n  <div style=\"background:#EA580C; color:#ffffff; padding:48px; border-radius:40px;\">\n    <h2 style=\"font-size:64px; font-weight:bold; color:#ffffff;\">Only 78€ more / night</h2>\n  </div>\n  <p style=\"font-size:18px;\">Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p style=\"font-size:18px;\">This unit is in high demand and has been offered to others—first to claim it wins.</p>\n  <a href=\"{OFFER_URL}\" style=\"background:white; color:black; padding:20px 40px; border-radius:40px; text-decoration:none;\">UNLOCK UPGRADE</a>\n  <div style=\"font-size:12px; color:#4b5563; margin-top:20px;\">Upgrade offer powered by UpRez</div>\n</div>",
+            "landing_hero": "Unlock a Private Pool in Mallorca",
+            "landing_summary": "Indulge in unparalleled comfort and luxury – transforming your Palma de Mallorca experience with a private oasis.",
+            "diff_bullets": [
+              "Private Rooftop Pool & Sun Deck",
+              "Three Spacious Bedrooms (3 Beds)",
+              "Two Full Bathrooms"
+            ]
+          },
+          "images": [
+            "/properties/prop_saud8h.png"
+          ],
+          "amenities": [
+            "shared_pool",
+            "air_conditioning",
+            "wifi",
+            "full_kitchen",
+            "washing_machine",
+            "dishwasher",
+            "terrace",
+            "smart_tv"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        },
+        {
+          "ranking": 3,
+          "prop_id": "prop_odd9x1",
+          "prop_name": "Family 2BR Apt",
+          "location": "El Terreno, Palma de Mallorca",
+          "beds": 3,
+          "baths": 1,
+          "type": "apartment",
+          "category": "midrange",
+          "max_guests": 4,
+          "bedrooms": 2,
+          "size_sqm": 65,
+          "floor": 3,
+          "elevator": 1,
+          "view": "partial_sea_and_city",
+          "noise_level": "medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "15:00",
+            "checkOutUntil": "11:00",
+            "selfCheckIn": true,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 21
+          },
+          "description_short": "Comfortable two-bedroom apartment in El Terreno, ideal for small families wanting easy access to Palma, the harbour, and nearby beaches.",
+          "description_long": "This family-friendly apartment is set on a quiet side street in El Terreno, a hillside neighborhood between Palma’s center and the seafront. The open-plan living and dining area connects to a small balcony with glimpses of the harbour. A fully equipped kitchen with dishwasher and washing machine makes longer stays more convenient. One bedroom features a queen bed while the second has two single beds, both with air conditioning. Underground parking is included, and you can reach both Bellver Park and the Paseo Marítimo within a short walk.",
+          "viability_score": 2.9771330685570505,
+          "tower_context": {
+            "market_multiplier": 1.4885665342785253,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 120,
+            "to_adr_list": 220,
+            "offer_adr": 180,
+            "extra_per_night": 60,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 1260,
+            "floor_total": 1190,
+            "floor_adr": 170,
+            "list_total": 1540,
+            "total_extra": 210,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 280,
+            "revenue_lift": 210
+          },
+          "diffs": [
+            "Private Balcony with Stunning City Views",
+            "An Extra Bedroom (3 Beds – Perfect for Relaxation)",
+            "Enhanced Comfort & Space – Ideal for Two Adults"
+          ],
+          "headline": "Unlock Unforgettable Mallorca Moments",
+          "summary": "Indulge in the spacious comfort of our Family 2BR Apt, perfectly suited for your 2-person getaway.",
+          "ai_copy": {
+            "subject": "Budget, Elevate Your Mallorca Escape",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_odd9x1.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\"/>\n  <div style=\"padding:24px;\">\n    <p>Dear Budget,</p>\n    <p>We've noticed you're considering a stay at City Studio in Palma Centro, and we wanted to offer you a truly exceptional upgrade – exclusively.</p>\n    <p>For just 60€ more per night, you can transform your experience with our Family 2BR Apt, boasting an extra bedroom (3 beds!), a private balcony, and unparalleled luxury. Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n    <div style=\"background:#EA580C; color:white; padding:48px; border-radius: 40px;\">\n      <h1 style=\"font-size:64px; color:white;\">Only 60€ more / night</h1>\n    </div>\n    <p>This unit is in high demand and has been offered to others – first to claim it wins!</p>\n    <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:16px; border-radius: 40px; text-decoration:none;\">UNLOCK UPGRADE</a>\n  </div>\n  <div style=\"text-align:center; font-size:10px; color:#4b5563; margin-top:20px;\">Upgrade offer powered by UpRez</div>\n</div>",
+            "landing_hero": "Unlock Unforgettable Mallorca Moments",
+            "landing_summary": "Indulge in the spacious comfort of our Family 2BR Apt, perfectly suited for your 2-person getaway.",
+            "diff_bullets": [
+              "Private Balcony with Stunning City Views",
+              "An Extra Bedroom (3 Beds – Perfect for Relaxation)",
+              "Enhanced Comfort & Space – Ideal for Two Adults"
+            ]
+          },
+          "images": [
+            "/properties/prop_odd9x1.png"
+          ],
+          "amenities": [
+            "air_conditioning",
+            "wifi",
+            "full_kitchen",
+            "dishwasher",
+            "washing_machine",
+            "balcony",
+            "smart_tv",
+            "baby_crib_on_request"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        }
+      ],
+      "email_subject": "Budget, Your Mallorca Upgrade Awaits!",
+      "email_body_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_08y3id.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; text-align:center;\">Only 96€ more / night</h1>\n    <a href=\"{OFFER_URL}\" style=\"background:white; color:black; padding:20px; border-radius:40px; text-decoration:none; display:block; margin-top:40px; text-align:center;\">UNLOCK UPGRADE</a>\n  </div>\n  <p style=\"margin-bottom:20px;\">Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p style=\"margin-bottom:20px;\">This unit is in high demand and has been offered to others—first to claim it wins.</p>\n  <div style=\"margin-bottom:40px;\">\n    <p style=\"margin-bottom:20px;\">Here’s what awaits you:</p>\n    <ul>\n      <li>+2 extra bedrooms (3 beds vs 1)</li>\n      <li>+1 extra bathroom</li>\n      <li>Includes Balcony</li>\n    </ul>\n  </div>\n  <div style=\"text-align:center; font-size:10px; color:#4b5563; margin-top:40px;\">Upgrade offer powered by UpRez</div>\n</div>",
+      "status": "active",
+      "expires_at": null,
+      "created_at": null,
+      "updated_at": null
+    },
+    {
+      "template_id": "template_mid_to_lux",
+      "scenario": "Midrange to Luxury",
+      "top3": [
+        {
+          "ranking": 1,
+          "prop_id": "prop_8b867z",
+          "prop_name": "Mid-Tier Villa",
+          "location": "Son Vida (hills), Palma de Mallorca",
+          "beds": 4,
+          "baths": 2,
+          "type": "villa",
+          "category": "upper_midrange",
+          "max_guests": 6,
+          "bedrooms": 3,
+          "size_sqm": 160,
+          "floor": 0,
+          "elevator": 0,
+          "view": "hills_and_golf_partial",
+          "noise_level": "low",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "16:00",
+            "checkOutUntil": "10:00",
+            "selfCheckIn": false,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 25
+          },
+          "description_short": "Comfortable villa with private pool and garden in the Son Vida hills, offering a quiet base close to Palma and nearby golf courses.",
+          "description_long": "This three-bedroom villa combines the privacy of a standalone house with easy access to Palma and the Son Vida golf courses. The single-level layout features an open living and dining room with fireplace, leading directly onto a covered terrace and lawned garden. The rectangular pool is bordered by sun loungers and a small BBQ area, creating a relaxed outdoor space for families or groups of friends. Interiors are simple but practical, with air conditioning in all bedrooms and a fully equipped kitchen suited to longer stays.",
+          "viability_score": 7.46221812132275,
+          "tower_context": {
+            "market_multiplier": 1.49244362426455,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 220,
+            "to_adr_list": 350,
+            "offer_adr": 298,
+            "extra_per_night": 78,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 2086,
+            "floor_total": 1564.5,
+            "floor_adr": 223.5,
+            "list_total": 2450,
+            "total_extra": 1036,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 364,
+            "revenue_lift": 1036
+          },
+          "diffs": [
+            "Private Rooftop Pool & Sun Deck",
+            "+1 Extra Bedroom (4 Beds)",
+            "+1 Extra Bathroom"
+          ],
+          "headline": "Unlock Your Dream Mallorca Villa",
+          "summary": "Indulge in unparalleled comfort and privacy – chat with our concierge to tailor your perfect escape.",
+          "ai_copy": {
+            "subject": "Budget, Unlock Your Mallorca Escape",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <h1 style=\"text-align:center;\">Your Stay, Elevated.</h1>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_8b867z.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; font-weight:bold; margin-bottom:20px;\">Only 78€ more / night</h1>\n    <a href=\"{OFFER_URL}\" style=\"background:white; color:black; padding:20px; border-radius:40px; text-decoration:none; display:block; margin-top:40px; text-align:center;\">UNLOCK UPGRADE</a>\n  </div>\n  <p style=\"margin-bottom:30px;\">Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p style=\"margin-bottom:30px;\">For only a small daily amount, you can transform your Mallorca experience from a Family 2BR Apt to the luxury of a Mid-Tier Villa. This unit is in high demand and has been offered to others – first to claim it wins.</p>\n  <div style=\"margin-bottom:40px;\">\n    <ul style=\"list-style-type:none;\">\n      <li style=\"margin-bottom:10px;\">Private Rooftop Pool</li>\n      <li style=\"margin-bottom:10px;\">+1 extra bedroom (4 beds vs 3)</li>\n      <li style=\"margin-bottom:10px;\">+1 extra bathroom</li>\n    </ul>\n  </div>\n  <div style=\"text-align:center; font-size:10px; color:#4b5563; margin-bottom:40px;\">Upgrade offer powered by UpRez</div>\n</div>",
+            "landing_hero": "Unlock Your Dream Mallorca Villa",
+            "landing_summary": "Indulge in unparalleled comfort and privacy – chat with our concierge to tailor your perfect escape.",
+            "diff_bullets": [
+              "Private Rooftop Pool & Sun Deck",
+              "+1 Extra Bedroom (4 Beds)",
+              "+1 Extra Bathroom"
+            ]
+          },
+          "images": [
+            "/properties/prop_8b867z.png"
+          ],
+          "amenities": [
+            "private_pool",
+            "air_conditioning",
+            "wifi",
+            "full_kitchen",
+            "dishwasher",
+            "washing_machine",
+            "garden",
+            "bbq",
+            "outdoor_dining",
+            "fireplace"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        },
+        {
+          "ranking": 2,
+          "prop_id": "prop_wd9nox",
+          "prop_name": "Lux Beach House",
+          "location": "Cala Major, Palma de Mallorca",
+          "beds": 5,
+          "baths": 3,
+          "type": "house",
+          "category": "luxury",
+          "max_guests": 8,
+          "bedrooms": 4,
+          "size_sqm": 220,
+          "floor": 0,
+          "elevator": 0,
+          "view": "sea_and_street",
+          "noise_level": "medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "16:00",
+            "checkOutUntil": "10:00",
+            "selfCheckIn": false,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 25
+          },
+          "description_short": "Stylish beach house with small private pool and direct access to Cala Major’s sandy cove, ideal for families or groups seeking a higher-end seaside stay.",
+          "description_long": "Set just one row back from the seafront, this four-bedroom house puts Cala Major’s beach, cafés, and beach clubs practically on your doorstep. The ground floor flows from a modern open kitchen into a light-filled dining and living area, opening onto a patio with a plunge pool, sun loungers, and gas BBQ. Upstairs, most bedrooms feature partial sea views and individual air-conditioning units. While you are within walking distance of shops and restaurants, the enclosed terrace and private garage add an extra sense of comfort and privacy for longer stays.",
+          "viability_score": 5.9697744970582,
+          "tower_context": {
+            "market_multiplier": 1.49244362426455,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 220,
+            "to_adr_list": 500,
+            "offer_adr": 388,
+            "extra_per_night": 168,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 2716,
+            "floor_total": 2037,
+            "floor_adr": 291,
+            "list_total": 3500,
+            "total_extra": 1666,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 784,
+            "revenue_lift": 1666
+          },
+          "diffs": [
+            "Private Rooftop Pool & Jacuzzi",
+            "Spacious Master Suite with Ocean Views",
+            "Dedicated Concierge Service for Seamless Experiences"
+          ],
+          "headline": "Experience Mallorca in Ultimate Luxury",
+          "summary": "Indulge in the unparalleled comfort and sophistication of our Lux Beach House, designed for discerning travelers like you.",
+          "ai_copy": {
+            "subject": "Budget, Unlock Your Mallorca Escape",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_wd9nox.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; text-align:center;\">Only 168€ more / night</h1>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>This exclusive invitation has been shared with other qualified guests on overlapping dates, and this unit is in high demand.</p>\n  <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:10px 20px; border-radius:40px; text-decoration:none;\">UNLOCK UPGRADE</a>\n  <p style=\"font-size:10px; color:#4b5563; text-align:center; margin-top:20px;\">Upgrade offer powered by UpRez</p>\n</div>",
+            "landing_hero": "Experience Mallorca in Ultimate Luxury",
+            "landing_summary": "Indulge in the unparalleled comfort and sophistication of our Lux Beach House, designed for discerning travelers like you.",
+            "diff_bullets": [
+              "Private Rooftop Pool & Jacuzzi",
+              "Spacious Master Suite with Ocean Views",
+              "Dedicated Concierge Service for Seamless Experiences"
+            ],
+            "offer_url": "{OFFER_URL}",
+            "property": "Lux Beach House",
+            "rate": 388,
+            "savings": 784
+          },
+          "images": [
+            "/properties/prop_wd9nox.png"
+          ],
+          "amenities": [
+            "private_pool",
+            "beach_access",
+            "air_conditioning",
+            "wifi",
+            "bbq",
+            "outdoor_shower",
+            "outdoor_dining",
+            "dishwasher",
+            "washing_machine",
+            "smart_tv"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        },
+        {
+          "ranking": 3,
+          "prop_id": "prop_c88oq1",
+          "prop_name": "Modern Penthouse",
+          "location": "Palma Old Town, Palma de Mallorca",
+          "beds": 4,
+          "baths": 2,
+          "type": "apartment",
+          "category": "upper_midrange",
+          "max_guests": 6,
+          "bedrooms": 3,
+          "size_sqm": 130,
+          "floor": 6,
+          "elevator": 1,
+          "view": "old_town_rooftops",
+          "noise_level": "medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "15:00",
+            "checkOutUntil": "11:00",
+            "selfCheckIn": true,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 23
+          },
+          "description_short": "Design-led penthouse on the edge of Palma’s old town with a large private terrace and access to a small building gym.",
+          "description_long": "Located on the top floor of a modern building just outside the pedestrianised streets of the old town, this penthouse is all about outdoor space and natural light. Floor-to-ceiling windows open onto a generous rooftop terrace with lounge seating, dining table, and views across tiled rooftops towards the cathedral. Inside, a sleek kitchen and island sit at the heart of the open-plan living area, with three compact but well-planned bedrooms and two bathrooms leading off the hallway. Guests have access to a small shared gym on the first floor, making the apartment suited to longer city stays and remote work setups.",
+          "viability_score": 5.9697744970582,
+          "tower_context": {
+            "market_multiplier": 1.49244362426455,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 220,
+            "to_adr_list": 400,
+            "offer_adr": 328,
+            "extra_per_night": 108,
+            "nights": 7,
+            "from_total": 1050,
+            "offer_total": 2296,
+            "floor_total": 1722,
+            "floor_adr": 246,
+            "list_total": 2800,
+            "total_extra": 1246,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 504,
+            "revenue_lift": 1246
+          },
+          "diffs": [
+            "Private Rooftop Pool with Panoramic Views",
+            "An Extra Bedroom (4 Beds) - Perfect for Sharing",
+            "An Extra Bathroom - Enhanced Comfort and Convenience"
+          ],
+          "headline": "Experience Mallorca's Finest",
+          "summary": "Indulge in unparalleled luxury and create unforgettable memories with a seamless upgrade to our exclusive Modern Penthouse.",
+          "ai_copy": {
+            "subject": "Budget, Unlock Your Mallorca Paradise",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_c88oq1.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; text-align:center;\">Only 108€ more / night</h1>\n    <a href=\"{OFFER_URL}\" style=\"background:white; color:black; padding:0; border:none; text-decoration:none; font-size:24px; font-weight:bold; display:block; margin-top:40px;\">UNLOCK UPGRADE</a>\n  </div>\n  <p style=\"text-align:center;\">Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p style=\"text-align:center; font-size:10px; color:#4b5563;\">Upgrade offer powered by UpRez</p>\n</div>",
+            "landing_hero": "Experience Mallorca's Finest",
+            "landing_summary": "Indulge in unparalleled luxury and create unforgettable memories with a seamless upgrade to our exclusive Modern Penthouse.",
+            "diff_bullets": [
+              "Private Rooftop Pool with Panoramic Views",
+              "An Extra Bedroom (4 Beds) - Perfect for Sharing",
+              "An Extra Bathroom - Enhanced Comfort and Convenience"
+            ],
+            "offer_url": "{OFFER_URL}",
+            "property": {
+              "property_type": "Modern Penthouse",
+              "list_rate": 400,
+              "rate": 328
+            }
+          },
+          "images": [
+            "/properties/prop_c88oq1.png"
+          ],
+          "amenities": [
+            "rooftop_terrace",
+            "air_conditioning",
+            "wifi",
+            "gym_in_building",
+            "full_kitchen",
+            "dishwasher",
+            "washing_machine",
+            "smart_tv",
+            "outdoor_dining"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        }
+      ],
+      "email_subject": "Budget, Unlock Your Mallorca Escape",
+      "email_body_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <h1 style=\"text-align:center;\">Your Stay, Elevated.</h1>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_8b867z.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\">\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; font-weight:bold; margin-bottom:20px;\">Only 78€ more / night</h1>\n    <a href=\"{OFFER_URL}\" style=\"background:white; color:black; padding:20px; border-radius:40px; text-decoration:none; display:block; margin-top:40px; text-align:center;\">UNLOCK UPGRADE</a>\n  </div>\n  <p style=\"margin-bottom:30px;\">Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p style=\"margin-bottom:30px;\">For only a small daily amount, you can transform your Mallorca experience from a Family 2BR Apt to the luxury of a Mid-Tier Villa. This unit is in high demand and has been offered to others – first to claim it wins.</p>\n  <div style=\"margin-bottom:40px;\">\n    <ul style=\"list-style-type:none;\">\n      <li style=\"margin-bottom:10px;\">Private Rooftop Pool</li>\n      <li style=\"margin-bottom:10px;\">+1 extra bedroom (4 beds vs 3)</li>\n      <li style=\"margin-bottom:10px;\">+1 extra bathroom</li>\n    </ul>\n  </div>\n  <div style=\"text-align:center; font-size:10px; color:#4b5563; margin-bottom:40px;\">Upgrade offer powered by UpRez</div>\n</div>",
+      "status": "active",
+      "expires_at": null,
+      "created_at": null,
+      "updated_at": null
+    },
+    {
+      "template_id": "template_upper_to_high_lux",
+      "scenario": "Upper Midrange to High Luxury",
+      "top3": [
+        {
+          "ranking": 1,
+          "prop_id": "prop_wd9nox",
+          "prop_name": "Lux Beach House",
+          "location": "Cala Major, Palma de Mallorca",
+          "beds": 5,
+          "baths": 3,
+          "type": "house",
+          "category": "luxury",
+          "max_guests": 8,
+          "bedrooms": 4,
+          "size_sqm": 220,
+          "floor": 0,
+          "elevator": 0,
+          "view": "sea_and_street",
+          "noise_level": "medium",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": false,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "16:00",
+            "checkOutUntil": "10:00",
+            "selfCheckIn": false,
+            "quietHours": "22:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": false,
+            "minimumAge": 25
+          },
+          "description_short": "Stylish beach house with small private pool and direct access to Cala Major’s sandy cove, ideal for families or groups seeking a higher-end seaside stay.",
+          "description_long": "Set just one row back from the seafront, this four-bedroom house puts Cala Major’s beach, cafés, and beach clubs practically on your doorstep. The ground floor flows from a modern open kitchen into a light-filled dining and living area, opening onto a patio with a plunge pool, sun loungers, and gas BBQ. Upstairs, most bedrooms feature partial sea views and individual air-conditioning units. While you are within walking distance of shops and restaurants, the enclosed terrace and private garage add an extra sense of comfort and privacy for longer stays.",
+          "viability_score": 5.812964288691731,
+          "tower_context": {
+            "market_multiplier": 1.4532410721729327,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 350,
+            "to_adr_list": 500,
+            "offer_adr": 440,
+            "extra_per_night": 90,
+            "nights": 7,
+            "from_total": 2800,
+            "offer_total": 3080,
+            "floor_total": 2940,
+            "floor_adr": 420,
+            "list_total": 3500,
+            "total_extra": 280,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 420,
+            "revenue_lift": 280
+          },
+          "diffs": [
+            "Private Rooftop Pool & Jacuzzi",
+            "Spacious Master Suite with Walk-In Closet",
+            "Dedicated Concierge Service & Private Transfers"
+          ],
+          "headline": "Unlock Unrivaled Mallorca Luxury",
+          "summary": "Elevate your escape with a private beachfront haven, designed for the most discerning tastes.",
+          "ai_copy": {
+            "subject": "Premium, an Exclusive Upgrade Awaits in Mallorca",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <h1 style=\"text-align:center;\">Your Stay, Elevated.</h1>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_wd9nox.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\"/>\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h2 style=\"font-size:64px; font-weight:bold;\">Only 90€ more / night</h2>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>We’ve identified an exceptional opportunity for you to transform your Mallorca experience. For just a small daily amount, you can upgrade from our Mid-Tier Villa to the unparalleled luxury of the Lux Beach House – a residence designed for discerning travellers like yourself.</p>\n  <p>This unit is in high demand and has been offered to others – first to claim it wins.</p>\n  <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:12px 24px; border-radius:40px; text-decoration:none;\">UNLOCK UPGRADE</a>\n  <div style=\"font-size:10px; color:#4b5563; text-align:center; margin-top:20px;\">Upgrade offer powered by UpRez</div>\n</div>",
+            "landing_hero": "Unlock Unrivaled Mallorca Luxury",
+            "landing_summary": "Elevate your escape with a private beachfront haven, designed for the most discerning tastes.",
+            "diff_bullets": [
+              "Private Rooftop Pool & Jacuzzi",
+              "Spacious Master Suite with Walk-In Closet",
+              "Dedicated Concierge Service & Private Transfers"
+            ]
+          },
+          "images": [
+            "/properties/prop_wd9nox.png"
+          ],
+          "amenities": [
+            "private_pool",
+            "beach_access",
+            "air_conditioning",
+            "wifi",
+            "bbq",
+            "outdoor_shower",
+            "outdoor_dining",
+            "dishwasher",
+            "washing_machine",
+            "smart_tv"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        },
+        {
+          "ranking": 2,
+          "prop_id": "prop_g0ppb2",
+          "prop_name": "Luxury Estate",
+          "location": "Marinamar, Calvià",
+          "beds": 7,
+          "baths": 4,
+          "type": "villa",
+          "category": "high_luxury",
+          "max_guests": 10,
+          "bedrooms": 5,
+          "size_sqm": 380,
+          "floor": 0,
+          "elevator": 0,
+          "view": "sea_and_hills_partial",
+          "noise_level": "low",
+          "suitability": {
+            "families": true,
+            "couples": true,
+            "remoteWorkers": true,
+            "petsAllowed": false,
+            "eventsAllowed": true,
+            "childrenAllowed": true
+          },
+          "house_rules": {
+            "checkInFrom": "17:00",
+            "checkOutUntil": "10:00",
+            "selfCheckIn": false,
+            "quietHours": "23:00-08:00",
+            "smokingAllowed": false,
+            "partiesAllowed": true,
+            "minimumAge": 28
+          },
+          "description_short": "Expansive high-end estate with large pool, Jacuzzi, and dedicated gym, set in a quiet coastal residential area near the southwest of Mallorca.",
+          "description_long": "Conceived as a private retreat, this estate offers generous indoor and outdoor living spaces spread across a landscaped plot with mature trees. The heart of the property is the pool terrace, where an integrated Jacuzzi, loungers, and an outdoor kitchen with gas BBQ create a resort-like feel. Inside, an open living and dining area flows into a fully fitted kitchen, with an additional TV lounge and a small office that can double as a workspace. Bedrooms are distributed between the ground and first floors, each with individually controlled AC and plenty of wardrobe space, making the house well suited to multi-generational stays or small retreats.",
+          "viability_score": 5.812964288691731,
+          "tower_context": {
+            "market_multiplier": 1.4532410721729327,
+            "pipeline": "tower.dev/real-time-demand-v4"
+          },
+          "pricing": {
+            "currency": "EUR",
+            "from_adr": 350,
+            "to_adr_list": 800,
+            "offer_adr": 620,
+            "extra_per_night": 270,
+            "nights": 7,
+            "from_total": 2800,
+            "offer_total": 4340,
+            "floor_total": 3255,
+            "floor_adr": 465,
+            "list_total": 5600,
+            "total_extra": 1540,
+            "discount_percent": 0.4,
+            "discount_max_percent": 0.55,
+            "discount_amount_total": 1260,
+            "revenue_lift": 1540
+          },
+          "diffs": [
+            "Private Rooftop Pool & Jacuzzi",
+            "+3 Extra Bedrooms (7 beds)",
+            "Includes a Fully Equipped Gym"
+          ],
+          "headline": "Experience Mallorca in unparalleled luxury.",
+          "summary": "Indulge in the ultimate in private luxury – a seamless transition to a magnificent Estate where memories are made.",
+          "ai_copy": {
+            "subject": "Premium, an exclusive upgrade awaits in Mallorca",
+            "email_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <div style=\"text-align:center;\">\n    <h1 style=\"font-size:24px;\">Your Stay, Elevated.</h1>\n  </div>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_g0ppb2.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\"><br><br>\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h1 style=\"font-size:64px; font-weight:bold;\">Only 270€ more / night</h1>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>This exclusive unit is in high demand and has been offered to others—first to claim it wins.</p>\n  <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:48px; border-radius:40px;\">UNLOCK UPGRADE</a>\n  <br><br>\n  <small style=\"color:#4b5563; font-size:10px;\">Upgrade offer powered by UpRez</small>\n</div>",
+            "landing_hero": "Experience Mallorca in unparalleled luxury.",
+            "landing_summary": "Indulge in the ultimate in private luxury – a seamless transition to a magnificent Estate where memories are made.",
+            "diff_bullets": [
+              "Private Rooftop Pool & Jacuzzi",
+              "+3 Extra Bedrooms (7 beds)",
+              "Includes a Fully Equipped Gym"
+            ],
+            "offer_url": "https://uprez.dpitcock.dev/offer/g0ppb2",
+            "property": {
+              "name": "Luxury Estate",
+              "rate": 620
+            }
+          },
+          "images": [
+            "/properties/prop_g0ppb2.png"
+          ],
+          "amenities": [
+            "private_pool",
+            "jacuzzi",
+            "gym",
+            "air_conditioning",
+            "wifi",
+            "bbq",
+            "outdoor_kitchen",
+            "outdoor_dining",
+            "fireplace",
+            "office_space",
+            "smart_tv"
+          ],
+          "metadata": {},
+          "availability": {
+            "available": true,
+            "reason": null
+          },
+          "created_at": null,
+          "updated_at": null
+        }
+      ],
+      "email_subject": "Premium, an Exclusive Upgrade Awaits in Mallorca",
+      "email_body_html": "<div style=\"background:#050505; color:#ffffff; padding:24px;\">\n  <h1 style=\"text-align:center;\">Your Stay, Elevated.</h1>\n  <img src=\"https://uprez.dpitcock.dev/properties/prop_wd9nox.png\" style=\"display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);\" alt=\"The Property\"/>\n  <div style=\"background:#EA580C; color:white; padding:48px; border-radius:40px;\">\n    <h2 style=\"font-size:64px; font-weight:bold;\">Only 90€ more / night</h2>\n  </div>\n  <p>Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served.</p>\n  <p>We’ve identified an exceptional opportunity for you to transform your Mallorca experience. For just a small daily amount, you can upgrade from our Mid-Tier Villa to the unparalleled luxury of the Lux Beach House – a residence designed for discerning travellers like yourself.</p>\n  <p>This unit is in high demand and has been offered to others – first to claim it wins.</p>\n  <a href=\"{OFFER_URL}\" style=\"margin-top:40px; background:white; color:black; padding:12px 24px; border-radius:40px; text-decoration:none;\">UNLOCK UPGRADE</a>\n  <div style=\"font-size:10px; color:#4b5563; text-align:center; margin-top:20px;\">Upgrade offer powered by UpRez</div>\n</div>",
+      "status": "active",
+      "expires_at": null,
+      "created_at": null,
       "updated_at": null
     }
   ]

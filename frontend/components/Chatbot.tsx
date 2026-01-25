@@ -14,11 +14,12 @@ interface ChatbotProps {
     offerId: string;
     propId: string;
     propName: string;
+    offer: any; // Context for Nano
     guestName?: string;
     onNegotiated?: () => void;
 }
 
-export default function Chatbot({ offerId, propId, propName, guestName, onNegotiated }: ChatbotProps) {
+export default function Chatbot({ offerId, propId, propName, offer, guestName, onNegotiated }: ChatbotProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([
@@ -29,7 +30,30 @@ export default function Chatbot({ offerId, propId, propName, guestName, onNegoti
         },
     ]);
     const [isLoading, setIsLoading] = useState(false);
+    const [aiTier, setAiTier] = useState<'nano' | 'cloud' | 'mock'>('mock');
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const checkAI = async () => {
+            if (process.env.NEXT_PUBLIC_USE_OPENAI === 'true') {
+                setAiTier('cloud');
+                return;
+            }
+
+            // Check for Gemini Nano
+            if (typeof window !== 'undefined' && (window as any).ai?.languageModel) {
+                try {
+                    const caps = await (window as any).ai.languageModel.capabilities();
+                    if (caps.available !== 'no') {
+                        setAiTier('nano');
+                        return;
+                    }
+                } catch (e) { console.warn("Nano detection failed", e); }
+            }
+            setAiTier('mock');
+        };
+        checkAI();
+    }, []);
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -40,6 +64,30 @@ export default function Chatbot({ offerId, propId, propName, guestName, onNegoti
             scrollToBottom();
         }
     }, [messages, isOpen]);
+
+    const buildNanoPrompt = (question: string) => {
+        const currentOption = offer.options?.find((o: any) => o.prop_id === propId) || offer.options?.[0];
+        const orig = offer.original_booking;
+        if (!currentOption || !orig) return question;
+
+        const amenities = currentOption.diffs.join(', ');
+
+        return `You are a strict luxury concierge. Answer ONLY using the CONTEXT below. 
+CRITICAL: Distinguish between PRIVATE and SHARED facilities (especially pools). Never invent features.
+If details are missing, say 'I don't have that specific detail' and pivot to a confirmed feature.
+
+CONTEXT:
+- Original: ${orig.prop_name}
+- Upgrade: ${currentOption.prop_name}
+- Upgrade Type: ${currentOption.type || 'Stay'}
+- Price Delta: ONLY €${currentOption.pricing.extra_per_night}/nt extra
+- Upgrade Features: ${amenities}
+- View: ${currentOption.view || 'Standard'}
+
+GUEST QUESTION: ${question}
+
+RULE: 1-2 concise, factual sentences. No fluff.`;
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -58,29 +106,26 @@ export default function Chatbot({ offerId, propId, propName, guestName, onNegoti
         setIsLoading(true);
 
         try {
-            // Convert history for backend
-            const history = messages.map(m => ({ role: m.role, content: m.content }));
-            const response = await queryBot(offerId, propId, userMsg, history);
-            let finalAnswer = response.answer || "I'm sorry, I couldn't process that request.";
+            let finalAnswer = "";
 
-            // Check for explicit negotiation action
-            const actionMatch = finalAnswer.match(/\[ACTION:NEGOTIATE:PID:([^:]+):VAL:([^\]]+)\]/);
-
-            if (actionMatch) {
-                const pid = actionMatch[1];
-                const price = parseFloat(actionMatch[2]);
-
-                // Call backend to update the database state
-                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'}/api/offer/${offerId}/negotiate?prop_id=${pid}&new_price=${price}`, {
-                    method: 'POST',
+            if (aiTier === 'nano') {
+                const session = await (window as any).ai.languageModel.create({
+                    temperature: 0.1,
+                    topK: 1
                 });
+                finalAnswer = await session.prompt(buildNanoPrompt(userMsg));
+            } else {
+                const history = messages.map(m => ({ role: m.role, content: m.content }));
+                const response = await queryBot(offerId, propId, userMsg, history);
+                finalAnswer = response.answer;
 
-                if (res.ok && onNegotiated) {
-                    onNegotiated();
+                // Fallback message with context
+                if (finalAnswer.includes("tokens needed")) {
+                    const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+                    finalAnswer = isChrome
+                        ? "To enable dynamic AI chat: 1. Configure OPENAI_API_KEY on the server or 2. Enable Gemini Nano in Chrome (chrome://flags/#optimization-guide-on-device-model)."
+                        : "To enable dynamic AI chat: 1. Configure OPENAI_API_KEY on the server or 2. Try Google Chrome to use on-device Gemini Nano!";
                 }
-
-                // Clean the raw command tag out of the bot message
-                finalAnswer = finalAnswer.replace(/\[ACTION:NEGOTIATE:[^\]]+\]/, '').trim();
             }
 
             const botMsg: Message = {
@@ -92,12 +137,11 @@ export default function Chatbot({ offerId, propId, propName, guestName, onNegoti
             setMessages(prev => [...prev, botMsg]);
         } catch (error) {
             console.error('Chatbot error:', error);
-            const errorMsg: Message = {
+            setMessages(prev => [...prev, {
                 role: 'bot',
-                content: "I'm having a bit of trouble connecting to my knowledge base. Please try again in a moment.",
+                content: "Local AI session initialization failed. Please refresh or check your API configuration.",
                 timestamp: new Date(),
-            };
-            setMessages(prev => [...prev, errorMsg]);
+            }]);
         } finally {
             setIsLoading(false);
         }
@@ -128,7 +172,19 @@ export default function Chatbot({ offerId, propId, propName, guestName, onNegoti
                                 <Bot className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="text-sm font-black uppercase tracking-widest text-white">Concierge AI</h3>
+                                <div className="flex items-center gap-2">
+                                    <h3 className="text-sm font-black uppercase tracking-widest text-white">Concierge AI</h3>
+                                    <div className={`flex items-center gap-1.5 px-2 py-0.5 rounded-full border text-[7px] font-black uppercase tracking-tighter ${aiTier === 'nano' ? 'bg-orange-500/10 border-orange-500/20 text-orange-500' :
+                                            aiTier === 'cloud' ? 'bg-blue-500/10 border-blue-500/20 text-blue-400' :
+                                                'bg-white/5 border-white/10 text-gray-500'
+                                        }`}>
+                                        <span className={`w-1 h-1 rounded-full animate-pulse ${aiTier === 'nano' ? 'bg-orange-500' :
+                                                aiTier === 'cloud' ? 'bg-blue-400' :
+                                                    'bg-gray-500'
+                                            }`} />
+                                        {aiTier === 'nano' ? 'Gemini Nano (Local)' : aiTier === 'cloud' ? 'Cloud AI (Secure)' : 'Demo Mode'}
+                                    </div>
+                                </div>
                                 <p className="text-[10px] font-bold text-orange-500/80 uppercase tracking-tighter italic">Expert on {propName}</p>
                             </div>
                         </div>

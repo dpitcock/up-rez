@@ -25,7 +25,7 @@ export default function MarketingHome() {
                         <span className="font-bold text-xl tracking-tight text-white">UpRez</span>
                     </div>
                     <div className="flex items-center gap-6">
-                        <button onClick={() => router.push('/dashboard/settings')} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
+                        <button onClick={() => router.push('/settings')} className="text-sm font-medium text-gray-400 hover:text-white transition-colors">
                             Log In
                         </button>
                         <button onClick={() => router.push('/demo')} className="bg-white text-black px-5 py-2.5 rounded-full text-sm font-bold hover:bg-gray-200 transition-colors">

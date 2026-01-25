@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { fetchOffer } from '@/lib/api';
+import { fetchOffer, apiClient } from '@/lib/api';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -40,6 +40,40 @@ export default function OfferPage() {
         loadOffer();
     }, [id]);
 
+    const handleEnableOpenAI = async () => {
+        try {
+            await apiClient('/demo/settings', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    use_openai: true,
+                    local_model: "gemma3:latest"
+                })
+            });
+            loadOffer();
+        } catch (err) {
+            console.error("Failed to enable OpenAI", err);
+        }
+    };
+
+    useEffect(() => {
+        const enableOpenAI = async () => {
+            try {
+                await apiClient('/demo/settings', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        use_openai: true,
+                        local_model: "gemma3:latest"
+                    })
+                });
+            } catch (err) {
+                console.error("Failed to enable OpenAI", err);
+            }
+        };
+        enableOpenAI();
+    }, []);
+
     if (loading) {
         return (
             <main className="min-h-screen bg-[#050505] flex items-center justify-center">
@@ -50,24 +84,6 @@ export default function OfferPage() {
             </main>
         );
     }
-
-    const handleEnableOpenAI = async () => {
-        try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'}/demo/settings`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    use_openai: true,
-                    local_model: "gemma3:latest"
-                })
-            });
-            if (res.ok) {
-                loadOffer();
-            }
-        } catch (err) {
-            console.error("Failed to enable OpenAI", err);
-        }
-    };
 
     if (error) {
         return (
@@ -89,7 +105,7 @@ export default function OfferPage() {
                     </div>
                     <h1 className="text-4xl font-black text-white mb-4 italic uppercase">Link Expired</h1>
                     <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">This upgrade invitation has either expired or been withdrawn. Your original booking remains confirmed.</p>
-                    <Link href="/" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-black uppercase text-xs tracking-widest rounded-2xl transition-all transform hover:scale-105">
+                    <Link href="/dashboard" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-black uppercase text-xs tracking-widest rounded-2xl transition-all transform hover:scale-105">
                         Return to Dashboard
                     </Link>
                 </div>
@@ -102,15 +118,25 @@ export default function OfferPage() {
     if (status === 'expired') {
         return (
             <main className="min-h-screen bg-[#050505] flex items-center justify-center p-8 text-white">
-                <div className="max-w-md w-full text-center space-y-6">
-                    <div className="w-20 h-20 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto border border-orange-500/20">
-                        <Clock className="w-10 h-10 text-orange-500" />
+                <div className="max-w-2xl w-full rounded-[3rem] p-16 text-center border border-orange-500/20 bg-orange-500/[0.02] space-y-8 shadow-[0_0_100px_-20px_rgba(234,88,12,0.15)]">
+                    <div className="w-24 h-24 bg-orange-600/10 rounded-full flex items-center justify-center mx-auto border border-orange-500/20 shadow-inner">
+                        <Clock className="w-12 h-12 text-orange-500" />
                     </div>
-                    <h1 className="text-3xl font-black italic uppercase">Offer Expired</h1>
-                    <p className="text-gray-400">This exclusive upgrade window closed on {new Date(expires_at).toLocaleDateString()}.</p>
-                    <Link href="/" className="block py-4 bg-white/5 hover:bg-white/10 rounded-2xl text-xs font-black uppercase tracking-widest transition-all">
-                        Back to Home
-                    </Link>
+                    <div className="space-y-4">
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white leading-tight">
+                            You weren't <br />
+                            <span className="text-orange-500">fast enough!</span>
+                        </h1>
+                        <p className="text-gray-400 text-lg font-medium italic max-w-md mx-auto">
+                            The exclusive upgrade window for your stay at <strong>{original_booking.prop_name}</strong> has closed. High-demand units like these move quickly.
+                        </p>
+                    </div>
+                    <div className="pt-4">
+                        <Link href="/dashboard" className="inline-flex items-center gap-3 px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all transform hover:scale-105">
+                            Return to Dashboard
+                            <ChevronRight className="w-4 h-4" />
+                        </Link>
+                    </div>
                 </div>
             </main>
         );
@@ -459,6 +485,7 @@ export default function OfferPage() {
                 offerId={id}
                 propId={currentOption.prop_id}
                 propName={currentOption.prop_name}
+                offer={offer}
                 guestName={original_booking.guest_name}
             />
         </main>

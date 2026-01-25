@@ -2,12 +2,19 @@ import sqlite3
 import json
 import os
 from pathlib import Path
+from datetime import datetime
 
 def export_db_to_json(write_to_file=True):
     # Paths
     backend_dir = Path(__file__).parent
     db_path = backend_dir / "UpRez.db"
-    output_path = backend_dir / ".." / "frontend" / "public" / "demo-data.json"
+    
+    # Check for docker volume mapping first
+    docker_frontend_path = Path("/frontend_public/demo-data.json")
+    if docker_frontend_path.parent.exists():
+        output_path = docker_frontend_path
+    else:
+        output_path = backend_dir / ".." / "frontend" / "public" / "demo-data.json"
     
     if not db_path.exists():
         print(f"Error: Database {db_path} not found.")
@@ -90,6 +97,20 @@ def export_db_to_json(write_to_file=True):
             },
             "options": top3
         }
+
+    # 5. Offer Templates
+    templates_path = backend_dir / "data" / "offer_templates.json"
+    if templates_path.exists():
+        try:
+            with open(templates_path, "r") as f:
+                data["offer_templates"] = json.load(f)
+            print(f"✓ Included {len(data['offer_templates'])} offer templates")
+        except Exception as e:
+            print(f"⚠️ Failed to load offer templates: {e}")
+            data["offer_templates"] = []
+    else:
+        print("ℹ️ No offer templates found to include")
+        data["offer_templates"] = []
 
     if not write_to_file:
         return data

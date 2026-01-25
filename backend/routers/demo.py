@@ -424,6 +424,30 @@ async def run_tower_pipelines():
         "runs": results
     }
 
+@router.post("/demo/frontend-build")
+async def run_frontend_build():
+    """Triggers the production build inside the frontend container."""
+    try:
+        # Executes npm run build inside the 'frontend' service container
+        cmd = ["docker-compose", "exec", "-T", "frontend", "npm", "run", "build"]
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=120)
+        
+        if result.returncode == 0:
+            return {"status": "ok", "message": "Production build completed successfully.", "output": result.stdout[-500:]}
+        else:
+            return {"status": "failed", "error": result.stderr, "output": result.stdout[-500:]}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Build trigger failed: {str(e)}")
+
+@router.post("/runpod/hammer")
+async def handle_runpod_hammer(count: int = 50):
+    """Generates synthetic traffic for RunPod GPU monitoring."""
+    import subprocess
+    script = SCRIPTS_DIR / "hammer_runpod.py"
+    # Run in background to avoid timeout
+    subprocess.Popen(["python3", str(script)])
+    return {"status": "started", "message": f"Generating {count} requests to RunPod in background."}
+
 @router.get("/tower/stats")
 async def get_tower_stats():
     """Returns analytics from the Tower-powered data pipelines."""

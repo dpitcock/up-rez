@@ -21,6 +21,8 @@ services:
       - NEXT_PUBLIC_NGROK_URL=${NEXT_PUBLIC_NGROK_URL}
     volumes:
       - ./backend:/app
+      - ./frontend/public:/frontend_public
+      - ./backend/data:/app/data
     command: uvicorn main:app --host 0.0.0.0 --port 8080 --reload
     networks:
       - uprez-network
@@ -32,6 +34,9 @@ services:
     environment:
       - NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
       - BACKEND_URL=http://backend:8080
+      - NEXT_PUBLIC_DEMO_MODE=${NEXT_PUBLIC_DEMO_MODE}
+      - NEXT_PUBLIC_USE_OPENAI=${NEXT_PUBLIC_USE_OPENAI:-false}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
     volumes:
       - ./frontend:/app
       - /app/node_modules

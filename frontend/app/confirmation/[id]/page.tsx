@@ -111,8 +111,8 @@ export default function ConfirmationPage() {
                         ].map((step, idx) => (
                             <div key={idx} className="flex gap-8 relative">
                                 <div className={`w-6 h-6 rounded-full shrink-0 flex items-center justify-center border ${step.status === 'complete'
-                                        ? 'bg-orange-600 border-orange-500 shadow-[0_0_15px_-2px_rgba(234,88,12,0.6)]'
-                                        : 'bg-black border-white/10'
+                                    ? 'bg-orange-600 border-orange-500 shadow-[0_0_15px_-2px_rgba(234,88,12,0.6)]'
+                                    : 'bg-black border-white/10'
                                     }`}>
                                     {step.status === 'complete' && <CheckCircle2 className="w-3 h-3 text-white" />}
                                 </div>
@@ -129,7 +129,7 @@ export default function ConfirmationPage() {
 
                 {/* Actions */}
                 <div className="flex flex-col md:flex-row items-center justify-center gap-6">
-                    <Link href="/" className="px-10 py-5 rounded-2xl bg-white text-black font-black uppercase text-xs tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 flex items-center gap-3">
+                    <Link href="/demo" className="px-10 py-5 rounded-2xl bg-white text-black font-black uppercase text-xs tracking-widest hover:bg-orange-600 hover:text-white transition-all active:scale-95 flex items-center gap-3">
                         <Home className="w-4 h-4" />
                         Go to Dashboard
                     </Link>

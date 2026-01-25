@@ -78,8 +78,8 @@ export default function HostSettingsDashboard() {
         </div>
     );
 
-    const emailTemplates = templates.filter(t => t.template_type === 'email');
-    const landingTemplates = templates.filter(t => t.template_type === 'landing');
+    const emailTemplates = Array.isArray(templates) ? templates.filter(t => t.template_type === 'email') : [];
+    const landingTemplates = Array.isArray(templates) ? templates.filter(t => t.template_type === 'landing') : [];
 
     return (
         <DashboardLayout>
@@ -90,7 +90,7 @@ export default function HostSettingsDashboard() {
                 </div>
                 <div className="flex items-center gap-3">
                     <button
-                        onClick={() => router.push('/demo/offer-editor')}
+                        onClick={() => router.push('/templates')}
                         className="px-6 py-2.5 bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-slate-600 dark:text-gray-300 transition-all border border-slate-200 dark:border-white/10"
                     >
                         Visual Editor
@@ -109,12 +109,12 @@ export default function HostSettingsDashboard() {
                 {/* Left Col: Core Economics */}
                 <div className="lg:col-span-8 space-y-8">
                     {/* Revenue Guardrails */}
-                    <section className="bg-[#0A0A0A] border border-white/5 rounded-[2.5rem] p-8 space-y-8">
+                    <section className="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-sm">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
                                 <TrendingUp className="w-6 h-6" />
                             </div>
-                            <h2 className="text-xl font-bold">Revenue Guardrails</h2>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Revenue Guardrails</h2>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -125,9 +125,9 @@ export default function HostSettingsDashboard() {
                                         type="number"
                                         value={settings.min_revenue_lift_eur_per_night}
                                         onChange={(e) => setSettings({ ...settings, min_revenue_lift_eur_per_night: Number(e.target.value) })}
-                                        className="flex-1 bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50"
+                                        className="flex-1 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 text-slate-900 dark:text-white"
                                     />
-                                    <span className="text-gray-500 font-bold">€</span>
+                                    <span className="text-slate-400 dark:text-gray-500 font-bold">€</span>
                                 </div>
                             </div>
                             <div className="space-y-3">
@@ -141,7 +141,7 @@ export default function HostSettingsDashboard() {
                                         type="range" min="0" max="0.5" step="0.05"
                                         value={settings.max_discount_pct}
                                         onChange={(e) => setSettings({ ...settings, max_discount_pct: Number(e.target.value) })}
-                                        className="w-full accent-orange-500"
+                                        className="w-full accent-orange-500 bg-transparent"
                                     />
                                 </div>
                             </div>
@@ -154,7 +154,7 @@ export default function HostSettingsDashboard() {
                                     type="number" step="0.05"
                                     value={settings.min_adr_ratio}
                                     onChange={(e) => setSettings({ ...settings, min_adr_ratio: Number(e.target.value) })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 text-slate-900 dark:text-white"
                                 />
                             </div>
                             <div className="space-y-3">
@@ -163,19 +163,19 @@ export default function HostSettingsDashboard() {
                                     type="number" step="0.25"
                                     value={settings.max_adr_multiplier}
                                     onChange={(e) => setSettings({ ...settings, max_adr_multiplier: Number(e.target.value) })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 text-slate-900 dark:text-white"
                                 />
                             </div>
                         </div>
                     </section>
 
                     {/* Template Orchestration */}
-                    <section className="bg-[#0A0A0A] border border-white/5 rounded-[2.5rem] p-8 space-y-8">
+                    <section className="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-sm">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
                                 <Layout className="w-6 h-6" />
                             </div>
-                            <h2 className="text-xl font-bold">Offer Templates</h2>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Offer Templates</h2>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -187,11 +187,11 @@ export default function HostSettingsDashboard() {
                                 <select
                                     value={settings.active_email_template_id || ""}
                                     onChange={(e) => setSettings({ ...settings, active_email_template_id: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 appearance-none cursor-pointer"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 appearance-none cursor-pointer text-slate-900 dark:text-white"
                                 >
-                                    <option value="" className="bg-[#111]">Auto-Generated (Default)</option>
+                                    <option value="" className="bg-white dark:bg-[#111]">Auto-Generated (Default)</option>
                                     {emailTemplates.map(t => (
-                                        <option key={t.template_id} value={t.template_id} className="bg-[#111]">{t.template_name}</option>
+                                        <option key={t.template_id} value={t.template_id} className="bg-white dark:bg-[#111]">{t.template_name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -203,11 +203,11 @@ export default function HostSettingsDashboard() {
                                 <select
                                     value={settings.active_landing_template_id || ""}
                                     onChange={(e) => setSettings({ ...settings, active_landing_template_id: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 appearance-none cursor-pointer"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 appearance-none cursor-pointer text-slate-900 dark:text-white"
                                 >
-                                    <option value="" className="bg-[#111]">Dynamic Showcase (Default)</option>
+                                    <option value="" className="bg-white dark:bg-[#111]">Dynamic Showcase (Default)</option>
                                     {landingTemplates.map(t => (
-                                        <option key={t.template_id} value={t.template_id} className="bg-[#111]">{t.template_name}</option>
+                                        <option key={t.template_id} value={t.template_id} className="bg-white dark:bg-[#111]">{t.template_name}</option>
                                     ))}
                                 </select>
                             </div>
@@ -215,12 +215,12 @@ export default function HostSettingsDashboard() {
                     </section>
 
                     {/* Operational Identity */}
-                    <section className="bg-[#0A0A0A] border border-white/5 rounded-[2.5rem] p-8 space-y-8">
+                    <section className="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-sm">
                         <div className="flex items-center gap-3">
                             <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
                                 <ShieldCheck className="w-6 h-6" />
                             </div>
-                            <h2 className="text-xl font-bold">Operational Identity</h2>
+                            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Operational Identity</h2>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -230,7 +230,7 @@ export default function HostSettingsDashboard() {
                                     type="text"
                                     value={settings.host_name || ""}
                                     onChange={(e) => setSettings({ ...settings, host_name: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-green-500/50"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-green-500/50 text-slate-900 dark:text-white"
                                     placeholder="e.g. Blue Lagoon Rentals"
                                 />
                             </div>
@@ -240,7 +240,7 @@ export default function HostSettingsDashboard() {
                                     type="text"
                                     value={settings.host_phone || ""}
                                     onChange={(e) => setSettings({ ...settings, host_phone: e.target.value })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-green-500/50"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-green-500/50 text-slate-900 dark:text-white"
                                     placeholder="+34 600 000 000"
                                 />
                             </div>
@@ -251,10 +251,10 @@ export default function HostSettingsDashboard() {
                 {/* Right Col: Operations & Stats */}
                 <div className="lg:col-span-4 space-y-8">
                     {/* Fee Structure */}
-                    <div className="bg-[#0A0A0A] border border-white/5 rounded-[2rem] p-8 space-y-6">
+                    <div className="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 space-y-6 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
                             <ShieldCheck className="w-5 h-5 text-green-500" />
-                            <h2 className="font-bold">Fee Tracking</h2>
+                            <h2 className="font-bold text-slate-900 dark:text-white">Fee Tracking</h2>
                         </div>
                         <div className="space-y-4">
                             <div className="space-y-2">
@@ -263,7 +263,7 @@ export default function HostSettingsDashboard() {
                                     type="number"
                                     value={settings.channel_fee_pct * 100}
                                     onChange={(e) => setSettings({ ...settings, channel_fee_pct: Number(e.target.value) / 100 })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-900 dark:text-white"
                                 />
                             </div>
                             <div className="space-y-2">
@@ -272,22 +272,22 @@ export default function HostSettingsDashboard() {
                                     type="number"
                                     value={settings.change_fee_eur}
                                     onChange={(e) => setSettings({ ...settings, change_fee_eur: Number(e.target.value) })}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-sm"
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-900 dark:text-white"
                                 />
                             </div>
                         </div>
                     </div>
 
                     {/* Live Analytics */}
-                    <div className="bg-[#0A0A0A] border border-white/5 rounded-[2rem] p-8 space-y-6">
+                    <div className="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/5 rounded-[2rem] p-8 space-y-6 shadow-sm">
                         <div className="flex items-center gap-3 mb-2">
                             <BarChart3 className="w-5 h-5 text-orange-500" />
-                            <h2 className="font-bold">MTD Analytics</h2>
+                            <h2 className="font-bold text-slate-900 dark:text-white">MTD Analytics</h2>
                         </div>
                         <div className="space-y-4">
-                            <div className="p-4 rounded-2xl bg-white/[0.02] border border-white/5">
-                                <div className="text-[10px] font-bold text-gray-600 uppercase mb-1">Offers Sent</div>
-                                <div className="text-2xl font-black">{settings.offers_sent_this_month || 0}</div>
+                            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-white/[0.02] border border-slate-100 dark:border-white/5">
+                                <div className="text-[10px] font-bold text-slate-400 dark:text-gray-600 uppercase mb-1">Offers Sent</div>
+                                <div className="text-2xl font-black text-slate-900 dark:text-white">{settings.offers_sent_this_month || 0}</div>
                             </div>
                             <div className="p-4 rounded-2xl bg-orange-600/5 border border-orange-500/10">
                                 <div className="text-[10px] font-bold text-orange-600 uppercase mb-1">Revenue Lift</div>
@@ -297,7 +297,7 @@ export default function HostSettingsDashboard() {
                     </div>
 
                     <button
-                        className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-white/5 border border-white/5 text-gray-500 hover:text-white hover:bg-red-500/10 hover:border-red-500/20 transition-all group"
+                        className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 text-slate-500 dark:text-gray-500 hover:text-red-500 dark:hover:text-white hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 dark:hover:border-red-500/20 transition-all group shadow-sm"
                         onClick={async () => {
                             const hostId = 'demo_host_001';
                             await apiClient(`/api/host/${hostId}/settings/reset`, { method: 'POST' });

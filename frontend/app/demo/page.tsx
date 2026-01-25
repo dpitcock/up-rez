@@ -4,15 +4,25 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from "@/lib/utils";
 import {
-    Zap, RefreshCcw, Database,
-    Play, Settings, Activity,
-    CheckCircle2, AlertCircle, Clock, Sparkles, Layout,
-    Globe, Network, Link, ExternalLink
+    RefreshCcw, Database,
+    Play, Sparkles, Layout,
+    Globe, Clock,
+    ArrowRight,
+    Zap,
+    Box,
+    Terminal,
+    ChevronRight,
+    Search,
+    Filter,
+    X,
+    Mail
 } from "lucide-react";
 
 import { ConnectionError } from "@/components/ConnectionError";
 import { apiClient } from '@/lib/api';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import DashboardLayout from '@/components/DashboardLayout';
+import { useLogs } from '@/context/LogContext';
+import EmailPreviewModal from '@/components/EmailPreviewModal';
 
 interface ReadyBooking {
     id: string;
@@ -23,26 +33,24 @@ interface ReadyBooking {
 
 export default function DemoPage() {
     const router = useRouter();
-    const [loading, setLoading] = useState(false);
+    const { addLog } = useLogs();
     const [status, setStatus] = useState<any>(null);
     const [readyBookings, setReadyBookings] = useState<{ cron_ready: ReadyBooking[], cancellation_ready: ReadyBooking[] }>({
         cron_ready: [],
         cancellation_ready: []
     });
-    const [logs, setLogs] = useState<{ msg: string, type: 'info' | 'success' | 'error', time: string }[]>([]);
     const [selectedCron, setSelectedCron] = useState<string>("");
     const [selectedCancel, setSelectedCancel] = useState<string>("");
     const [error, setError] = useState(false);
     const [ngrokStatus, setNgrokStatus] = useState<any>(null);
     const [checkingNgrok, setCheckingNgrok] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
+    const [previewOffer, setPreviewOffer] = useState<any>(null);
 
     useEffect(() => {
         refreshData();
     }, []);
-
-    const addLog = (msg: string, type: 'info' | 'success' | 'error' = 'info') => {
-        setLogs(prev => [{ msg, type, time: new Date().toLocaleTimeString() }, ...prev].slice(0, 10));
-    };
 
     const refreshData = async () => {
         try {
@@ -62,46 +70,42 @@ export default function DemoPage() {
 
     const handleAction = async (endpoint: string, method: string = 'POST', body?: any) => {
         setLoading(true);
+        const isTrigger = endpoint.includes('trigger');
+        const isClientOnly = process.env.NEXT_PUBLIC_DEMO_MODE === 'client_only';
+
+        if (isTrigger) {
+            addLog("AI Engine analyzing inventory availability...", "info");
+        }
+
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'}${endpoint}`, {
+            if (isTrigger && isClientOnly) {
+                await new Promise(r => setTimeout(r, 1500));
+                addLog("Orchestrating multi-node reward optimization...", "info");
+                await new Promise(r => setTimeout(r, 1000));
+            }
+
+            const data = await apiClient(endpoint, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
                 body: body ? JSON.stringify(body) : undefined
             });
-            const data = await res.json();
-            if (res.ok) {
-                addLog(data.message || "Action completed successfully", "success");
+
+            if (data) {
+                if (data.offer_id) {
+                    addLog(`Offer generated! Preparing preview...`, "success");
+                    // Fetch full offer details for the preview
+                    const offerDetails = await apiClient(`/offer/${data.offer_id}`);
+                    if (offerDetails) {
+                        setPreviewOffer(offerDetails);
+                        setShowPreview(true);
+                    }
+                } else {
+                    addLog(data.message || "Action completed successfully", "success");
+                }
                 await refreshData();
-            } else {
-                addLog(data.detail || "Action failed", "error");
             }
         } catch (err) {
             addLog("Network error occurred", "error");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleTrigger = async (type: 'cron' | 'cancellation') => {
-        const bookingId = type === 'cron' ? selectedCron : selectedCancel;
-        setLoading(true);
-        addLog(`Triggering ${type} orchestration...`, 'info');
-
-        try {
-            const data = await apiClient(`/demo/trigger`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ type, booking_id: bookingId })
-            });
-
-            if (data.status === 'simulated_success') {
-                addLog(`Simulated ${type} success (Static Demo Mode)`, 'success');
-            } else {
-                addLog(`Successfully triggered ${type} automation. Check Host Dashboard for results.`, 'success');
-            }
-            refreshData();
-        } catch (err) {
-            addLog(`Failed to trigger ${type}. Engine may be offline.`, 'error');
         } finally {
             setLoading(false);
         }
@@ -123,14 +127,13 @@ export default function DemoPage() {
             setNgrokStatus({ status: 'offline', message: 'Could not connect to backend' });
         } finally {
             setCheckingNgrok(false);
-            // Hide status after 5 seconds
             setTimeout(() => setNgrokStatus(null), 5000);
         }
     };
 
     const handleEnableOpenAI = async () => {
         try {
-            const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'}/demo/settings`, {
+            await apiClient('/demo/settings', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -138,9 +141,7 @@ export default function DemoPage() {
                     local_model: "gemma3:latest"
                 })
             });
-            if (res.ok) {
-                refreshData();
-            }
+            refreshData();
         } catch (err) {
             console.error("Failed to enable OpenAI", err);
         }
@@ -157,267 +158,211 @@ export default function DemoPage() {
         );
     }
 
+    const subHeader = (
+        <div className="flex items-center gap-2">
+            <button
+                onClick={() => handleAction('/demo/normalize-dates')}
+                data-tooltip="Normalize Dates"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-orange-500/10 hover:text-orange-500 transition-all border border-slate-200 dark:border-white/10"
+            >
+                <RefreshCcw className="w-4 h-4" />
+            </button>
+            <button
+                onClick={() => handleAction('/demo/reset-data')}
+                data-tooltip="Reset Database"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-red-500/10 hover:text-red-500 transition-all border border-slate-200 dark:border-white/10"
+            >
+                <Database className="w-4 h-4" />
+            </button>
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-2" />
+            <button
+                onClick={() => handleAction('/demo/frontend-build')}
+                data-tooltip="Rebuild Layout Templates"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-blue-500/10 hover:text-blue-500 transition-all border border-slate-200 dark:border-white/10"
+            >
+                <Play className="w-4 h-4" />
+            </button>
+            <button
+                onClick={() => router.push('/tower')}
+                data-tooltip="Intelligence Hub (Tower)"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-cyan-500/10 hover:text-cyan-500 transition-all border border-slate-200 dark:border-white/10"
+            >
+                <Box className="w-4 h-4" />
+            </button>
+            <button
+                onClick={handleCheckNgrok}
+                data-tooltip="Check Ngrok Tunnel"
+                className={cn(
+                    "p-2.5 rounded-xl transition-all border",
+                    ngrokStatus?.status === 'online'
+                        ? "bg-green-500/10 text-green-500 border-green-500/20"
+                        : "bg-slate-100 dark:bg-white/5 hover:bg-blue-500/10 hover:text-blue-500 border-slate-200 dark:border-white/10"
+                )}
+            >
+                <Globe className={cn("w-4 h-4", checkingNgrok && "animate-spin")} />
+            </button>
+        </div>
+    );
+
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#050505] text-slate-900 dark:text-white selection:bg-orange-500 pb-20 transition-colors duration-300">
-            {/* Nav */}
-            <nav className="fixed top-0 w-full z-50 border-b border-slate-200 dark:border-white/5 bg-white/80 dark:bg-[#050505]/80 backdrop-blur-xl transition-colors">
-                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2 font-bold text-lg cursor-pointer" onClick={() => router.push('/')}>
-                        <img src="/up-rez-logo-white.svg" alt="UpRez Logo" className="h-8 w-auto" />
-                        UpRez Demo
-                    </div>
-                    <div className="flex items-center gap-4">
-                        <div className={cn(
-                            "flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider",
-                            status?.demo_ready ? "bg-green-500/10 text-green-400 border border-green-500/20" : "bg-red-500/10 text-red-400 border border-red-500/20"
-                        )}>
-                            {status?.demo_ready ? "System Ready" : "Run Normalize"}
+        <DashboardLayout subHeader={subHeader}>
+            <div className="space-y-10">
+                {/* Hero Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-end border-b border-slate-200 dark:border-white/5 pb-8 gap-6">
+                    <div>
+                        <div className="flex items-center gap-2 mb-2">
+                            <div className="w-2 h-2 rounded-full bg-orange-600 animate-pulse" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-gray-500">Local Orchestration Node</span>
                         </div>
-                        <button
-                            onClick={handleCheckNgrok}
-                            disabled={checkingNgrok}
-                            className={cn(
-                                "flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all",
-                                ngrokStatus?.status === 'online'
-                                    ? "bg-blue-500/20 text-blue-400 border border-blue-500/30 shadow-[0_0_15px_-5px_rgba(59,130,246,0.5)]"
-                                    : "bg-white/5 text-gray-400 border border-white/10 hover:bg-white/10"
-                            )}
-                        >
-                            {checkingNgrok ? (
-                                <RefreshCcw className="w-3 h-3 animate-spin" />
-                            ) : (
-                                <Globe className="w-3 h-3" />
-                            )}
-                            {ngrokStatus?.status === 'online' ? "Tunnel Live" : "Check Tunnel"}
-                        </button>
-                        <div className="flex items-center gap-3">
-                            <ThemeToggle />
-                            <div className="flex items-center bg-slate-100 dark:bg-white/5 rounded-full px-2 border border-slate-200 dark:border-white/10">
-                                <button
-                                    onClick={() => router.push('/dashboard/settings')}
-                                    className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2"
-                                    title="Host Admin Center"
-                                >
-                                    <Settings className="w-4 h-4 text-orange-500" />
-                                    <span className="text-[10px] font-bold uppercase hidden sm:block">Admin</span>
-                                </button>
-                                <div className="w-px h-4 bg-slate-300 dark:bg-white/10 mx-1" />
-                                <button
-                                    onClick={() => router.push('/demo/settings')}
-                                    className="p-2 hover:bg-slate-200 dark:hover:bg-white/10 rounded-full transition-colors text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white flex items-center gap-2"
-                                    title="AI Core Settings"
-                                >
-                                    <Sparkles className="w-4 h-4 text-blue-500" />
-                                    <span className="text-[10px] font-bold uppercase hidden sm:block">AI Core</span>
-                                </button>
-                            </div>
+                        <h1 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter leading-none">
+                            Demo Center
+                        </h1>
+                    </div>
+
+                    <div className="flex flex-col items-end gap-2 text-right">
+                        <div className="px-5 py-2 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10">
+                            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 block mb-0.5">Static Demo State</span>
+                            <span className="text-lg font-black italic uppercase text-orange-600">Active - Local Only</span>
                         </div>
                     </div>
                 </div>
-            </nav>
 
-            <main className="max-w-7xl mx-auto px-6 pt-24 pb-20 grid grid-cols-1 lg:grid-cols-12 gap-8">
-
-                {/* Left: Global Controls & Stats */}
-                <div className="lg:col-span-4 space-y-6">
-                    {/* Header */}
-                    <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-6">
-                        <h1 className="text-2xl font-bold mb-2">Control Panel</h1>
-                        <p className="text-gray-500 text-sm mb-6">Manage demo data state and global triggers.</p>
-
-                        <div className="grid grid-cols-2 gap-3">
-                            <button
-                                onClick={() => handleAction('/demo/normalize-dates')}
-                                className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-orange-500/50 hover:bg-white/10 transition-all text-sm group"
-                            >
-                                <RefreshCcw className="w-5 h-5 text-orange-500 group-hover:rotate-180 transition-transform duration-500" />
-                                Normalize
-                            </button>
-                            <button
-                                onClick={() => handleAction('/demo/reset-data')}
-                                className="flex flex-col items-center justify-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-red-500/50 hover:bg-white/10 transition-all text-sm group"
-                            >
-                                <Database className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
-                                Reset DB
-                            </button>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-3 mt-4">
-                            <button
-                                onClick={() => router.push('/demo/offer-editor')}
-                                className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-orange-600/10 border border-orange-500/30 hover:bg-orange-600/20 text-orange-400 transition-all text-sm font-bold group"
-                            >
-                                <Sparkles className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                Templates
-                            </button>
-                            <button
-                                onClick={() => router.push('/demo/tower')}
-                                className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-blue-600/10 border border-blue-500/30 hover:bg-blue-600/20 text-blue-400 transition-all text-sm font-bold group"
-                            >
-                                <Database className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                Intelligence Hub
-                            </button>
-                            <button
-                                onClick={() => router.push('/demo/properties')}
-                                className="flex items-center justify-center gap-2 p-4 rounded-2xl bg-white/5 border border-white/10 hover:bg-white/10 text-white transition-all text-sm font-bold group"
-                            >
-                                <Layout className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                Properties
-                            </button>
-                        </div>
-
-                        <button
-                            onClick={() => router.push('/dashboard/offers')}
-                            className="w-full mt-3 flex items-center justify-center gap-2 p-4 rounded-2xl bg-green-600/10 border border-green-500/30 hover:bg-green-600/20 text-green-400 transition-all text-sm font-bold group"
-                        >
-                            <ExternalLink className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                            View Sent Offers
-                        </button>
-                    </div>
-
-                    {/* Stats */}
-                    <div className="bg-[#0A0A0A] border border-white/5 rounded-3xl p-6">
-                        <div className="flex items-center gap-2 mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">
-                            <Activity className="w-3 h-3" />
-                            Live Metrics
-                        </div>
-                        <div className="space-y-4">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                    {/* Main Interaction Area */}
+                    <div className="lg:col-span-8 space-y-8">
+                        {/* 1. Automated Cron Simulation */}
+                        <section className="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-sm">
                             <div className="flex items-center justify-between">
-                                <span className="text-gray-400 text-sm">7-Day Bookings</span>
-                                <span className="font-mono text-orange-500 font-bold">{status?.cron_ready_count || 0}</span>
-                            </div>
-                            <div className="flex items-center justify-between">
-                                <span className="text-gray-400 text-sm">Cancellable Pairs</span>
-                                <span className="font-mono text-orange-500 font-bold">{status?.cancellation_ready_count || 0}</span>
-                            </div>
-                            <div className="pt-4 border-t border-white/5">
-                                <span className="text-[10px] text-gray-600 block mb-1">LAST SYNC</span>
-                                <span className="text-xs text-gray-400 font-mono italic">{status?.timestamp ? new Date(status.timestamp).toLocaleTimeString() : 'Never'}</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Log */}
-                    <div className="bg-black/40 border border-white/5 rounded-3xl p-6 overflow-hidden">
-                        <div className="flex items-center gap-2 mb-4 text-xs font-bold uppercase tracking-widest text-gray-500">
-                            <Clock className="w-3 h-3" />
-                            Activity Log
-                        </div>
-                        <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-                            {logs.length === 0 && <div className="text-gray-700 text-xs italic">Waiting for events...</div>}
-                            {logs.map((log, i) => (
-                                <div key={i} className="flex gap-3 animate-in fade-in slide-in-from-left-2 duration-300">
-                                    <div className={cn(
-                                        "mt-1 w-1.5 h-1.5 rounded-full shrink-0",
-                                        log.type === 'success' ? "bg-green-500" : log.type === 'error' ? "bg-red-500" : "bg-blue-500"
-                                    )} />
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-orange-500/10 flex items-center justify-center text-orange-600">
+                                        <Clock className="w-6 h-6" />
+                                    </div>
                                     <div>
-                                        <div className="text-[11px] text-gray-500 font-mono">{log.time}</div>
-                                        <div className="text-xs text-gray-300 leading-relaxed">{log.msg}</div>
+                                        <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Window-Based Triggers</h2>
+                                        <p className="text-sm text-slate-500 dark:text-gray-500">Simulate periodic automated inventory scans</p>
                                     </div>
                                 </div>
-                            ))}
+                                <div className="px-4 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Queue: {readyBookings.cron_ready.length}
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
+                                <div className="space-y-4">
+                                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 block ml-2">Target High-Propensity Booking</label>
+                                    <div className="flex flex-col sm:flex-row gap-3">
+                                        <select
+                                            value={selectedCron}
+                                            onChange={(e) => setSelectedCron(e.target.value)}
+                                            className="flex-1 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 appearance-none cursor-pointer text-slate-900 dark:text-white placeholder:text-slate-400"
+                                        >
+                                            <option value="">Select a ready booking...</option>
+                                            {readyBookings.cron_ready.map(b => (
+                                                <option key={b.id} value={b.id}>{b.guest_name} - {b.prop_name} ({b.id})</option>
+                                            ))}
+                                        </select>
+                                        <button
+                                            disabled={!selectedCron || loading}
+                                            onClick={() => handleAction('/demo/trigger', 'POST', { type: 'cron', booking_id: selectedCron })}
+                                            className="bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-black uppercase text-xs px-8 py-4 rounded-2xl transition-all shadow-lg shadow-orange-600/20 active:scale-95 flex items-center justify-center gap-2"
+                                        >
+                                            {loading ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                                            Run Logic
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        {/* 2. Cancellation Event Simulation */}
+                        <section className="bg-white dark:bg-[#0A0A0A] border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-sm">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4">
+                                    <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center text-red-500">
+                                        <Zap className="w-6 h-6" />
+                                    </div>
+                                    <div>
+                                        <h2 className="text-xl font-bold text-slate-900 dark:text-white uppercase tracking-tight">Reactive Triggers</h2>
+                                        <p className="text-sm text-slate-500 dark:text-gray-500">Simulate incoming cancellation events</p>
+                                    </div>
+                                </div>
+                                <div className="px-4 py-1.5 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Queue: {readyBookings.cancellation_ready.length}
+                                </div>
+                            </div>
+
+                            <div className="space-y-4">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 block ml-2">Simulate Guest Cancellation At</label>
+                                <div className="flex flex-col sm:flex-row gap-3">
+                                    <select
+                                        value={selectedCancel}
+                                        onChange={(e) => setSelectedCancel(e.target.value)}
+                                        className="flex-1 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-red-500/50 appearance-none cursor-pointer text-slate-900 dark:text-white placeholder:text-slate-400"
+                                    >
+                                        <option value="">Select booking to cancel...</option>
+                                        {readyBookings.cancellation_ready.map(b => (
+                                            <option key={b.id} value={b.id}>{b.guest_name} at {b.prop_name}</option>
+                                        ))}
+                                    </select>
+                                    <button
+                                        disabled={!selectedCancel || loading}
+                                        onClick={() => handleAction('/demo/trigger', 'POST', { type: 'cancellation', booking_id: selectedCancel })}
+                                        className="bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-black uppercase text-xs px-8 py-4 rounded-2xl transition-all shadow-lg shadow-red-600/20 active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        {loading ? <RefreshCcw className="w-4 h-4 animate-spin" /> : <Play className="w-4 h-4" />}
+                                        Trigger
+                                    </button>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    {/* Right Panel: AI & System Stats */}
+                    <div className="lg:col-span-4 space-y-6">
+                        {/* Node Stats */}
+                        <div className="bg-white dark:bg-[#0A0A0A] text-slate-900 dark:text-white border border-slate-200 dark:border-white/5 rounded-[2.5rem] p-8 space-y-8 shadow-sm dark:shadow-2xl relative overflow-hidden group">
+                            <div className="absolute top-0 right-0 w-32 h-32 bg-orange-600/5 dark:bg-orange-600/10 blur-[60px] -mr-10 -mt-10 group-hover:bg-orange-600/20 transition-all duration-700" />
+
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-3 mb-6">
+                                    <Terminal className="w-5 h-5 text-orange-500" />
+                                    <h3 className="font-black uppercase tracking-widest text-xs text-slate-400 dark:text-gray-500">Node Stats</h3>
+                                </div>
+
+                                <div className="space-y-6">
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 rounded-2xl">
+                                            <div className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase mb-1">Active Offers</div>
+                                            <div className="text-2xl font-black italic">{status?.active_offers || 0}</div>
+                                        </div>
+                                        <div className="bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5 p-4 rounded-2xl">
+                                            <div className="text-[8px] font-black text-slate-400 dark:text-gray-500 uppercase mb-1">Real-time Conv</div>
+                                            <div className="text-2xl font-black italic text-orange-500">{status?.conversion_rate || 0}%</div>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center px-1">
+                                            <span className="text-[10px] font-bold text-slate-400 dark:text-gray-600">DEMO PIPELINE STATUS</span>
+                                            <span className="text-[8px] font-black text-green-500 tracking-[0.2em]">HEALTHY</span>
+                                        </div>
+                                        <div className="h-1.5 w-full bg-slate-100 dark:bg-white/5 rounded-full overflow-hidden">
+                                            <div className="h-full w-[85%] bg-orange-600 rounded-full shadow-[0_0_10px_rgba(234,88,12,0.5)]" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                {/* Right: Triggers */}
-                <div className="lg:col-span-8 space-y-8">
-
-                    {/* Cron Section */}
-                    <section className="bg-[#0A0A0A] border border-white/5 rounded-[2rem] p-8 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-8 text-orange-500/10 group-hover:text-orange-500/20 transition-colors pointer-events-none">
-                            <Clock className="w-32 h-32 rotate-12" />
-                        </div>
-
-                        <h2 className="text-2xl font-bold mb-2 flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
-                                <Zap className="w-6 h-6" />
-                            </div>
-                            Cron Trigger (7-Day Window)
-                        </h2>
-                        <p className="text-gray-400 mb-8 max-w-lg">Simulate the automated daily scan that finds bookings exactly 7 days from arrival and generates personalized offers.</p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                            {readyBookings.cron_ready.map(b => (
-                                <button
-                                    key={b.id}
-                                    onClick={() => setSelectedCron(b.id)}
-                                    className={cn(
-                                        "p-4 rounded-2xl border text-left transition-all",
-                                        selectedCron === b.id
-                                            ? "bg-orange-600/10 border-orange-500/50"
-                                            : "bg-white/5 border-white/5 hover:border-white/10"
-                                    )}
-                                >
-                                    <div className="font-bold text-sm text-white mb-1 truncate">{b.guest_name}</div>
-                                    <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">{b.prop_name}</div>
-                                    <div className="flex items-center gap-2 text-[10px] font-mono text-orange-400/80">
-                                        <Clock className="w-3 h-3" />
-                                        {b.arrival_date}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-
-                        <button
-                            disabled={!selectedCron || loading}
-                            onClick={() => handleAction(`/demo/trigger/cron?booking_id=${selectedCron}`)}
-                            className="w-full py-4 rounded-2xl bg-orange-600 hover:bg-orange-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold transition-all shadow-[0_0_30px_-10px_rgba(234,88,12,0.5)] flex items-center justify-center gap-3 active:scale-95"
-                        >
-                            <Play className="w-5 h-5 fill-current" />
-                            {loading ? "Processing AI Offer..." : "Trigger Cron Offer"}
-                        </button>
-                    </section>
-
-                    {/* Cancellation Section */}
-                    <section className="bg-[#0A0A0A] border border-white/5 rounded-[2rem] p-8 relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-8 text-blue-500/10 group-hover:text-blue-500/20 transition-colors pointer-events-none">
-                            <Activity className="w-32 h-32 -rotate-12" />
-                        </div>
-
-                        <h2 className="text-2xl font-bold mb-2 flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                                <AlertCircle className="w-6 h-6" />
-                            </div>
-                            Property Cancellation
-                        </h2>
-                        <p className="text-gray-400 mb-8 max-w-lg">Simulate a high-tier booking cancellation. Watch the system instantly re-allocate the inventory to an overlapping guest.</p>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
-                            {readyBookings.cancellation_ready.map(b => (
-                                <button
-                                    key={b.id}
-                                    onClick={() => setSelectedCancel(b.id)}
-                                    className={cn(
-                                        "p-4 rounded-2xl border text-left transition-all",
-                                        selectedCancel === b.id
-                                            ? "bg-blue-600/10 border-blue-500/50"
-                                            : "bg-white/5 border-white/5 hover:border-white/10"
-                                    )}
-                                >
-                                    <div className="font-bold text-sm text-white mb-1 truncate">{b.prop_name}</div>
-                                    <div className="text-[10px] text-gray-500 uppercase tracking-wider mb-2">Premium Booking</div>
-                                    <div className="flex items-center gap-2 text-[10px] font-mono text-blue-400/80">
-                                        <Clock className="w-3 h-3" />
-                                        Overlap Check: OK
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
-
-                        <button
-                            disabled={!selectedCancel || loading}
-                            onClick={() => handleAction(`/demo/trigger/cancellation?booking_id=${selectedCancel}`)}
-                            className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold transition-all shadow-[0_0_30px_-10px_rgba(37,99,235,0.4)] flex items-center justify-center gap-3 active:scale-95"
-                        >
-                            <AlertCircle className="w-5 h-5" />
-                            {loading ? "Cancelling & Re-assigning..." : "Cancel & Trigger Instant Upsell"}
-                        </button>
-                    </section>
-
-                </div>
-            </main>
-        </div>
+            {/* Email Preview Modal */}
+            <EmailPreviewModal
+                isOpen={showPreview}
+                onClose={() => setShowPreview(false)}
+                offer={previewOffer}
+            />
+        </DashboardLayout>
     );
 }

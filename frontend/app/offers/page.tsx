@@ -1,17 +1,30 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '@/components/DashboardLayout';
-import { listOffers, expireOffer } from '@/lib/api';
-import { ExternalLink, Clock, Trash2, CheckCircle2, XCircle, RefreshCcw } from 'lucide-react';
+import { useLogs } from '@/context/LogContext';
+import { apiClient, listOffers, expireOffer } from '@/lib/api';
+import {
+    ExternalLink, Clock, Ban, CheckCircle2, XCircle,
+    RefreshCcw, Database, Play, Layout, Box, Globe, Mail
+} from 'lucide-react';
 import Link from 'next/link';
+import EmailPreviewModal from '@/components/EmailPreviewModal';
 
 // Simple cn utility
 const cn = (...classes: any[]) => classes.filter(Boolean).join(' ');
 
 export default function OffersPage() {
+    const router = useRouter();
+    const { addLog } = useLogs();
     const [offers, setOffers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState(false);
+    const [ngrokStatus, setNgrokStatus] = useState<any>(null);
+    const [checkingNgrok, setCheckingNgrok] = useState(false);
+    const [showPreview, setShowPreview] = useState(false);
+    const [selectedOffer, setSelectedOffer] = useState<any>(null);
 
     const loadOffers = async () => {
         try {
@@ -28,13 +41,54 @@ export default function OffersPage() {
         loadOffers();
     }, []);
 
-    const handleExpire = async (id: string) => {
-        if (!confirm("Are you sure you want to expire this offer manually?")) return;
+    const handleAction = async (endpoint: string, method: string = 'POST', body?: any) => {
+        setActionLoading(true);
+        try {
+            const data = await apiClient(endpoint, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: body ? JSON.stringify(body) : undefined
+            });
+            if (data) {
+                addLog(data.message || "Action completed successfully", "success");
+                await loadOffers();
+            }
+        } catch (err) {
+            addLog("Network error occurred", "error");
+        } finally {
+            setActionLoading(false);
+        }
+    };
+
+    const handleCheckNgrok = async () => {
+        setCheckingNgrok(true);
+        addLog("Testing ngrok tunnel connectivity...", "info");
+        try {
+            const data = await apiClient(`/demo/check-ngrok`);
+            setNgrokStatus(data);
+            if (data.status === 'online') {
+                addLog(`Ngrok is ONLINE [${data.url}]`, "success");
+            } else {
+                addLog("Ngrok is OFFLINE or not configured", "error");
+            }
+        } catch (err) {
+            addLog("Backend unreachable for tunnel check", "error");
+            setNgrokStatus({ status: 'offline', message: 'Could not connect to backend' });
+        } finally {
+            setCheckingNgrok(false);
+            setTimeout(() => setNgrokStatus(null), 5000);
+        }
+    };
+
+    const handleCancel = async (id: string) => {
+        if (!confirm("Are you sure you want to cancel this offer? It will be marked as expired.")) return;
         try {
             await expireOffer(id);
-            loadOffers();
+            addLog("Offer canceled and marked as expired", "info");
+            await loadOffers();
         } catch (err) {
-            console.error("Failed to expire offer", err);
+            console.error("Failed to cancel offer", err);
+            addLog("Failed to cancel offer", "error");
         }
     };
 
@@ -68,8 +122,54 @@ export default function OffersPage() {
         );
     };
 
+    const subHeader = (
+        <div className="flex items-center gap-2">
+            <button
+                onClick={() => handleAction('/demo/normalize-dates')}
+                data-tooltip="Normalize Dates"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-orange-500/10 hover:text-orange-500 transition-all border border-slate-200 dark:border-white/10 group relative"
+            >
+                <RefreshCcw className="w-4 h-4" />
+            </button>
+            <button
+                onClick={() => handleAction('/demo/reset-data')}
+                data-tooltip="Reset Database"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-red-500/10 hover:text-red-500 transition-all border border-slate-200 dark:border-white/10 group relative"
+            >
+                <Database className="w-4 h-4" />
+            </button>
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-2" />
+            <button
+                onClick={() => handleAction('/demo/frontend-build')}
+                data-tooltip="Rebuild Layout Templates"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-blue-500/10 hover:text-blue-500 transition-all border border-slate-200 dark:border-white/10 group relative"
+            >
+                <Play className="w-4 h-4" />
+            </button>
+            <button
+                onClick={() => router.push('/tower')}
+                data-tooltip="Intelligence Hub (Tower)"
+                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-cyan-500/10 hover:text-cyan-500 transition-all border border-slate-200 dark:border-white/10 group relative"
+            >
+                <Box className="w-4 h-4" />
+            </button>
+            <button
+                onClick={handleCheckNgrok}
+                data-tooltip="Check Ngrok Tunnel"
+                className={cn(
+                    "p-2.5 rounded-xl transition-all border group relative",
+                    ngrokStatus?.status === 'online'
+                        ? "bg-green-500/10 text-green-500 border-green-500/20"
+                        : "bg-slate-100 dark:bg-white/5 hover:bg-blue-500/10 hover:text-blue-500 border-slate-200 dark:border-white/10"
+                )}
+            >
+                <Globe className={cn("w-4 h-4", checkingNgrok && "animate-spin")} />
+            </button>
+        </div>
+    );
+
     return (
-        <DashboardLayout>
+        <DashboardLayout subHeader={subHeader}>
             <div className="mb-10 flex justify-between items-end">
                 <div>
                     <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Sent Offers</h2>
@@ -155,21 +255,33 @@ export default function OffersPage() {
                                         </td>
                                         <td className="px-8 py-6 text-right">
                                             <div className="flex items-center justify-end gap-3 translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                                                <button
+                                                    onClick={() => {
+                                                        setSelectedOffer(offer);
+                                                        setShowPreview(true);
+                                                    }}
+                                                    className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-blue-600 dark:text-blue-400 hover:bg-blue-600 hover:text-white dark:hover:bg-blue-600 dark:hover:text-white transition-all shadow-sm border border-slate-200 dark:border-white/5"
+                                                    data-tooltip="Email Preview"
+                                                >
+                                                    <Mail className="w-4 h-4" />
+                                                </button>
                                                 <Link
                                                     href={`/offer/${offer.id}`}
                                                     target="_blank"
                                                     className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-gray-400 hover:bg-orange-600 hover:text-white dark:hover:bg-orange-600 dark:hover:text-white transition-all shadow-sm border border-slate-200 dark:border-white/5"
-                                                    title="View Public Page"
+                                                    data-tooltip="Public Page"
                                                 >
                                                     <ExternalLink className="w-4 h-4" />
                                                 </Link>
-                                                {new Date(offer.expires_at) > new Date() && offer.status !== 'accepted' && offer.status !== 'expired' && (
+
+                                                {/* Cancel Button: Only if Active */}
+                                                {offer.status === 'active' && (
                                                     <button
-                                                        onClick={() => handleExpire(offer.id)}
-                                                        className="p-3 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-500 hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm border border-red-100 dark:border-red-500/20"
-                                                        title="Expire Immediately"
+                                                        onClick={() => handleCancel(offer.id)}
+                                                        className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-red-600 dark:text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200 dark:border-white/5"
+                                                        data-tooltip="Cancel Offer"
                                                     >
-                                                        <Trash2 className="w-4 h-4" />
+                                                        <Ban className="w-4 h-4" />
                                                     </button>
                                                 )}
                                             </div>
@@ -181,6 +293,12 @@ export default function OffersPage() {
                     </div>
                 </div>
             )}
+
+            <EmailPreviewModal
+                isOpen={showPreview}
+                onClose={() => setShowPreview(false)}
+                offer={selectedOffer}
+            />
         </DashboardLayout>
     );
 }

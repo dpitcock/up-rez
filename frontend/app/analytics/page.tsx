@@ -7,7 +7,7 @@ export default function AnalyticsPage() {
     return (
         <DashboardLayout>
             <div className="mb-10">
-                <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Performance Analytics</h2>
+                <h2 className="text-3xl font-black text-slate-900 dark:text-white uppercase italic tracking-tighter">Performance</h2>
                 <p className="text-slate-500 dark:text-gray-500 text-sm font-medium">Revenue lift and conversion metrics</p>
             </div>
 
