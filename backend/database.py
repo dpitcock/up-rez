@@ -25,6 +25,8 @@ def init_db():
     with get_db() as conn:
         cursor = conn.cursor()
         
+        # 1. CREATE ALL TABLES FIRST
+        
         # Properties table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS properties (
@@ -75,46 +77,12 @@ def init_db():
             base_nightly_rate REAL NOT NULL,
             total_paid REAL NOT NULL,
             channel TEXT,
-            upgraded_from_prop_id TEXT,
-            original_base_rate REAL,
-            original_total_paid REAL,
-            upgrade_at TEXT,
+            status TEXT DEFAULT 'confirmed',
             created_at TEXT NOT NULL,
             updated_at TEXT
         )
         """)
         
-        # COLUMN ADDITIONS (Migration)
-        # 1. Bookings Migration
-        cursor.execute("PRAGMA table_info(bookings)")
-        columns = [column[1] for column in cursor.fetchall()]
-        if "upgraded_from_prop_id" not in columns:
-            cursor.execute("ALTER TABLE bookings ADD COLUMN upgraded_from_prop_id TEXT")
-        if "original_base_rate" not in columns:
-            cursor.execute("ALTER TABLE bookings ADD COLUMN original_base_rate REAL")
-        if "original_total_paid" not in columns:
-            cursor.execute("ALTER TABLE bookings ADD COLUMN original_total_paid REAL")
-        if "upgrade_at" not in columns:
-            cursor.execute("ALTER TABLE bookings ADD COLUMN upgrade_at TEXT")
-        
-        # 2. Host Settings Migration
-        cursor.execute("PRAGMA table_info(host_settings)")
-        hs_columns = [column[1] for column in cursor.fetchall()]
-        if "pm_company_name" not in hs_columns:
-            cursor.execute("ALTER TABLE host_settings ADD COLUMN pm_company_name TEXT")
-        if "host_phone" not in hs_columns:
-            cursor.execute("ALTER TABLE host_settings ADD COLUMN host_phone TEXT")
-        if "local_llm_model" not in hs_columns:
-            cursor.execute("ALTER TABLE host_settings ADD COLUMN local_llm_model TEXT DEFAULT 'gemma3:latest'")
-
-        # 3. Properties Migration (Safety check)
-        cursor.execute("PRAGMA table_info(properties)")
-        p_columns = [column[1] for column in cursor.fetchall()]
-        needed_p = ["type", "category", "max_guests", "bedrooms", "size_sqm", "floor", "elevator", "view", "noise_level"]
-        for col in needed_p:
-            if col not in p_columns:
-                cursor.execute(f"ALTER TABLE properties ADD COLUMN {col} TEXT")
-
         # Offers table
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS offers (
@@ -138,35 +106,6 @@ def init_db():
             created_at TEXT NOT NULL,
             updated_at TEXT,
             FOREIGN KEY (booking_id) REFERENCES bookings(id)
-        )
-        """)
-        
-        # Ensure offers has confirmation_number column (migration)
-        cursor.execute("PRAGMA table_info(offers)")
-        o_columns = [column[1] for column in cursor.fetchall()]
-        if "confirmation_number" not in o_columns:
-            cursor.execute("ALTER TABLE offers ADD COLUMN confirmation_number TEXT")
-        if "selected_prop_id" not in o_columns:
-            cursor.execute("ALTER TABLE offers ADD COLUMN selected_prop_id TEXT")
-        if "payment_status" not in o_columns:
-            cursor.execute("ALTER TABLE offers ADD COLUMN payment_status TEXT DEFAULT 'pending'")
-        if "payment_amount" not in o_columns:
-            cursor.execute("ALTER TABLE offers ADD COLUMN payment_amount REAL")
-        if "accepted_at" not in o_columns:
-            cursor.execute("ALTER TABLE offers ADD COLUMN accepted_at TEXT")
-        
-        # Offer candidates table (optional, for debugging)
-        cursor.execute("""
-        CREATE TABLE IF NOT EXISTS offer_candidates (
-            id TEXT PRIMARY KEY,
-            offer_id TEXT NOT NULL,
-            from_prop_id TEXT NOT NULL,
-            to_prop_id TEXT NOT NULL,
-            viability_score REAL NOT NULL,
-            ranking INTEGER,
-            score_components TEXT,
-            created_at TEXT NOT NULL,
-            FOREIGN KEY (offer_id) REFERENCES offers(id)
         )
         """)
         
@@ -199,9 +138,72 @@ def init_db():
             last_login_at TEXT
         )
         """)
+
+        # Offer candidates table
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS offer_candidates (
+            id TEXT PRIMARY KEY,
+            offer_id TEXT NOT NULL,
+            from_prop_id TEXT NOT NULL,
+            to_prop_id TEXT NOT NULL,
+            viability_score REAL NOT NULL,
+            ranking INTEGER,
+            score_components TEXT,
+            created_at TEXT NOT NULL,
+            FOREIGN KEY (offer_id) REFERENCES offers(id)
+        )
+        """)
+        
+        # 2. RUN MIGRATIONS (ADD MISSING COLUMNS)
+        
+        # Bookings Migration
+        cursor.execute("PRAGMA table_info(bookings)")
+        columns = [column[1] for column in cursor.fetchall()]
+        if "upgraded_from_prop_id" not in columns:
+            cursor.execute("ALTER TABLE bookings ADD COLUMN upgraded_from_prop_id TEXT")
+        if "original_base_rate" not in columns:
+            cursor.execute("ALTER TABLE bookings ADD COLUMN original_base_rate REAL")
+        if "original_total_paid" not in columns:
+            cursor.execute("ALTER TABLE bookings ADD COLUMN original_total_paid REAL")
+        if "upgrade_at" not in columns:
+            cursor.execute("ALTER TABLE bookings ADD COLUMN upgrade_at TEXT")
+        if "status" not in columns:
+            cursor.execute("ALTER TABLE bookings ADD COLUMN status TEXT DEFAULT 'confirmed'")
+        
+        # Host Settings Migration
+        cursor.execute("PRAGMA table_info(host_settings)")
+        hs_columns = [column[1] for column in cursor.fetchall()]
+        if "pm_company_name" not in hs_columns:
+            cursor.execute("ALTER TABLE host_settings ADD COLUMN pm_company_name TEXT")
+        if "host_phone" not in hs_columns:
+            cursor.execute("ALTER TABLE host_settings ADD COLUMN host_phone TEXT")
+        if "local_llm_model" not in hs_columns:
+            cursor.execute("ALTER TABLE host_settings ADD COLUMN local_llm_model TEXT DEFAULT 'gemma3:latest'")
+
+        # Properties Migration
+        cursor.execute("PRAGMA table_info(properties)")
+        p_columns = [column[1] for column in cursor.fetchall()]
+        needed_p = ["type", "category", "max_guests", "bedrooms", "size_sqm", "floor", "elevator", "view", "noise_level"]
+        for col in needed_p:
+            if col not in p_columns:
+                cursor.execute(f"ALTER TABLE properties ADD COLUMN {col} TEXT")
+
+        # Offers Migration
+        cursor.execute("PRAGMA table_info(offers)")
+        o_columns = [column[1] for column in cursor.fetchall()]
+        if "confirmation_number" not in o_columns:
+            cursor.execute("ALTER TABLE offers ADD COLUMN confirmation_number TEXT")
+        if "selected_prop_id" not in o_columns:
+            cursor.execute("ALTER TABLE offers ADD COLUMN selected_prop_id TEXT")
+        if "payment_status" not in o_columns:
+            cursor.execute("ALTER TABLE offers ADD COLUMN payment_status TEXT DEFAULT 'pending'")
+        if "payment_amount" not in o_columns:
+            cursor.execute("ALTER TABLE offers ADD COLUMN payment_amount REAL")
+        if "accepted_at" not in o_columns:
+            cursor.execute("ALTER TABLE offers ADD COLUMN accepted_at TEXT")
         
         conn.commit()
-        print("✓ Database schema created successfully")
+        print("✓ Database schema created and migrated successfully")
 
 
 if __name__ == "__main__":

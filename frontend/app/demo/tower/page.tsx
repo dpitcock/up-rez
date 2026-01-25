@@ -32,6 +32,17 @@ export default function TowerIntelligenceHub() {
         }
     };
 
+    const handleRunPipelines = async () => {
+        setLoading(true);
+        try {
+            await apiClient('/demo/tower/run', { method: 'POST' });
+            await fetchStats();
+        } catch (err) {
+            console.error("Failed to run Tower pipelines", err);
+            setLoading(false);
+        }
+    };
+
     if (loading) {
         return (
             <div className="min-h-screen bg-slate-50 dark:bg-[#050505] flex flex-col items-center justify-center space-y-4 transition-colors duration-300">
@@ -222,7 +233,10 @@ export default function TowerIntelligenceHub() {
                                 ))}
                             </div>
 
-                            <button className="w-full mt-10 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all shadow-[0_0_30px_-10px_rgba(59,130,246,0.5)] flex items-center justify-center gap-2 group">
+                            <button
+                                onClick={handleRunPipelines}
+                                className="w-full mt-10 py-4 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-sm font-bold transition-all shadow-[0_0_30px_-10px_rgba(59,130,246,0.5)] flex items-center justify-center gap-2 group"
+                            >
                                 <Zap className="w-4 h-4 fill-current group-hover:scale-125 transition-transform" />
                                 Refresh Feature Pipeline
                             </button>
