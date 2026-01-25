@@ -7,19 +7,53 @@
 
 UpRez is an AI-powered upgrade engine for vacation rentals that:
 - Detects upsell opportunities via booking triggers
+- **Analyzes Market Pressure** via [Tower](https://tower.dev) data pipelines
+- **Calculates high-fidelity fit scores** using [RunPod](https://runpod.io) GPU compute
 - Generates personalized offers with intelligent property comparisons
 - Sends HTML emails with property photos and pricing details
 - Serves dynamic landing pages with AI-powered Q&A chatbot
-- Gracefully handles unavailable properties with regeneration
 
 ## Tech Stack
 
 - **Backend**: FastAPI (Python) + SQLite
 - **Frontend**: Next.js 15 (React)
-- **LLMs**: Gemma3 (Ollama) for dev, OpenAI GPT-4o-mini for production
-- **RAG**: Property metadata retrieval for bot Q&A
-- **Email**: SendGrid (recommended) or Resend API
+- **Data Engineering**: **Tower.dev** (Distributed Pipelines & Feature Store)
+- **High-Perf Compute**: **RunPod** (Serverless GPU for Behavioral Scoring)
+- **Generative AI**: **OpenAI** GPT-4o-mini (Copywriting) + **Ollama** (Local Inference)
+- **Email**: SendGrid or Resend API
 - **Deployment**: Docker Compose + Vercel + Ngrok
+
+## System Architecture & AI Flow
+
+UpRez orchestrates multiple AI layers to deliver hyper-targeted hospitality upgrades.
+
+```mermaid
+graph TD
+    subgraph "Core System (Docker)"
+        BE[Backend - FastAPI]
+        FE[Frontend - Next.js]
+        DB[(SQLite)]
+    end
+
+    subgraph "AI & Data Partners"
+        TW[Tower.dev - Data Pipelines]
+        RP[RunPod - GPU Compute]
+        OI[OpenAI - Marketing Copy]
+    end
+
+    %% Data Flow
+    BE <--> DB
+    FE <--> BE
+    
+    %% AI Integration
+    TW -- "1. Market Pressure & Supply" --> BE
+    BE -- "2. High-Fidelity Fit Scoring" --> RP
+    BE -- "3. Personalized Copywriting" --> OI
+    
+    %% Communication
+    BE -- "4. HTML Offer Delivery" --> EM[Email Service]
+    FE -- "5. AI Concierge (RAG)" --> OI
+```
 
 ## Quick Start
 

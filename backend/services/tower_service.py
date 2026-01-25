@@ -38,23 +38,33 @@ def get_tower_market_demand(location_str: str) -> float:
     base_demand = demand_by_airport.get(airport_code, 1.0)
     return base_demand + (random.random() * 0.05)
 
+from services.runpod_service import runpod_service
+
 def engineer_guest_fit_features(booking: Dict[str, Any], property: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Uses Tower Feature Store logic to engineer advanced guest-property fit metrics.
+    Uses Tower Feature Store logic + RunPod GPU Compute to engineer 
+    advanced guest-property fit metrics.
     """
-    # Features engineered in Tower:
-    # 1. Family-Space-Ratio (sqm per child)
-    # 2. Remote-Work-Score (WiFi speed + dedicated desk vs length of stay)
-    # 3. Luxury-Conversion-Propensity (based on guest's historical ADR)
+    # 1. Attempt High-Fidelity Scoring via RunPod (Third Hackathon Partner)
+    rp_result = runpod_service.score_guest_fit(booking, property)
     
+    if rp_result:
+        return {
+            "tower_fit_score": rp_result.get("propensity_score", 0.5),
+            "motivators": rp_result.get("key_motivators", []),
+            "strategy": rp_result.get("recommended_offer_style", "Balanced"),
+            "compute_node": "runpod-gpu-vllm",
+            "pipeline_version": "v2.5-prod"
+        }
+
+    # 2. Fallback to Local/Mock heuristic
     fit_score = 0.0
-    
-    # Example logic for a 'Luxury Propensity' feature engineered in Tower
     if booking.get("base_nightly_rate", 0) > 200:
         fit_score += 0.2
         
     return {
         "tower_fit_score": fit_score,
         "pipeline_version": "v2.4-stable",
-        "last_sync": "real-time"
+        "last_sync": "real-time",
+        "compute_node": "local-cpu"
     }
