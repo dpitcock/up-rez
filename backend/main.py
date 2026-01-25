@@ -16,6 +16,10 @@ load_dotenv() # Fallback to default .env behavior
 
 # Import routers
 from routers import webhook, offers, bot, demo, host
+from database import init_db
+
+# Initialize database (handles migrations)
+init_db()
 
 app = FastAPI(
     title="UpRez API",

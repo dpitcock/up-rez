@@ -1,6 +1,7 @@
 'use client';
-
+import React from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
+import { TrendingUp } from 'lucide-react';
 
 export default function AnalyticsPage() {
     return (

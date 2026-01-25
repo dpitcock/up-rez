@@ -72,31 +72,63 @@ def answer_query_with_llm(
     property_context: str,
     guest_context: Dict[str, Any] = {},
     original_property_context: Optional[str] = None,
+    history: List[Dict[str, str]] = [],
     use_openai: bool = False
 ) -> str:
     """
-    Answer guest question using LLM with property and guest context.
+    Answer guest question using LLM with property, guest context, and memory.
     """
     guest_name = guest_context.get("guest_name", "Valued Guest").split()[0]
     
-    prompt = f"""You are a helpful concierge for a luxury vacation rental. 
-    You are speaking with {guest_name} who is considering an upgrade for their {guest_context.get('nights', '')} night stay.
+    # Calculate Incremental Cost
+    orig_adr = guest_context.get("orig_adr", 0)
+    discussed_pricing = guest_context.get("discussed_pricing", {})
+    offer_adr = discussed_pricing.get("offer_adr", 0)
+    delta_adr = max(0, offer_adr - orig_adr)
     
-    GUEST STAYS: {guest_context.get('arrival_date', 'soon')} to {guest_context.get('departure_date', '')}
-    PARTY: {guest_context.get('adults', 2)} adults, {guest_context.get('children', 0)} children
+    prompt = f"""You are an elite luxury sales concierge. You are speaking with {guest_name} about upgrading their stay.
     
-    ORIGINAL PROPERTY DETAILS:
-    {original_property_context if original_property_context else "Not available"}
+    GUEST CONTEXT:
+    - Staying from {guest_context.get('arrival_date', 'soon')} to {guest_context.get('departure_date', '')}
+    - Original Booking Cost: €{orig_adr}/night (Total: €{guest_context.get('orig_total', 0)})
+    - Upgrade Option currently viewed: {property_context}
+    - INCREMENTAL COST: The guest only pays the difference. For this property, it is ONLY €{delta_adr:.2f} extra per night.
     
-    UPGRADE PROPERTY DETAILS:
-    {property_context}
+    YOUR MISSION:
+    1. Sell the value of the upgrade by focusing on the INCREMENTAL cost (€{delta_adr:.2f}/night), not the total price.
+    2. Be aware of the conversation history provided below.
+    3. Authorized floor for this prop: €{discussed_pricing.get('floor_total', 'N/A')} total stay. (This is the absolute minimum total price).
+    """
+
+    # Add Multi-Offer Context
+    all_options = guest_context.get("all_options", [])
+    if all_options:
+        prompt += "\nOTHER AVAILABLE OPTIONS:\n"
+        for opt in all_options:
+            p = opt.get("pricing", {})
+            d = max(0, p.get("offer_adr", 0) - orig_adr)
+            prompt += f"- {opt['prop_name']}: Just €{d:.2f} more/night. (Floor Total: €{p.get('floor_total')}). Highlights: {', '.join(opt.get('diffs', []))}\n"
+
+    # Format History
+    history_str = ""
+    if history:
+        history_str = "\nCONVERSATION HISTORY:\n"
+        for msg in history[-5:]: # Last 5 turns
+            role = "Guest" if msg["role"] == "user" else "You"
+            history_str += f"{role}: {msg['content']}\n"
+
+    prompt += f"""
+    {history_str}
+    
+    NEGOTIATION RULES:
+    1. Always lead with the "incremental delta" (€{delta_adr:.2f}) to make it feel affordable.
+    2. Suggest other options if this one is too expensive.
+    3. Position concessions as a 'special one-time gesture' from the manager.
+    4. If asked about availability: Remind {guest_name} that it is first-come, first-served. Scarcity is key.
+    5. Be concise (2-3 sentences). Focus on luxury benefits.
+    6. If they agree to a price, YOU MUST END with: 'Let me update that for you... and done! [ACTION:NEGOTIATE:PID:[prop_id]:VAL:[negotiated_total_price]]'
     
     GUEST QUESTION: {question}
-    
-    TASK: Answer {guest_name}'s question concisely (2-3 sentences max). 
-    If they ask about details not in the context, be honest but encouraging. 
-    Focus on comparing the upgrade property to their original choice if relevant.
-    Highlight why the upgrade is a superior choice for their specific needs.
     """
     
     try:
@@ -343,13 +375,16 @@ def generate_full_offer_preview_copy(
         up_imgs = json.loads(up_imgs)
     
     # Important: In Email templates, images MUST be fully qualified URLs
-    # Priority: FRONTEND_URL -> NEXT_PUBLIC_FRONTEND_URL -> local
-    frontend_url = (os.getenv("FRONTEND_URL") or 
+    # Priority: NEXT_PUBLIC_NGROK_URL -> FRONTEND_URL -> NEXT_PUBLIC_FRONTEND_URL -> local
+    frontend_url = (os.getenv("NEXT_PUBLIC_NGROK_URL") or 
+                    os.getenv("FRONTEND_URL") or 
                     os.getenv("NEXT_PUBLIC_FRONTEND_URL") or 
                     "http://localhost:3030").rstrip('/')
 
-    # Allow specific override for images/assets (e.g. CDN or custom domain)
-    image_base_url = (os.getenv("IMAGE_BASE_URL") or frontend_url).rstrip('/')
+    # Priority for images: Frontend Public URL (always available) -> ngrok -> local
+    image_base_url = (os.getenv("NEXT_PUBLIC_FRONTEND_URL") or 
+                      os.getenv("IMAGE_BASE_URL") or 
+                      frontend_url).rstrip('/')
     
     # Ensure image path has single slash
     img_path = up_imgs[0] if up_imgs else ""
@@ -398,13 +433,15 @@ def generate_full_offer_preview_copy(
        - Image: <img src="{hero_img_url}" style="display:block; margin-left:auto; margin-right:auto; width:100%; max-width:600px; border-radius:40px; margin-bottom:40px; box-shadow: 0 40px 100px -30px rgba(0,0,0,1);" alt="The Property">
        - Sales Hook: Use a <h1> like "Your Stay, Elevated."
        - Narrative: Focus on how for *only a small daily amount*, they can upgrade from {original_prop['name']} to the luxury of {upgrade_prop['name']}. 
+       - NEGOTIATION HINT: Add a P sentence: "Our AI Revenue Manager has pre-approved this special rate for you, but it's first-come, first-served."
        - SCARCITY NOTE: Explicitly mention that this unit is in high demand and has been offered to others—first to claim it wins.
        - Offer Card: A <div> with #EA580C background, white text, 48px padding, border-radius: 40px. 
          Prominently show "Only {price_delta_fmt}€ more / night" in 64px bold text.
-       - CTA: A white button with black text: "UNLOCK UPGRADE". Link MUST be exactly "{{OFFER_URL}}".
-       - FOOTER: At the very bottom, in small text (10px, color: #4b5563), show: "Upgrade offer powered by <img src=\"{image_base_url}/up-rez-logo-white.svg\" style=\"height:10px; vertical-align:middle; margin-bottom:2px;\"> UpRez".
+       - CTA: A white button-style link (<a href="{{OFFER_URL}}">) with black text: "UNLOCK UPGRADE". 
+         IMPORTANT: The CTA MUST be an <a> tag with href="{{OFFER_URL}}". Add 40px margin-top to the link or its parent container.
+       - FOOTER: At the very bottom, in small text (10px, color: #4b5563), show: "Upgrade offer powered by UpRez". (Strictly NO logo/SVG images in footer).
     3. landing_hero: (8 words max) Catchy emotional headline.
-    4. landing_summary: 1 persuasive, high-prestige sentence that includes urgency.
+    4. landing_summary: 1 persuasive, high-prestige sentence. Hint that they can "Chat with our concierge" if they have specific requests.
     5. diff_bullets: 3 concrete improvements (e.g. "Private Rooftop Pool").
 
     Output ONLY raw JSON.
@@ -462,10 +499,10 @@ def generate_full_offer_preview_copy(
                     <div style="font-size: 14px; font-weight: 900; text-transform: uppercase; opacity: 0.8; letter-spacing: 2px; margin-bottom: 12px; color: #ffffff;">Upgrade today for only</div>
                     <div style="font-size: 72px; font-weight: 900; letter-spacing: -4px; line-height: 1; color: #ffffff;">{price_delta_fmt}€<span style="font-size: 22px; font-weight: 400; opacity: 0.7; letter-spacing: 0;">/night</span></div>
                 </div>
-                <a href="{{OFFER_URL}}" style="display: inline-block; background-color: #ffffff; color: #000000; padding: 26px 64px; border-radius: 24px; font-weight: 900; text-decoration: none; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; box-shadow: 0 20px 40px rgba(255,255,255,0.15); margin-bottom: 60px;">Unlock Upgrade</a>
+                <a href="{{OFFER_URL}}" style="display: inline-block; background-color: #ffffff; color: #000000; padding: 26px 64px; border-radius: 24px; font-weight: 900; text-decoration: none; text-transform: uppercase; font-size: 16px; letter-spacing: 1px; box-shadow: 0 20px 40px rgba(255,255,255,0.15); margin-bottom: 60px; margin-top: 40px;">Unlock Upgrade</a>
                 
                 <div style="font-size: 10px; color: #444444; border-top: 1px solid #1a1a1a; padding-top: 30px;">
-                    Upgrade offer powered by <img src="{image_base_url}/up-rez-logo-white.svg" style="height: 10px; vertical-align: middle; margin-bottom: 2px; opacity: 0.3;"> UpRez
+                    Upgrade offer powered by UpRez
                 </div>
             </div>
             """,

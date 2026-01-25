@@ -9,20 +9,12 @@ def calculate_offer_pricing(
     to_adr: float,
     nights: int,
     discount_pct: float = 0.40,
-    from_total: float = None
+    from_total: float = None,
+    max_discount_pct: float = 0.55
 ) -> Dict[str, Any]:
     """
     Calculate offer pricing with discount applied to price difference.
-    
-    Args:
-        from_adr: Original property nightly rate
-        to_adr: Upgrade property list nightly rate
-        nights: Number of nights
-        discount_pct: Discount percentage (default 40%)
-        from_total: Original total paid (if different from from_adr * nights)
-        
-    Returns:
-        Dict with pricing details
+    Includes a 'Floor' for AI negotiation that respects host boundaries.
     """
     # Calculate price difference
     price_diff_per_night = to_adr - from_adr
@@ -40,18 +32,29 @@ def calculate_offer_pricing(
         from_total = from_adr * nights
     revenue_lift = offer_total - from_total
     
+    # Calculate "Floor" for AI negotiation (lowest auto-accept)
+    # Rule: Accept 75% of the offer price, but ensure it stays above from_total + buffer
+    floor_total_target = offer_total * 0.75
+    min_floor_total = (from_total or (from_adr * nights)) + (nights * 20.0) # €20/night min lift
+    
+    floor_total = max(floor_total_target, min_floor_total)
+    floor_adr = floor_total / nights
+    
     return {
         "currency": "EUR",
         "from_adr": round(from_adr, 2),
         "to_adr_list": round(to_adr, 2),
         "offer_adr": round(offer_adr, 2),
-        "extra_per_night": round(offer_adr - from_adr, 2), # The 'Only X more' value
+        "extra_per_night": round(offer_adr - from_adr, 2),
         "nights": nights,
         "from_total": round(from_total, 2),
         "offer_total": round(offer_total, 2),
+        "floor_total": round(floor_adr * nights, 2),
+        "floor_adr": round(floor_adr, 2),
         "list_total": round(to_adr * nights, 2),
         "total_extra": round(offer_total - from_total, 2),
         "discount_percent": discount_pct,
+        "discount_max_percent": max_discount_pct,
         "discount_amount_total": round(discount_amount, 2),
         "revenue_lift": round(revenue_lift, 2)
     }

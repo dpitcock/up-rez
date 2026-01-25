@@ -12,6 +12,7 @@ from services.rag_service import (
     extract_property_source
 )
 from database import get_db
+import json
 
 router = APIRouter()
 
@@ -48,7 +49,8 @@ async def bot_query(request: BotQueryRequest):
         cursor = conn.cursor()
         cursor.execute("""
             SELECT o.*, b.guest_name, b.arrival_date, b.departure_date, b.nights, b.adults, b.children, 
-                   b.prop_id as orig_prop_id, h.host_name as pm_name
+                   b.prop_id as orig_prop_id, b.base_nightly_rate as orig_adr, b.total_paid as orig_total,
+                   h.host_name as pm_name
             FROM offers o
             JOIN bookings b ON o.booking_id = b.id
             LEFT JOIN host_settings h ON b.host_id = h.host_id
@@ -65,6 +67,18 @@ async def bot_query(request: BotQueryRequest):
                 if orig_row:
                     original_property_info = dict(orig_row)
             
+            # Extract all offers for comparison awareness
+            try:
+                top3 = json.loads(guest_context.get("top3", "[]"))
+                guest_context["all_options"] = top3
+                
+                # Identify the specific pricing for the property they are currently viewing
+                discussed_pricing = next((opt["pricing"] for opt in top3 if opt["prop_id"] == request.prop_id), None)
+                if discussed_pricing:
+                    guest_context["discussed_pricing"] = discussed_pricing
+            except:
+                pass
+            
     # Build context for both properties
     upgrade_property_context = build_property_context(property_info)
     original_property_context = build_property_context(original_property_info) if original_property_info else None
@@ -72,12 +86,13 @@ async def bot_query(request: BotQueryRequest):
     # Check if using OpenAI or Ollama
     use_openai = os.getenv("USE_OPENAI", "false").lower() == "true"
     
-    # Get answer from LLM with comparison capability
+    # Get answer from LLM with comparison capability and history
     answer = answer_query_with_llm(
         question=request.question,
         property_context=upgrade_property_context,
         guest_context=guest_context, 
         original_property_context=original_property_context,
+        history=request.history,
         use_openai=use_openai
     )
     

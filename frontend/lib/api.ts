@@ -123,6 +123,14 @@ export async function apiClient(path: string, options?: RequestInit) {
             if (path.includes('/demo/properties')) return demoData.properties;
             if (path.includes('/settings')) return demoData.host_settings;
             if (path.includes('/templates')) return []; // Mock empty templates for demo
+            if (path.includes('/api/admin/offers')) {
+                // Map the offers object to an array for the dashboard
+                return Object.values(demoData.offers || {}).map((o: any) => ({
+                    ...o,
+                    guest_name: o.original_booking?.guest_name || "Demo Guest",
+                    prop_name: o.options?.[0]?.prop_name || "Demo Property"
+                }));
+            }
 
             return demoData;
         } catch (fallbackErr) {
@@ -144,11 +152,11 @@ export async function triggerDemo(type: 'cron' | 'cancellation', bookingId?: num
     });
 }
 
-export async function queryBot(offerId: string, propId: string, question: string) {
+export async function queryBot(offerId: string, propId: string, question: string, history: any[] = []) {
     return apiClient(`/bot/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offer_id: offerId, prop_id: propId, question })
+        body: JSON.stringify({ offer_id: offerId, prop_id: propId, question, history })
     });
 }
 

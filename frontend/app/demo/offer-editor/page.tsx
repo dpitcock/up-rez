@@ -143,6 +143,7 @@ export default function OfferEditorPage() {
 
     const origProp = properties.find(p => p.id === selectedOrig);
     const upProp = properties.find(p => p.id === selectedUp);
+    const currentPropRate = preview?.pricing?.from_adr || origProp?.list_nightly_rate || 0;
 
     const handleSendTestEmail = async () => {
         if (!preview) return;

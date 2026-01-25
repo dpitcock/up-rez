@@ -40,7 +40,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
                 <div className="flex flex-col h-full">
                     {/* Logo */}
                     <div className="flex items-center gap-3 px-6 py-6 border-b border-slate-100 dark:border-white/5">
-                        <div className="w-8 h-8 rounded-lg bg-orange-600 flex items-center justify-center text-white font-black text-xl">U</div>
+                        <Image src="/logo.svg" alt="UpRez Logo" width={32} height={32} />
                         <span className="text-xl font-black text-slate-900 dark:text-white tracking-tighter italic uppercase">UpRez</span>
                     </div>
 

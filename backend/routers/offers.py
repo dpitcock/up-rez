@@ -19,10 +19,19 @@ async def list_offers():
     with get_db() as conn:
         cursor = conn.cursor()
         cursor.execute("""
-            SELECT o.*, b.guest_name, p.name as prop_name
+            SELECT 
+                o.*, 
+                b.guest_name, 
+                p.name as prop_name,
+                b.upgraded_from_prop_id,
+                b.original_base_rate,
+                b.original_total_paid,
+                b.upgrade_at,
+                orig.name as original_prop_name
             FROM offers o
             JOIN bookings b ON o.booking_id = b.id
             JOIN properties p ON b.prop_id = p.id
+            LEFT JOIN properties orig ON b.upgraded_from_prop_id = orig.id
             ORDER BY o.created_at DESC
         """)
         rows = cursor.fetchall()
@@ -74,7 +83,13 @@ async def accept_offer(offer_id: str, request: AcceptOffer):
         if datetime.now(timezone.utc) > expires_at:
             raise HTTPException(status_code=400, detail="Offer has expired")
 
-        # 2. Get pricing for the selected option
+        # 2. Get original booking and pricing for the selected option
+        cursor.execute("SELECT * FROM bookings WHERE id = ?", (offer["booking_id"],))
+        booking_row = cursor.fetchone()
+        if not booking_row:
+            raise HTTPException(status_code=404, detail="Booking not found")
+        booking = dict(booking_row)
+
         try:
             top3 = json.loads(offer["top3"])
             selected_option = next((opt for opt in top3 if opt["prop_id"] == request.prop_id), None)
@@ -82,15 +97,18 @@ async def accept_offer(offer_id: str, request: AcceptOffer):
                 raise HTTPException(status_code=404, detail="Selected property not found in offer")
                 
             payment_amount = selected_option["pricing"]["offer_total"]
+            new_adr = selected_option["pricing"]["offer_adr"]
         except Exception as e:
             print(f"Error parsing offer data: {e}")
             payment_amount = 0
+            new_adr = 0
 
         # 3. Generate Artifacts
         confirmation_num = f"UREZ-{str(uuid.uuid4())[:8].upper()}"
         now = datetime.now(timezone.utc).isoformat() + "Z"
         
-        # 4. Update Database
+        # 4. Update Tables (Atomicish)
+        # Update Offer
         cursor.execute("""
             UPDATE offers 
             SET status = 'accepted', 
@@ -100,15 +118,49 @@ async def accept_offer(offer_id: str, request: AcceptOffer):
                 payment_amount = ?
             WHERE id = ?
         """, (now, confirmation_num, request.prop_id, payment_amount, offer_id))
+
+        # Update Booking with Audit Trail
+        cursor.execute("""
+            UPDATE bookings
+            SET upgraded_from_prop_id = ?,
+                original_base_rate = ?,
+                original_total_paid = ?,
+                upgrade_at = ?,
+                prop_id = ?,
+                base_nightly_rate = ?,
+                total_paid = ?,
+                updated_at = ?
+            WHERE id = ?
+        """, (
+            booking["prop_id"], 
+            booking["base_nightly_rate"], 
+            booking["total_paid"], 
+            now,
+            request.prop_id,
+            new_adr,
+            payment_amount,
+            now,
+            booking["id"]
+        ))
         
         conn.commit()
+
+        # 5. Send Confirmation Email
+        from services.email_service import send_upgrade_confirmation_email
+        send_upgrade_confirmation_email(
+            to_email=booking["guest_email"],
+            guest_name=booking["guest_name"],
+            new_prop_name=selected_option["prop_name"],
+            confirmation_num=confirmation_num,
+            total_paid=payment_amount
+        )
         
         return {
             "success": True,
             "confirmation_number": confirmation_num,
-            "message": "Congratulations! Processing your upgrade...",
-            "payment_url": f"/pay/{offer_id}", # Next step for the guest
-            "next_steps": "Complete payment to finalize."
+            "message": "Congratulations! Your upgrade is confirmed.",
+            "payment_url": f"/pay/{offer_id}", # Redirect to success/receipt
+            "next_steps": "Your new confirmation has been sent to your email."
         }
 
 
@@ -233,3 +285,52 @@ async def regenerate_offer(
             "message": "Regeneration successful (simulated)",
             "options": top3
         }
+@router.post("/api/offer/{offer_id}/negotiate")
+async def negotiate_offer(
+    offer_id: str,
+    prop_id: str,
+    new_price: float
+):
+    """
+    Finalize a negotiated price update for an offer option.
+    """
+    with get_db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM offers WHERE id = ?", (offer_id,))
+        offer_row = cursor.fetchone()
+        if not offer_row:
+            raise HTTPException(status_code=404, detail="Offer not found")
+        
+        offer = dict(offer_row)
+        top3 = json.loads(offer["top3"])
+        
+        # Find and update the specific option
+        found = False
+        for opt in top3:
+            if opt["prop_id"] == prop_id:
+                # Update current ADR and Total based on new_price (total)
+                nights = opt["pricing"]["nights"]
+                opt["pricing"]["offer_total"] = new_price
+                opt["pricing"]["offer_adr"] = round(new_price / nights, 2)
+                opt["pricing"]["is_negotiated"] = True
+                found = True
+                break
+        
+        if not found:
+            raise HTTPException(status_code=404, detail="Property not found in offer")
+
+        # Update the database
+        cursor.execute("""
+            UPDATE offers 
+            SET top3 = ?, 
+                email_subject = ?,
+                status = 'negotiated'
+            WHERE id = ?
+        """, (
+            json.dumps(top3), 
+            f"DEAL SECURED: We've unlocked your custom rate for {offer_id[:4]}", 
+            offer_id
+        ))
+        conn.commit()
+        
+        return {"status": "ok", "message": "Offer updated with negotiated price"}

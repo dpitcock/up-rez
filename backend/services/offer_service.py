@@ -218,15 +218,67 @@ def generate_offer(booking_id: str) -> Optional[str]:
                 use_openai=bool(host_settings.get("use_openai_for_copy", False))
             )
             
-            # Parse images
-            images = candidate.get("images", [])
+            # Parse amenities, metadata, and images
+            amenities = candidate.get("amenities", [])
+            if isinstance(amenities, str):
+                amenities = json.loads(amenities) if amenities else []
+                
+            metadata = candidate.get("metadata", {})
+            if isinstance(metadata, str):
+                metadata = json.loads(metadata) if metadata else {}
+
+            images = candidate.get("images", "[]")
             if isinstance(images, str):
-                images = json.loads(images) if images else []
+                try:
+                    images = json.loads(images)
+                except:
+                    images = []
             
+            location_data = candidate.get("location", "")
+            if isinstance(location_data, str):
+                try:
+                    location_json = json.loads(location_data)
+                    location_str = f"{location_json.get('neighborhood', '')}, {location_json.get('city', '')}"
+                except:
+                    location_str = location_data
+            else:
+                location_str = str(location_data)
+
+            # Parse complex fields
+            suitability = candidate.get("suitability", "{}")
+            if isinstance(suitability, str):
+                try:
+                    suitability = json.loads(suitability)
+                except:
+                    suitability = {}
+            
+            house_rules = candidate.get("house_rules", "{}")
+            if isinstance(house_rules, str):
+                try:
+                    house_rules = json.loads(house_rules)
+                except:
+                    house_rules = {}
+
             option = {
                 "ranking": 0,  # Will be set after sorting
                 "prop_id": candidate["id"],
                 "prop_name": candidate["name"],
+                "location": location_str,
+                "beds": candidate["beds"],
+                "baths": candidate["baths"],
+                "type": candidate.get("type"),
+                "category": candidate.get("category"),
+                "max_guests": candidate.get("max_guests"),
+                "bedrooms": candidate.get("bedrooms"),
+                "size_sqm": candidate.get("size_sqm"),
+                "floor": candidate.get("floor"),
+                "elevator": candidate.get("elevator"),
+                "view": candidate.get("view"),
+                "noise_level": candidate.get("noise_level"),
+                "suitability": suitability,
+                "house_rules": house_rules,
+                "description_short": candidate.get("description_short"),
+                "description_long": candidate.get("description_long"),
                 "viability_score": final_score,
                 "tower_context": {
                     "market_multiplier": market_multiplier,
@@ -238,6 +290,8 @@ def generate_offer(booking_id: str) -> Optional[str]:
                 "summary": ai_data.get("landing_summary", summary),
                 "ai_copy": ai_data, # Store the whole package
                 "images": images,
+                "amenities": amenities,
+                "metadata": metadata,
                 "availability": {
                     "available": True,
                     "reason": None
@@ -286,10 +340,14 @@ def generate_offer(booking_id: str) -> Optional[str]:
         email_body = top_option.get("ai_copy", {}).get("email_html", "")
         
         # Inject Offer URL
-        frontend_url = os.getenv("NEXT_PUBLIC_FRONTEND_URL") or "http://localhost:3030"
-        frontend_url = frontend_url.rstrip('/')
-        offer_url = f"{frontend_url}/offer/{offer_id}"
-        email_body = email_body.replace("{OFFER_URL}", offer_url)
+        base_url = (os.getenv("NEXT_PUBLIC_NGROK_URL") or 
+                    os.getenv("NEXT_PUBLIC_FRONTEND_URL") or 
+                    "http://localhost:3030").rstrip('/')
+        offer_url = f"{base_url}/offer/{offer_id}"
+        # Robust placeholder replacement for all common formats
+        placeholders = ["{{OFFER_URL}}", "{{ OFFER_URL }}", "{OFFER_URL}", "{ OFFER_URL }"]
+        for p in placeholders:
+            email_body = email_body.replace(p, offer_url)
 
         cursor = conn.cursor()
         cursor.execute("""

@@ -67,12 +67,31 @@ class UpgradeOption(BaseModel):
     ranking: int
     prop_id: str
     prop_name: str
+    location: Optional[str] = None
+    beds: Optional[int] = None
+    baths: Optional[int] = None
+    type: Optional[str] = None
+    category: Optional[str] = None
+    max_guests: Optional[int] = None
+    bedrooms: Optional[int] = None
+    size_sqm: Optional[int] = None
+    floor: Optional[int] = None
+    elevator: Optional[int] = None
+    view: Optional[str] = None
+    noise_level: Optional[str] = None
+    suitability: Optional[Dict[str, Any]] = {}
+    house_rules: Optional[Dict[str, Any]] = {}
+    description_short: Optional[str] = None
+    description_long: Optional[str] = None
     viability_score: float
     pricing: PricingDetails
     diffs: List[str]
     headline: str
     summary: str
     images: List[str]
+    ai_copy: Optional[Dict[str, Any]] = {}
+    amenities: List[str] = []
+    metadata: Dict[str, Any] = {}
     availability: Dict[str, Any]
 
 
@@ -106,6 +125,7 @@ class BotQueryRequest(BaseModel):
     offer_id: str
     prop_id: str
     question: str
+    history: Optional[List[Dict[str, str]]] = []
 
 
 class BotQueryResponse(BaseModel):

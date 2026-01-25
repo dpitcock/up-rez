@@ -28,6 +28,19 @@ def create_schema(conn):
         baths INTEGER NOT NULL,
         list_nightly_rate REAL NOT NULL,
         amenities TEXT NOT NULL,
+        type TEXT,
+        category TEXT,
+        max_guests INTEGER,
+        bedrooms INTEGER,
+        size_sqm INTEGER,
+        floor INTEGER,
+        elevator INTEGER,
+        view TEXT,
+        noise_level TEXT,
+        suitability TEXT,
+        house_rules TEXT,
+        description_short TEXT,
+        description_long TEXT,
         metadata TEXT,
         images TEXT,
         created_at TEXT NOT NULL,
@@ -130,16 +143,31 @@ def load_properties(conn):
         cursor.execute("""
         INSERT INTO properties 
         (id, name, location, beds, baths, list_nightly_rate, 
-         amenities, metadata, images, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         amenities, type, category, max_guests, bedrooms, size_sqm,
+         floor, elevator, view, noise_level, suitability, house_rules,
+         description_short, description_long, metadata, images, created_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
             prop["id"],
             prop["name"],
             json.dumps(prop["location"]),
             prop["beds"],
             prop["baths"],
-            prop["price"],  # Using 'price' as the list rate
+            prop["price"],
             json.dumps(prop["amenities"]),
+            prop.get("type"),
+            prop.get("category"),
+            prop.get("maxGuests"),
+            prop.get("bedrooms"),
+            prop.get("sizeSqm"),
+            prop.get("floor"),
+            1 if prop.get("elevator") else 0,
+            prop.get("view"),
+            prop.get("noiseLevel"),
+            json.dumps(prop.get("suitability", {})),
+            json.dumps(prop.get("houseRules", {})),
+            prop.get("descriptionShort"),
+            prop.get("descriptionLong"),
             json.dumps(prop.get("metadata", {})),
             json.dumps(prop.get("images", [])),
             now

@@ -15,9 +15,10 @@ interface ChatbotProps {
     propId: string;
     propName: string;
     guestName?: string;
+    onNegotiated?: () => void;
 }
 
-export default function Chatbot({ offerId, propId, propName, guestName }: ChatbotProps) {
+export default function Chatbot({ offerId, propId, propName, guestName, onNegotiated }: ChatbotProps) {
     const [isOpen, setIsOpen] = useState(false);
     const [input, setInput] = useState('');
     const [messages, setMessages] = useState<Message[]>([
@@ -57,11 +58,34 @@ export default function Chatbot({ offerId, propId, propName, guestName }: Chatbo
         setIsLoading(true);
 
         try {
-            const response = await queryBot(offerId, propId, userMsg);
+            // Convert history for backend
+            const history = messages.map(m => ({ role: m.role, content: m.content }));
+            const response = await queryBot(offerId, propId, userMsg, history);
+            let finalAnswer = response.answer || "I'm sorry, I couldn't process that request.";
+
+            // Check for explicit negotiation action
+            const actionMatch = finalAnswer.match(/\[ACTION:NEGOTIATE:PID:([^:]+):VAL:([^\]]+)\]/);
+
+            if (actionMatch) {
+                const pid = actionMatch[1];
+                const price = parseFloat(actionMatch[2]);
+
+                // Call backend to update the database state
+                const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080'}/api/offer/${offerId}/negotiate?prop_id=${pid}&new_price=${price}`, {
+                    method: 'POST',
+                });
+
+                if (res.ok && onNegotiated) {
+                    onNegotiated();
+                }
+
+                // Clean the raw command tag out of the bot message
+                finalAnswer = finalAnswer.replace(/\[ACTION:NEGOTIATE:[^\]]+\]/, '').trim();
+            }
 
             const botMsg: Message = {
                 role: 'bot',
-                content: response.answer || "I'm sorry, I couldn't process that request.",
+                content: finalAnswer,
                 timestamp: new Date(),
             };
 
@@ -125,8 +149,8 @@ export default function Chatbot({ offerId, propId, propName, guestName }: Chatbo
                             >
                                 <div
                                     className={`relative max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${msg.role === 'user'
-                                            ? 'bg-orange-600 text-white rounded-tr-none'
-                                            : 'bg-white/5 text-gray-200 border border-white/5 rounded-tl-none'
+                                        ? 'bg-orange-600 text-white rounded-tr-none'
+                                        : 'bg-white/5 text-gray-200 border border-white/5 rounded-tl-none'
                                         }`}
                                 >
                                     <div className="flex items-center gap-1.5 mb-1 opacity-50 uppercase text-[9px] font-black tracking-widest">

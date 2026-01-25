@@ -3,8 +3,11 @@
 import { useState, useEffect } from 'react';
 import DashboardLayout from '@/components/DashboardLayout';
 import { listOffers, expireOffer } from '@/lib/api';
-import { ExternalLink, Clock, Trash2, CheckCircle2, XCircle } from 'lucide-react';
+import { ExternalLink, Clock, Trash2, CheckCircle2, XCircle, RefreshCcw } from 'lucide-react';
 import Link from 'next/link';
+
+// Simple cn utility
+const cn = (...classes: any[]) => classes.filter(Boolean).join(' ');
 
 export default function OffersPage() {
     const [offers, setOffers] = useState<any[]>([]);
@@ -13,7 +16,7 @@ export default function OffersPage() {
     const loadOffers = async () => {
         try {
             const data = await listOffers();
-            setOffers(data);
+            setOffers(Array.isArray(data) ? data : []);
         } catch (err) {
             console.error("Failed to load offers", err);
         } finally {
@@ -119,9 +122,25 @@ export default function OffersPage() {
                                         <td className="px-8 py-6">
                                             <div className="text-sm font-bold text-slate-900 dark:text-white mb-0.5">{offer.guest_name}</div>
                                             <div className="text-[10px] text-slate-400 dark:text-gray-500 font-mono tracking-tighter uppercase">{offer.id.slice(0, 12)}</div>
+                                            {offer.status === 'accepted' && offer.upgrade_at && (
+                                                <div className="mt-2 text-[8px] font-black uppercase text-green-600 tracking-widest flex items-center gap-1">
+                                                    <CheckCircle2 className="w-2 h-2" />
+                                                    Finalized {new Date(offer.upgrade_at).toLocaleDateString()}
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-8 py-6">
-                                            <div className="text-sm text-slate-600 dark:text-gray-300 font-bold italic tracking-tight uppercase">{offer.prop_name}</div>
+                                            <div className="text-sm text-slate-600 dark:text-gray-300 font-bold italic tracking-tight uppercase mb-1">{offer.prop_name}</div>
+                                            {offer.status === 'accepted' && offer.original_prop_name && (
+                                                <div className="flex flex-col gap-1">
+                                                    <div className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                                                        Upgraded from: <span className="text-slate-500 line-through decoration-slate-300 decoration-1">{offer.original_prop_name}</span>
+                                                    </div>
+                                                    <div className="text-[9px] font-black text-orange-500 uppercase tracking-widest">
+                                                        Revenue Lift: +€{Math.round(offer.payment_amount - (offer.original_total_paid || 0))}
+                                                    </div>
+                                                </div>
+                                            )}
                                         </td>
                                         <td className="px-8 py-6">
                                             <StatusBadge offer={offer} />
@@ -144,7 +163,7 @@ export default function OffersPage() {
                                                 >
                                                     <ExternalLink className="w-4 h-4" />
                                                 </Link>
-                                                {new Date(offer.expires_at) > new Date() && offer.status !== 'expired' && (
+                                                {new Date(offer.expires_at) > new Date() && offer.status !== 'accepted' && offer.status !== 'expired' && (
                                                     <button
                                                         onClick={() => handleExpire(offer.id)}
                                                         className="p-3 rounded-xl bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-500 hover:bg-red-600 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition-all shadow-sm border border-red-100 dark:border-red-500/20"
