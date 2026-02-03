@@ -23,6 +23,7 @@ import { apiClient } from '@/lib/api';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useLogs } from '@/context/LogContext';
 import EmailPreviewModal from '@/components/EmailPreviewModal';
+import OfferSuccessDialog from '@/components/OfferSuccessDialog';
 
 interface ReadyBooking {
     id: string;
@@ -47,6 +48,9 @@ export default function DemoPage() {
     const [loading, setLoading] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [previewOffer, setPreviewOffer] = useState<any>(null);
+    const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+    const [successOfferId, setSuccessOfferId] = useState<string>('');
+    const [successGuestName, setSuccessGuestName] = useState<string>('');
 
     useEffect(() => {
         refreshData();
@@ -72,6 +76,7 @@ export default function DemoPage() {
         setLoading(true);
         const isTrigger = endpoint.includes('trigger');
         const isClientOnly = process.env.NEXT_PUBLIC_DEMO_MODE === 'client_only';
+        const useOpenAI = process.env.NEXT_PUBLIC_USE_OPENAI === 'true';
 
         if (isTrigger) {
             addLog("AI Engine analyzing inventory availability...", "info");
@@ -93,11 +98,23 @@ export default function DemoPage() {
             if (data) {
                 if (data.offer_id) {
                     addLog(`Offer generated! Preparing preview...`, "success");
-                    // Fetch full offer details for the preview
-                    const offerDetails = await apiClient(`/offer/${data.offer_id}`);
-                    if (offerDetails) {
-                        setPreviewOffer(offerDetails);
-                        setShowPreview(true);
+
+                    if (useOpenAI) {
+                        setSuccessOfferId(data.offer_id);
+                        // Try to find the guest name from our local state
+                        const bookingId = body?.booking_id;
+                        const guest = readyBookings.cron_ready.find((b: ReadyBooking) => b.id === bookingId) ||
+                            readyBookings.cancellation_ready.find((b: ReadyBooking) => b.id === bookingId);
+                        if (guest) setSuccessGuestName(guest.guest_name);
+
+                        setShowSuccessDialog(true);
+                    } else {
+                        // Fetch full offer details for the preview
+                        const offerDetails = await apiClient(`/offer/${data.offer_id}`);
+                        if (offerDetails) {
+                            setPreviewOffer(offerDetails);
+                            setShowPreview(true);
+                        }
                     }
                 } else {
                     addLog(data.message || "Action completed successfully", "success");
@@ -362,6 +379,14 @@ export default function DemoPage() {
                 isOpen={showPreview}
                 onClose={() => setShowPreview(false)}
                 offer={previewOffer}
+            />
+
+            {/* Success Dialog (OpenAI Mode) */}
+            <OfferSuccessDialog
+                isOpen={showSuccessDialog}
+                onClose={() => setShowSuccessDialog(false)}
+                offerId={successOfferId}
+                guestName={successGuestName}
             />
         </DashboardLayout>
     );

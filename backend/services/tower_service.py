@@ -1,17 +1,17 @@
 """
-Tower Integration Service.
-Simulates calling Tower.dev pipelines for real-time market data 
-and feature engineering to improve upgrade targeting.
+Mock Tower Integration Service.
+Provides simulated market data and feature engineering without actual Tower API calls.
 """
 import random
 from typing import Dict, Any
 
+
 def get_tower_market_demand(location_str: str) -> float:
     """
-    Simulates fetching real-time market demand via Tower for a specific airport zone.
-    Focuses on PMI (Mallorca) as the primary hub.
+    Returns mock real-time market demand for a specific airport zone.
+    Simulates what Tower.dev pipelines would provide.
     """
-    # Mapping logic for Tower's airport-centric pipelines
+    # Mapping logic for mock airport-centric pipelines
     location_to_airport = {
         "Mallorca": "PMI",
         "Palma": "PMI",
@@ -21,13 +21,13 @@ def get_tower_market_demand(location_str: str) -> float:
     }
 
     # Extract primary identifier
-    airport_code = "PMI" # Default for this speciality
+    airport_code = "PMI"  # Default for this speciality
     for loc, code in location_to_airport.items():
         if loc.lower() in location_str.lower():
             airport_code = code
             break
 
-    # Tower-engineered demand factors indexed by Airport Code
+    # Mock demand factors indexed by Airport Code
     demand_by_airport = {
         "PMI": 1.45,  # High seasonal demand for Mallorca
         "BER": 1.15,
@@ -36,35 +36,61 @@ def get_tower_market_demand(location_str: str) -> float:
     }
     
     base_demand = demand_by_airport.get(airport_code, 1.0)
+    # Add slight variance for realism
     return base_demand + (random.random() * 0.05)
 
-from services.runpod_service import runpod_service
 
 def engineer_guest_fit_features(booking: Dict[str, Any], property: Dict[str, Any]) -> Dict[str, Any]:
     """
-    Uses Tower Feature Store logic + RunPod GPU Compute to engineer 
-    advanced guest-property fit metrics.
+    Returns mock feature-engineered guest-property fit metrics.
+    Simulates Tower Feature Store + RunPod GPU compute results.
     """
-    # 1. Attempt High-Fidelity Scoring via RunPod (Third Hackathon Partner)
-    rp_result = runpod_service.score_guest_fit(booking, property)
+    # Generate mock fit score based on booking characteristics
+    fit_score = 0.35  # Base score
     
-    if rp_result:
-        return {
-            "tower_fit_score": rp_result.get("propensity_score", 0.5),
-            "motivators": rp_result.get("key_motivators", []),
-            "strategy": rp_result.get("recommended_offer_style", "Balanced"),
-            "compute_node": "runpod-gpu-vllm",
-            "pipeline_version": "v2.5-prod"
-        }
-
-    # 2. Fallback to Local/Mock heuristic
-    fit_score = 0.0
+    # Boost for higher-value bookings
     if booking.get("base_nightly_rate", 0) > 200:
-        fit_score += 0.2
-        
+        fit_score += 0.25
+    elif booking.get("base_nightly_rate", 0) > 100:
+        fit_score += 0.15
+    
+    # Boost for families
+    if booking.get("children", 0) > 0:
+        fit_score += 0.1
+    
+    # Boost for longer stays
+    if booking.get("nights", 0) >= 7:
+        fit_score += 0.1
+    
+    # Cap at realistic maximum
+    fit_score = min(0.85, fit_score)
+    
+    # Add slight variance
+    fit_score += random.random() * 0.1
+    
+    # Generate motivators
+    motivators = []
+    if property.get("pool"):
+        motivators.append("pool_access")
+    if property.get("beds", 0) >= 3:
+        motivators.append("extra_space")
+    prop_category = property.get("category", "").lower()
+    if "luxury" in prop_category or "premium" in prop_category:
+        motivators.append("premium_experience")
+    
+    # Determine strategy
+    if fit_score > 0.6:
+        strategy = "Premium Push"
+    elif fit_score > 0.4:
+        strategy = "Balanced"
+    else:
+        strategy = "Value Focused"
+    
     return {
-        "tower_fit_score": fit_score,
-        "pipeline_version": "v2.4-stable",
+        "tower_fit_score": round(fit_score, 3),
+        "motivators": motivators if motivators else ["general_upgrade"],
+        "strategy": strategy,
+        "pipeline_version": "mock-v2.5-stable",
         "last_sync": "real-time",
-        "compute_node": "local-cpu"
+        "compute_node": "mock-cpu-local"
     }

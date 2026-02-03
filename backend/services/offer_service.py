@@ -103,6 +103,11 @@ def get_host_settings(conn, host_id: str) -> Dict[str, Any]:
     
     if row:
         settings = dict(row)
+        # Global override via environment variable
+        env_openai = os.getenv("USE_OPENAI") == "true" or os.getenv("NEXT_PUBLIC_USE_OPENAI") == "true"
+        if env_openai:
+            settings["use_openai_for_copy"] = True
+            
         # Parse JSON fields
         if settings.get("blocked_prop_ids"):
             try:
@@ -118,7 +123,7 @@ def get_host_settings(conn, host_id: str) -> Dict[str, Any]:
         "min_revenue_lift_eur_per_night": 30.0,
         "max_adr_multiplier": 2.5,
         "offer_validity_hours": 48,
-        "use_openai_for_copy": False,
+        "use_openai_for_copy": os.getenv("USE_OPENAI") == "true" or os.getenv("NEXT_PUBLIC_USE_OPENAI") == "true",
         "local_llm_model": "gemma3:latest"
     }
 

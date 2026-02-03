@@ -21,7 +21,12 @@ async def get_host_settings(host_id: str):
         cursor.execute("SELECT * FROM host_settings WHERE host_id = ?", (host_id,))
         row = cursor.fetchone()
         if row:
-            return dict(row)
+            settings = dict(row)
+            import os
+            env_openai = os.getenv("USE_OPENAI") == "true" or os.getenv("NEXT_PUBLIC_USE_OPENAI") == "true"
+            if env_openai:
+                settings["use_openai_for_copy"] = True
+            return settings
         raise HTTPException(status_code=404, detail="Host settings not found")
 
 @router.patch("/{host_id}/settings")

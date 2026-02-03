@@ -80,7 +80,11 @@ async def get_offer_preview(req: PreviewRequest):
         # 2. Get LLM setting
         cursor.execute("SELECT use_openai_for_copy, local_llm_model, pm_company_name FROM host_settings WHERE host_id = 'demo_host_001'")
         set_row = cursor.fetchone()
-        use_openai = bool(set_row[0]) if set_row else False
+        
+        # Global override via environment variable
+        env_openai = os.getenv("USE_OPENAI") == "true" or os.getenv("NEXT_PUBLIC_USE_OPENAI") == "true"
+        use_openai = env_openai or (bool(set_row[0]) if set_row else False)
+        
         local_model = set_row[1] if set_row and set_row[1] else "gemma3:latest"
         pm_name = set_row[2] if set_row and set_row[2] else "@luxury_stays"
         
@@ -131,13 +135,17 @@ async def get_demo_settings():
         cursor = conn.cursor()
         cursor.execute("SELECT use_openai_for_copy, local_llm_model, pm_company_name FROM host_settings WHERE host_id = 'demo_host_001'")
         row = cursor.fetchone()
+        
+        # Global override via environment variable
+        env_openai = os.getenv("USE_OPENAI") == "true" or os.getenv("NEXT_PUBLIC_USE_OPENAI") == "true"
+        
         if row:
             return {
-                "use_openai": bool(row[0]),
+                "use_openai": env_openai or bool(row[0]),
                 "local_model": row[1] or "gemma2:2b",
                 "pm_company_name": row[2] or "@luxury_stays"
             }
-        return {"use_openai": False, "local_model": "gemma3:latest", "pm_company_name": "@luxury_stays"}
+        return {"use_openai": env_openai, "local_model": "gemma3:latest", "pm_company_name": "@luxury_stays"}
 
 @router.post("/settings")
 async def update_demo_settings(settings: DemoSettings):
@@ -233,6 +241,25 @@ async def normalize_demo_dates():
     except subprocess.CalledProcessError as e:
         raise HTTPException(status_code=500, detail=f"Normalization failed: {e.stderr}")
 
+@router.post("/trigger")
+async def handle_demo_trigger(payload: DemoTriggerPayload):
+    """
+    Unified trigger endpoint for the demo frontend.
+    Dispatches to the correct logic based on payload.type.
+    """
+    if payload.type == 'cron':
+        if not payload.booking_id:
+            raise HTTPException(status_code=400, detail="booking_id required for cron trigger")
+        return await trigger_cron(booking_id=payload.booking_id)
+    
+    elif payload.type == 'cancellation':
+        if not payload.booking_id:
+            raise HTTPException(status_code=400, detail="booking_id required for cancellation trigger")
+        return await trigger_cancellation(booking_id=payload.booking_id)
+    
+    else:
+        raise HTTPException(status_code=400, detail=f"Unknown trigger type: {payload.type}")
+
 @router.post("/trigger/cron")
 async def trigger_cron(booking_id: str = Query(..., description="Booking ID to trigger for")):
     """Trigger a 7-day pre-arrival upsell offer."""
@@ -318,6 +345,24 @@ async def trigger_cancellation(booking_id: str = Query(..., description="Premium
         # 4. Trigger offer for the budget guest
         offer_id = generate_offer(budget["id"])
         
+        if offer_id:
+            # Fetch the generated email content
+            cursor.execute("SELECT email_subject, email_body_html FROM offers WHERE id = ?", (offer_id,))
+            offer_row = cursor.fetchone()
+            if offer_row:
+                # Fetch target guest email
+                cursor.execute("SELECT guest_email FROM bookings WHERE id = ?", (budget["id"],))
+                guest_res = cursor.fetchone()
+                guest_email = guest_res[0] if guest_res else "guest@example.com"
+
+                from services.email_service import send_test_email
+                print(f"Sending cancellation recovery email to {guest_email}...")
+                send_test_email(
+                    to_email=guest_email,
+                    subject=offer_row[0],
+                    html_content=offer_row[1]
+                )
+        
     return {
         "status": "ok", 
         "cancelled_booking": booking_id,
@@ -401,27 +446,22 @@ async def send_email_endpoint(payload: dict):
 
 @router.post("/tower/run")
 async def run_tower_pipelines():
-    """Triggers the Tower data-pond pipelines via Docker exec."""
+    """Returns mock results for Tower data-pond pipelines (Tower integration removed)."""
     pipelines = ["pipelines/demand_pipeline.py", "pipelines/fit_score_pipeline.py", "pipelines/timing_pipeline.py"]
     results = []
     
     for p in pipelines:
-        try:
-            # We use docker-compose to target the sibling container
-            cmd = ["docker-compose", "exec", "-T", "data-pond", "python", p]
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=30)
-            results.append({
-                "pipeline": p,
-                "status": "success" if res.returncode == 0 else "failed",
-                "output": res.stdout[-200:] # Last 200 chars
-            })
-        except Exception as e:
-            results.append({"pipeline": p, "status": "error", "message": str(e)})
+        results.append({
+            "pipeline": p,
+            "status": "success",
+            "output": f"[MOCK] Pipeline {p} completed successfully. Processed 150 records."
+        })
             
     return {
         "status": "complete",
         "timestamp": datetime.now(timezone.utc).isoformat(),
-        "runs": results
+        "runs": results,
+        "note": "Mock mode - Tower integration removed"
     }
 
 @router.post("/demo/frontend-build")
@@ -441,12 +481,12 @@ async def run_frontend_build():
 
 @router.post("/runpod/hammer")
 async def handle_runpod_hammer(count: int = 50):
-    """Generates synthetic traffic for RunPod GPU monitoring."""
-    import subprocess
-    script = SCRIPTS_DIR / "hammer_runpod.py"
-    # Run in background to avoid timeout
-    subprocess.Popen(["python3", str(script)])
-    return {"status": "started", "message": f"Generating {count} requests to RunPod in background."}
+    """Returns mock response (RunPod integration removed)."""
+    return {
+        "status": "mock",
+        "message": f"[MOCK] Would have generated {count} requests to RunPod.",
+        "note": "RunPod integration has been removed. Scoring is now fully mocked."
+    }
 
 @router.get("/tower/stats")
 async def get_tower_stats():

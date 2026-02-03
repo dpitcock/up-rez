@@ -84,7 +84,7 @@ async def bot_query(request: BotQueryRequest):
     original_property_context = build_property_context(original_property_info) if original_property_info else None
     
     # Check if using OpenAI or Ollama
-    use_openai = os.getenv("USE_OPENAI", "false").lower() == "true"
+    use_openai = (os.getenv("USE_OPENAI", "false").lower() == "true") or (os.getenv("NEXT_PUBLIC_USE_OPENAI", "false").lower() == "true")
     
     # Get answer from LLM with comparison capability and history
     answer = answer_query_with_llm(

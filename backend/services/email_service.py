@@ -59,6 +59,8 @@ def send_with_sendgrid(to_email: str, subject: str, html_content: str) -> bool:
         
     except Exception as e:
         print(f"❌ SendGrid error: {e}")
+        if hasattr(e, 'body'):
+            print(f"   Error Body: {e.body}")
         return False
 
 

@@ -47,16 +47,6 @@ services:
     networks:
       - uprez-network
 
-  data-pond:
-    build:
-      context: .
-      dockerfile: data-pond/Dockerfile
-    volumes:
-      - ./data-pond:/data-pond
-      - ./scripts:/scripts
-    networks:
-      - uprez-network
-
 networks:
   uprez-network:
     driver: bridge
