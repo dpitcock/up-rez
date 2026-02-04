@@ -3,10 +3,11 @@ import { db } from '@/lib/db';
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { hostId: string } }
+    context: { params: Promise<{ hostId: string }> }
 ) {
     try {
-        const settings = await db.getHostSettings(params.hostId);
+        const { hostId } = await context.params;
+        const settings = await db.getHostSettings(hostId);
         if (!settings) {
             return NextResponse.json({ error: 'Settings not found' }, { status: 404 });
         }

@@ -50,31 +50,75 @@ graph TD
 
 ### Prerequisites
 
-- Node.js (v20+)
+- Node.js (v20+) or **Docker**
 - **SendGrid API Key** (with verified sender)
 - **OpenAI API Key**
 - A Postgres database (Local or Vercel Postgres)
 
-### Setup
+### Docker Flow (Recommended)
 
-1. **Clone and Configure**:
+1. **Launch Stack**:
    ```bash
-   cp .env.example .env
-   # Edit .env with your API keys and Postgres URL
+   docker-compose up -d
    ```
 
-2. **Install Dependencies**:
+2. **Replicate Vercel Build (Inside Docker)**:
+   To ensure your code passes Vercel's strict production checks (TypeScript, Route verification), run:
    ```bash
-   cd frontend
-   npm install
+   docker-compose exec frontend npm run build
    ```
 
-3. **Initialize Database**:
-   Once the server is running, visit `/api/demo/reset` to seed the initial properties and bookings.
+3. **Reset/Seed Data**:
+   Visit `http://localhost:3030/api/demo/reset` or run:
+   ```bash
+   docker-compose exec frontend curl http://localhost:3030/api/demo/reset -X POST
+   ```
+
+## Quick Start
+
+### 1. Configure Environment
+Regardless of your setup, you need to configure your API keys:
+```bash
+cp .env.example .env
+# Edit .env with your OpenAI, SendGrid, and Postgres credentials
+```
+
+---
+
+### Option A: Docker (Recommended) 🐳
+Best for a consistent environment. Docker handles Node.js, Dependencies, and the Dev Server automatically.
+
+1. **Start the Platform**:
+   ```bash
+   docker-compose up -d
+   ```
+
+2. **Use the CLI Helper**:
+   We've provided a simple script to run common tasks inside the container:
+   - **Seed/Reset Data**: `./uprez.sh reset`
+   - **Production Build Check**: `./uprez.sh build`
+   - **Follow Logs**: `./uprez.sh logs`
+   - **Shell Access**: `./uprez.sh shell`
+
+3. **Launch**: Open [http://localhost:3030/demo](http://localhost:3030/demo)
+
+---
+
+### Option B: Manual (Host machine)
+Use this if you prefer running Node.js directly on your machine.
+
+1. **Install Dependencies**:
+   ```bash
+   cd frontend && npm install
+   ```
+2. **Start Dev Server**:
    ```bash
    npm run dev
    ```
-   Access the Demo Center at `http://localhost:3030/demo`.
+3. **Seed Database**:
+   Visit [http://localhost:3030/api/demo/reset](http://localhost:3030/api/demo/reset) to initialize data.
+
+---
 
 ## Deployment
 

@@ -3,10 +3,10 @@ import { generateOptionCopy } from '@/lib/services/offerService';
 
 export async function POST(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: { params: Promise<{ id: string }> }
 ) {
     try {
-        const offerId = params.id;
+        const { id: offerId } = await context.params;
         const { prop_id } = await req.json();
 
         if (!prop_id) {
