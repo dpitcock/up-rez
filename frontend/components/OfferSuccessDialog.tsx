@@ -3,15 +3,27 @@
 import React from 'react';
 import { X, CheckCircle, Mail, FileText, ArrowRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { cn } from "@/lib/utils";
 
 interface OfferSuccessDialogProps {
     isOpen: boolean;
     onClose: () => void;
     offerId: string;
     guestName?: string;
+    emailEnabled?: boolean;
+    contactEmail?: string;
+    onViewEmail: () => void;
 }
 
-export default function OfferSuccessDialog({ isOpen, onClose, offerId, guestName }: OfferSuccessDialogProps) {
+export default function OfferSuccessDialog({
+    isOpen,
+    onClose,
+    offerId,
+    guestName,
+    emailEnabled,
+    contactEmail,
+    onViewEmail
+}: OfferSuccessDialogProps) {
     const router = useRouter();
 
     if (!isOpen) return null;
@@ -52,12 +64,16 @@ export default function OfferSuccessDialog({ isOpen, onClose, offerId, guestName
                                 <Mail className="w-5 h-5" />
                             </div>
                             <div>
-                                <p className="font-bold text-slate-900 dark:text-white text-sm">Email Delivered</p>
+                                <p className="font-bold text-slate-900 dark:text-white text-sm">
+                                    {emailEnabled ? 'Email Delivered' : 'Email Mocked'}
+                                </p>
                                 <p className="text-[10px] font-bold text-slate-400 dark:text-gray-500 uppercase tracking-widest">
-                                    {guestName ? `Sent to ${guestName}` : 'Sent to guest'}
+                                    {emailEnabled
+                                        ? `Check ${contactEmail || 'inbox'} for demo`
+                                        : (guestName ? `To: ${guestName}` : 'Sent to guest')}
                                 </p>
                             </div>
-                            <CheckCircle className="w-5 h-5 text-green-500 ml-auto" />
+                            <CheckCircle className={cn("w-5 h-5 ml-auto", emailEnabled ? "text-green-500" : "text-slate-300")} />
                         </div>
 
                         <div className="flex items-center gap-4 p-4 bg-slate-50 dark:bg-white/5 rounded-2xl border border-slate-100 dark:border-white/5">
@@ -78,13 +94,21 @@ export default function OfferSuccessDialog({ isOpen, onClose, offerId, guestName
                     <div className="space-y-3 pt-2">
                         <button
                             onClick={() => {
-                                router.push('/offers');
+                                window.open(`/offer/${offerId}`, '_blank');
                                 onClose();
                             }}
                             className="w-full py-4 bg-orange-600 hover:bg-orange-500 rounded-2xl font-black text-sm uppercase tracking-widest text-white transition-all transform hover:scale-[1.02] shadow-xl shadow-orange-600/20 flex items-center justify-center gap-3"
                         >
-                            View All Offers
+                            View Offer Landing Page
                             <ArrowRight className="w-4 h-4" />
+                        </button>
+
+                        <button
+                            onClick={onViewEmail}
+                            className="w-full py-4 bg-white dark:bg-white/5 hover:bg-slate-50 dark:hover:bg-white/10 rounded-2xl font-black text-sm uppercase tracking-widest text-slate-900 dark:text-white transition-all transform hover:scale-[1.02] border border-slate-200 dark:border-white/10 flex items-center justify-center gap-3"
+                        >
+                            <Mail className="w-4 h-4" />
+                            Preview Email
                         </button>
 
                         <button
@@ -99,7 +123,7 @@ export default function OfferSuccessDialog({ isOpen, onClose, offerId, guestName
                 {/* Footer */}
                 <div className="px-8 py-3 bg-slate-50 dark:bg-white/[0.02] border-t border-slate-100 dark:border-white/5 text-center">
                     <p className="text-[8px] font-black uppercase text-green-500 tracking-[0.2em]">
-                        ✓ OpenAI-Powered Generation Complete
+                        ✓ {process.env.NEXT_PUBLIC_USE_OPENAI === 'true' ? 'OpenAI-Powered' : 'Template-Based'} Generation Complete
                     </p>
                 </div>
             </div>

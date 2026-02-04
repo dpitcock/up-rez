@@ -16,7 +16,7 @@ export default function EmailPreviewModal({ isOpen, onClose, offer }: EmailPrevi
     if (!isOpen || !offer) return null;
 
     return (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-10">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-10">
             <div
                 className="absolute inset-0 bg-slate-900/60 dark:bg-black/80 backdrop-blur-sm"
                 onClick={onClose}

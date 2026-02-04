@@ -2,7 +2,7 @@
  * API client for backend communication
  */
 
-const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:8080';
+const BACKEND_URL = '/api';
 
 /**
  * Instantiates a full offer object from a dateless template.
@@ -249,6 +249,29 @@ GUEST QUESTION: ${question}
 RULE: 1-2 concise, factual sentences. No fluff.`;
     };
 
+    // 1.5 GENERATE OPTION COPY MOCK
+    if (path.includes('/generate-option')) {
+        const { prop_id } = JSON.parse(options?.body as string || '{}');
+        const offerId = path.split('/')[2];
+        const offer = demoData.offers?.[offerId];
+        if (offer) {
+            const index = offer.options.findIndex((o: any) => o.prop_id === prop_id);
+            if (index !== -1) {
+                const opt = offer.options[index];
+                const aiCopy = {
+                    landing_hero: `Experience ${opt.prop_name}`,
+                    landing_summary: `Your exclusive upgrade to ${opt.prop_name} is ready for review.`,
+                    subject: `Upgrade Reveal: ${opt.prop_name}`
+                };
+                offer.options[index].ai_copy = aiCopy;
+                offer.options[index].headline = aiCopy.landing_hero;
+                offer.options[index].summary = aiCopy.landing_summary;
+                saveMockDB(demoData);
+                return { status: "ok", ai_copy: aiCopy };
+            }
+        }
+    }
+
     // 1. CHATBOT MOCK
     if (path.includes('/bot/query')) {
         const useOpenAI = process.env.NEXT_PUBLIC_USE_OPENAI === 'true';
@@ -261,7 +284,7 @@ RULE: 1-2 concise, factual sentences. No fluff.`;
                     const promptContext = buildClientBotPrompt(offer, prop_id, question, history);
 
                     // Call our SECURE internal API route (protects the API Key)
-                    const res = await fetch('/api/chat', {
+                    const res = await fetch('/api/bot/query', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({

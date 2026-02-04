@@ -8,7 +8,7 @@ import { apiClient } from '@/lib/api';
 import {
     LayoutDashboard, Gift, Settings, BarChart3,
     ArrowLeft, LogOut, Activity, Clock,
-    Menu, X, LineChart, Cpu, ShieldCheck, Layout, Home, Sparkles
+    Menu, X, LineChart, Cpu, ShieldCheck, Layout, Home, Sparkles, Calendar
 } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,7 @@ export default function DashboardLayout({ children, subHeader }: DashboardLayout
 
     const navigation = [
         { name: 'Demo Center', href: '/demo', icon: Cpu },
+        { name: 'Reservations', href: '/reservations', icon: Calendar },
         { name: 'Managed Offers', href: '/offers', icon: Gift },
         { name: 'Templates', href: '/templates', icon: Layout },
         { name: 'Properties', href: '/properties', icon: Home },

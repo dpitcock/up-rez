@@ -99,23 +99,14 @@ export default function DemoPage() {
                 if (data.offer_id) {
                     addLog(`Offer generated! Preparing preview...`, "success");
 
-                    if (useOpenAI) {
-                        setSuccessOfferId(data.offer_id);
-                        // Try to find the guest name from our local state
-                        const bookingId = body?.booking_id;
-                        const guest = readyBookings.cron_ready.find((b: ReadyBooking) => b.id === bookingId) ||
-                            readyBookings.cancellation_ready.find((b: ReadyBooking) => b.id === bookingId);
-                        if (guest) setSuccessGuestName(guest.guest_name);
+                    setSuccessOfferId(data.offer_id);
+                    // Try to find the guest name from our local state
+                    const bookingId = body?.booking_id;
+                    const guest = readyBookings.cron_ready.find((b: ReadyBooking) => b.id === bookingId) ||
+                        readyBookings.cancellation_ready.find((b: ReadyBooking) => b.id === bookingId);
+                    if (guest) setSuccessGuestName(guest.guest_name);
 
-                        setShowSuccessDialog(true);
-                    } else {
-                        // Fetch full offer details for the preview
-                        const offerDetails = await apiClient(`/offer/${data.offer_id}`);
-                        if (offerDetails) {
-                            setPreviewOffer(offerDetails);
-                            setShowPreview(true);
-                        }
-                    }
+                    setShowSuccessDialog(true);
                 } else {
                     addLog(data.message || "Action completed successfully", "success");
                 }
@@ -125,6 +116,19 @@ export default function DemoPage() {
             addLog("Network error occurred", "error");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleViewEmail = async (offerId: string) => {
+        try {
+            addLog("Fetching offer template details...", "info");
+            const offerDetails = await apiClient(`/offer/${offerId}`);
+            if (offerDetails) {
+                setPreviewOffer(offerDetails);
+                setShowPreview(true);
+            }
+        } catch (err) {
+            addLog("Failed to fetch offer details for preview", "error");
         }
     };
 
@@ -177,13 +181,6 @@ export default function DemoPage() {
 
     const subHeader = (
         <div className="flex items-center gap-2">
-            <button
-                onClick={() => handleAction('/demo/normalize-dates')}
-                data-tooltip="Normalize Dates"
-                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-orange-500/10 hover:text-orange-500 transition-all border border-slate-200 dark:border-white/10"
-            >
-                <RefreshCcw className="w-4 h-4" />
-            </button>
             <button
                 onClick={() => handleAction('/demo/reset-data')}
                 data-tooltip="Reset Database"
@@ -385,8 +382,11 @@ export default function DemoPage() {
             <OfferSuccessDialog
                 isOpen={showSuccessDialog}
                 onClose={() => setShowSuccessDialog(false)}
+                onViewEmail={() => handleViewEmail(successOfferId)}
                 offerId={successOfferId}
                 guestName={successGuestName}
+                emailEnabled={status?.email_enabled}
+                contactEmail={status?.contact_email}
             />
         </DashboardLayout>
     );

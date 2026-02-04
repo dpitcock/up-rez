@@ -1,225 +1,104 @@
 # UpRez - AI-Powered Vacation Rental Upsell Platform
 
-**Status**: In Development  
-**Demo Target**: Berlin AI Hackathon (Arbio Track)
+**Status**: Vercel-Ready Monorepo 🚀  
+**Target**: Berlin AI Hackathon (Arbio Track)
 
 ## Overview
 
 UpRez is an AI-powered upgrade engine for vacation rentals that:
-- Detects upsell opportunities via booking triggers
-- **Analyzes Market Pressure** via [Tower](https://tower.dev) data pipelines
-- **Calculates high-fidelity fit scores** using [RunPod](https://runpod.io) GPU compute
-- Generates personalized offers with intelligent property comparisons
-- Sends HTML emails with property photos and pricing details
-- Serves dynamic landing pages with AI-powered Q&A chatbot
+- **Detects Upsell Opportunities**: Automated triggers for pre-arrival and cancellations.
+- **Personalized Offers**: Generates high-fidelity fit scores and property comparisons.
+- **AI Copywriting**: Crafts personalized email and landing page copy via OpenAI.
+- **Interactive AI Concierge**: Real-time Q&A bot for guests to ask about upgrade features.
+- **Conversion-Ready**: Integrated email delivery (SendGrid) and dynamic landing pages.
 
 ## Tech Stack
 
-- **Backend**: FastAPI (Python) + SQLite
-- **Frontend**: Next.js 15 (React)
-- **Data Engineering**: **Tower.dev** (Distributed Pipelines & Feature Store)
-- **High-Perf Compute**: **RunPod** (Serverless GPU for Behavioral Scoring)
-- **Generative AI**: **OpenAI** GPT-4o-mini (Copywriting) + **Ollama** (Local Inference)
-- **Email**: SendGrid or Resend API
-- **Deployment**: Docker Compose + Vercel + Ngrok
+- **Framework**: Next.js 15 (TypeScript) - Monorepo (UI + API)
+- **Database**: Vercel Postgres (Powered by Neon)
+- **Generative AI**: OpenAI GPT-4o-mini
+- **Email**: SendGrid API
+- **Deployment**: Vercel (Frontend & Serverless Functions)
 
-## System Architecture & AI Flow
+## System Architecture
 
-UpRez orchestrates multiple AI layers to deliver hyper-targeted hospitality upgrades.
+UpRez is built as a unified Next.js monorepo, making it extremely easy to deploy and maintain on Vercel.
 
 ```mermaid
 graph TD
-    subgraph "Core System (Docker)"
-        BE[Backend - FastAPI]
+    subgraph "Vercel Platform"
         FE[Frontend - Next.js]
-        DB[(SQLite)]
+        API[API Routes - Serverless]
+        DB[(Vercel Postgres)]
     end
 
-    subgraph "AI & Data Partners"
-        TW[Tower.dev - Data Pipelines]
-        RP[RunPod - GPU Compute]
-        OI[OpenAI - Marketing Copy]
+    subgraph "External Services"
+        OI[OpenAI - AI Copy & Chat]
+        SG[SendGrid - Email Delivery]
     end
 
     %% Data Flow
-    BE <--> DB
-    FE <--> BE
+    FE <--> API
+    API <--> DB
     
-    %% AI Integration
-    TW -- "1. Market Pressure & Supply" --> BE
-    BE -- "2. High-Fidelity Fit Scoring" --> RP
-    BE -- "3. Personalized Copywriting" --> OI
-    
-    %% Communication
-    BE -- "4. HTML Offer Delivery" --> EM[Email Service]
-    FE -- "5. AI Concierge (RAG)" --> OI
+    %% Service Integration
+    API -- "Personalized Copy & Bot Q&A" --> OI
+    API -- "HTML Offer Delivery" --> SG
 ```
 
-## Quick Start
+## Quick Start (Local Development)
 
 ### Prerequisites
 
-- Docker and Docker Compose
-- Ollama installed with `gemma3:latest` model (for local LLM)
-- **Email Provider** (choose one):
-  - **SendGrid** (recommended for demos - fast delivery, ~1-2 seconds)
-  - **Resend** (alternative - slower delivery, ~5 minutes, sandbox restrictions)
-- OpenAI API key (optional, for production mode)
-- **Ngrok** (for local development with public exposure)
-
-### Email Provider Setup
-
-#### Option 1: SendGrid (Recommended for Demos)
-
-1. Sign up at [SendGrid](https://sendgrid.com/)
-2. Create an API key with "Mail Send" permissions
-3. Verify a sender email address or domain
-4. Add to `.env.local`:
-```env
-EMAIL_PROVIDER=sendgrid
-SENDGRID_API_KEY=SG.your-key-here
-SENDGRID_FROM_EMAIL=noreply@yourdomain.com
-SENDGRID_FROM_NAME=UpRez Demo
-CONTACT_EMAIL=your-email@example.com
-```
-
-#### Option 2: Resend (Alternative)
-
-1. Sign up at [Resend](https://resend.com/)
-2. Create an API key
-3. Add to `.env.local`:
-```env
-EMAIL_PROVIDER=resend
-RESEND_API_KEY=re_your-key-here
-CONTACT_EMAIL=your-verified-email@example.com
-```
-
-**Note**: Resend's free tier has sandbox restrictions (must send from `onboarding@resend.dev` to your verified email only) and slower delivery times (~5 minutes).
+- Node.js (v20+)
+- **SendGrid API Key** (with verified sender)
+- **OpenAI API Key**
+- A Postgres database (Local or Vercel Postgres)
 
 ### Setup
 
-1. **Clone and configure**:
-```bash
-cp .env.example .env
-# Edit .env with your API keys
-```
+1. **Clone and Configure**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your API keys and Postgres URL
+   ```
 
-2. **Seed the database**:
-```bash
-cd backend
-python seed.py
-```
+2. **Install Dependencies**:
+   ```bash
+   cd frontend
+   npm install
+   ```
 
-3. **Start services**:
-```bash
-docker-compose up --build
-```
+3. **Initialize Database**:
+   Once the server is running, visit `/api/demo/reset` to seed the initial properties and bookings.
+   ```bash
+   npm run dev
+   ```
+   Access the Demo Center at `http://localhost:3030/demo`.
 
-4. Access the application:
-   - Backend API: http://localhost:8080
-   - Frontend: http://localhost:3030
-   - Demo page: http://localhost:3030/demo
+## Deployment
 
-## Infrastructure: Global Previews (Ngrok + Vercel)
-
-For property images to appear correctly in **Email Templates** and for Vercel to communicate with your local backend, you must set up a public tunnel.
-
-### 1. Local Tunnel (Ngrok)
-Run ngrok to expose your local backend:
-```bash
-ngrok http 8080
-```
-Capture the `https://...ngrok-free.app` URL.
-
-### 2. Configure Environment Variables
-To ensure absolute image paths and cross-origin communication:
-
-**Local Backend (`backend/.env`):**
-```env
-# URL where your images are hosted (your Vercel deployment)
-FRONTEND_URL=https://your-app.vercel.app
-```
-
-**Vercel Frontend Settings:**
-```env
-# Point Vercel to your local machine via ngrok
-NEXT_PUBLIC_BACKEND_URL=https://your-active-id.ngrok-free.app
-```
-
-> **Note**: For images to load in real email clients (Gmail, Outlook), the image files must be hosted on a public URL (like Vercel). The application will automatically prepend `FRONTEND_URL` to all property images during AI generation.
+UpRez is optimized for **Vercel**. For detailed infrastructure provisioning (Postgres, Secrets, etc.), see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 ## Project Structure
 
 ```
 up-rez/
-├── backend/                    # FastAPI application
-│   ├── services/              # Business logic
-│   │   ├── offer_service.py   # Main offer generation
-│   │   ├── scoring_service.py # Property comparison
-│   │   ├── pricing_service.py # Price calculations
-│   │   └── rag_service.py     # Q&A bot
-│   ├── routers/               # API endpoints
-│   ├── data/                  # Seed data (properties, bookings)
-│   ├── database.py            # SQLite schema
-│   ├── models.py              # Pydantic models
-│   ├── seed.py                # Database seeding
-│   └── main.py                # FastAPI app
-├── frontend/                   # Next.js application
-│   ├── app/                   # Pages
-│   │   ├── demo/              # Demo trigger page
-│   │   └── offer/[id]/        # Landing pages
-│   └── components/            # React components
-├── initial_data/              # Documentation and specs
-└── docker-compose.yml         # Docker configuration
+├── frontend/                   # Next.js Application (Monorepo)
+│   ├── app/                    # Pages & API Routes
+│   │   ├── api/                # Backend Logic (Python logic ported here)
+│   │   ├── demo/               # Demo Dashboard
+│   │   └── offer/[id]/         # Personalized Landing Pages
+│   ├── components/             # UI Components
+│   ├── lib/                    # Shared Utilities
+│   │   ├── db.ts               # Database Layer (Vercel Postgres)
+│   │   └── services/           # Ported Business Logic (Offer, Email, RAG)
+│   ├── types/                  # TypeScript Interfaces
+│   └── scripts/                # Data Scripts
+├── initial_data/               # Reference Specs & Specs
+└── docker-compose.yml          # Container config for local dev
 ```
-
-## Key Features
-
-### 1. Intelligent Property Scoring
-- Multi-factor viability algorithm
-- Considers capacity, amenities, location, family fit
-- Configurable host guardrails
-
-### 2. Smart Pricing
-- Discount applied to price *difference*, not total
-- Configurable discount (25-50%, default 40%)
-- Revenue lift optimization
-
-### 3. AI-Powered Q&A
-- RAG-based property metadata retrieval
-- Ollama (Gemma2) for fast local responses
-- OpenAI fallback for production quality
-
-### 4. Graceful Degradation
-- Handles unavailable properties automatically
-- "Find New Upgrades" regeneration
-- No 404s or broken experiences
-
-## Development Status
-
-**Completed**:
-- ✅ Docker configuration (ports 8080/3030)
-- ✅ Database schema and seed data
-- ✅ Property scoring algorithm
-- ✅ Pricing calculation service
-- ✅ RAG/LLM integration for bot Q&A
-- ✅ Main offer generation orchestration
-
-**In Progress**:
-- 🔄 API endpoints (webhook, offers, bot)
-- 🔄 Email service with Resend
-- 🔄 Frontend landing pages
-- 🔄 Chatbot widget
-
-**TODO**:
-- ⏳ Integration testing
-- ⏳ Demo preparation
-- ⏳ Production deployment
 
 ## License
 
 MIT
-
-## Contact
-
-For demo inquiries: [contact info]

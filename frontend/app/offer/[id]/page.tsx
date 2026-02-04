@@ -8,6 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { AlertCircle, Clock, CheckCircle2, ChevronRight, Home, Users, Bed, Bath, Maximize, Layers, Monitor, Volume2, Waves, ShieldCheck, Sparkles } from 'lucide-react';
 import { ConnectionError } from "@/components/ConnectionError";
 import Chatbot from '@/components/Chatbot';
+import { cn } from '@/lib/utils';
 
 export default function OfferPage() {
     const params = useParams();
@@ -20,6 +21,7 @@ export default function OfferPage() {
 
     const [activeIndex, setActiveIndex] = useState(0);
     const [showDetails, setShowDetails] = useState(true);
+    const [generatingOptionId, setGeneratingOptionId] = useState<string | null>(null);
 
     const loadOffer = async () => {
         if (!id) return;
@@ -54,6 +56,39 @@ export default function OfferPage() {
         } catch (err) {
             console.error("Failed to enable OpenAI", err);
         }
+    };
+
+    const handleOptionClick = async (option: any, index: number) => {
+        if (!option.ai_copy) {
+            setGeneratingOptionId(option.prop_id);
+            try {
+                const response = await apiClient(`/offer/${id}/generate-option`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prop_id: option.prop_id })
+                });
+
+                if (response && response.status === 'ok') {
+                    // Update the local offer state with the new AI copy for that option
+                    const updatedOptions = [...offer.options];
+                    updatedOptions[index] = {
+                        ...updatedOptions[index],
+                        ai_copy: response.ai_copy,
+                        headline: response.ai_copy.landing_hero || updatedOptions[index].headline,
+                        summary: response.ai_copy.landing_summary || updatedOptions[index].summary
+                    };
+                    setOffer({ ...offer, options: updatedOptions });
+                }
+            } catch (err) {
+                console.error("Failed to generate option copy", err);
+            } finally {
+                setGeneratingOptionId(null);
+            }
+        }
+
+        setActiveIndex(index);
+        setShowDetails(false);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     useEffect(() => {
@@ -427,12 +462,11 @@ export default function OfferPage() {
                                 return (
                                     <div
                                         key={opt.prop_id}
-                                        onClick={() => {
-                                            setActiveIndex(optIndex);
-                                            setShowDetails(false); // Reset details when switching properties
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }}
-                                        className="group cursor-pointer bg-[#0A0A0A] border border-white/5 rounded-[2rem] overflow-hidden hover:border-white/20 transition-all transform hover:-translate-y-1"
+                                        onClick={() => handleOptionClick(opt, optIndex)}
+                                        className={cn(
+                                            "group cursor-pointer bg-[#0A0A0A] border rounded-[2rem] overflow-hidden transition-all transform hover:-translate-y-1 shadow-2xl",
+                                            generatingOptionId === opt.prop_id ? "border-orange-500/50 scale-[0.98]" : "border-white/5 hover:border-white/20"
+                                        )}
                                     >
                                         <div className="relative h-56 overflow-hidden">
                                             <img
@@ -448,8 +482,21 @@ export default function OfferPage() {
                                                         <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{opt.beds} Bed · {opt.location?.split(',')[0] || "Luxury Unit"}</p>
                                                     </div>
                                                     <div className="text-right">
-                                                        <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1 italic">Only Upgrade</p>
-                                                        <p className="text-lg font-black text-white">+€{Math.round(opt.pricing.offer_adr - (original_booking.current_adr || 0))}<span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-1">/nt</span></p>
+                                                        <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1 italic">
+                                                            {opt.ai_copy ? "Only Upgrade" : "Secret Deal"}
+                                                        </p>
+                                                        <div className="flex items-center justify-end gap-2">
+                                                            {generatingOptionId === opt.prop_id ? (
+                                                                <div className="w-4 h-4 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
+                                                            ) : !opt.ai_copy ? (
+                                                                <div className="flex items-baseline gap-1">
+                                                                    <span className="text-lg font-black text-white/40">???</span>
+                                                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">See More</span>
+                                                                </div>
+                                                            ) : (
+                                                                <p className="text-lg font-black text-white">+€{Math.round(opt.pricing.offer_adr - (original_booking.current_adr || 0))}<span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-1">/nt</span></p>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
