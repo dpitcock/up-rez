@@ -254,6 +254,29 @@ export async function acceptOffer(offerId: string, propId: string, sessionId?: s
         upgrade_at: new Date().toISOString()
     });
 
+    // 3. Expire all other active offers for the same property
+    // This prevents double-booking when multiple guests are offered the same upgrade
+    try {
+        const { neon } = require('@neondatabase/serverless');
+        const sql = neon(process.env.POSTGRES_URL!);
+
+        const result = await sql`
+            UPDATE offers 
+            SET status = 'expired', updated_at = ${new Date().toISOString()}
+            WHERE status = 'active' 
+            AND id != ${offerId}
+            AND top3::text LIKE ${`%"prop_id":"${propId}"%`}
+        `;
+
+        const expiredCount = result.length || 0;
+        if (expiredCount > 0) {
+            console.log(`🚫 Expired ${expiredCount} other active offer(s) for property ${propId}`);
+        }
+    } catch (err) {
+        console.error('⚠️ Failed to expire competing offers:', err);
+        // Don't fail the acceptance if this step fails - log and continue
+    }
+
     console.log(`✅ Offer ${offerId} accepted. Booking ${offer.booking_id} updated to property ${propId}.`);
 
     return {

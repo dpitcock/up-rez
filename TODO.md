@@ -1,0 +1,1 @@
+- [x] if someone accepts an offer, all other offers for the same property should be cancelled

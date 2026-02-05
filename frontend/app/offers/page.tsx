@@ -223,7 +223,7 @@ export default function OffersPage() {
                                             </div>
                                         </td>
                                         <td className="px-8 py-6 text-right">
-                                            <div className="flex items-center justify-end gap-3 translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+                                            <div className="flex items-center justify-end gap-3">
                                                 <button
                                                     onClick={() => {
                                                         setSelectedOffer(offer);
@@ -243,16 +243,20 @@ export default function OffersPage() {
                                                     <ExternalLink className="w-4 h-4" />
                                                 </Link>
 
-                                                {/* Cancel Button: Only if Active */}
-                                                {offer.status === 'active' && (
-                                                    <button
-                                                        onClick={() => handleCancel(offer.id)}
-                                                        className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-red-600 dark:text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200 dark:border-white/5"
-                                                        data-tooltip="Cancel Offer"
-                                                    >
-                                                        <Ban className="w-4 h-4" />
-                                                    </button>
-                                                )}
+                                                {/* Cancel Button: Only if Active (using same logic as StatusBadge) */}
+                                                {(() => {
+                                                    const isPastExpiry = new Date(offer.expires_at) < new Date();
+                                                    const computedStatus = (offer.status === 'expired' || isPastExpiry) ? 'expired' : offer.status;
+                                                    return computedStatus === 'active' && (
+                                                        <button
+                                                            onClick={() => handleCancel(offer.id)}
+                                                            className="p-3 rounded-xl bg-slate-100 dark:bg-white/5 text-red-600 dark:text-red-500 hover:bg-red-600 hover:text-white transition-all shadow-sm border border-slate-200 dark:border-white/5"
+                                                            data-tooltip="Cancel Offer"
+                                                        >
+                                                            <Ban className="w-4 h-4" />
+                                                        </button>
+                                                    );
+                                                })()}
                                             </div>
                                         </td>
                                     </tr>
