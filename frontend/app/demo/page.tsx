@@ -43,16 +43,16 @@ export default function DemoPage() {
     const [selectedCron, setSelectedCron] = useState<string>("");
     const [selectedCancel, setSelectedCancel] = useState<string>("");
     const [error, setError] = useState(false);
-    const [ngrokStatus, setNgrokStatus] = useState<any>(null);
-    const [checkingNgrok, setCheckingNgrok] = useState(false);
     const [loading, setLoading] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [previewOffer, setPreviewOffer] = useState<any>(null);
     const [showSuccessDialog, setShowSuccessDialog] = useState(false);
     const [successOfferId, setSuccessOfferId] = useState<string>('');
+    const [sessionId, setSessionId] = useState<string>("");
     const [successGuestName, setSuccessGuestName] = useState<string>('');
 
     useEffect(() => {
+        setSessionId(localStorage.getItem('uprez_session_id') || "");
         refreshData();
     }, []);
 
@@ -75,20 +75,12 @@ export default function DemoPage() {
     const handleAction = async (endpoint: string, method: string = 'POST', body?: any) => {
         setLoading(true);
         const isTrigger = endpoint.includes('trigger');
-        const isClientOnly = process.env.NEXT_PUBLIC_DEMO_MODE === 'client_only';
-        const useOpenAI = process.env.NEXT_PUBLIC_USE_OPENAI === 'true';
 
         if (isTrigger) {
             addLog("AI Engine analyzing inventory availability...", "info");
         }
 
         try {
-            if (isTrigger && isClientOnly) {
-                await new Promise(r => setTimeout(r, 1500));
-                addLog("Orchestrating multi-node reward optimization...", "info");
-                await new Promise(r => setTimeout(r, 1000));
-            }
-
             const data = await apiClient(endpoint, {
                 method,
                 headers: { 'Content-Type': 'application/json' },
@@ -100,7 +92,6 @@ export default function DemoPage() {
                     addLog(`Offer generated! Preparing preview...`, "success");
 
                     setSuccessOfferId(data.offer_id);
-                    // Try to find the guest name from our local state
                     const bookingId = body?.booking_id;
                     const guest = readyBookings.cron_ready.find((b: ReadyBooking) => b.id === bookingId) ||
                         readyBookings.cancellation_ready.find((b: ReadyBooking) => b.id === bookingId);
@@ -109,6 +100,10 @@ export default function DemoPage() {
                     setShowSuccessDialog(true);
                 } else {
                     addLog(data.message || "Action completed successfully", "success");
+                }
+                if (endpoint.includes('reset')) {
+                    addLog("Inventory re-indexed.", "info");
+                    await new Promise(r => setTimeout(r, 500));
                 }
                 await refreshData();
             }
@@ -122,58 +117,24 @@ export default function DemoPage() {
     const handleViewEmail = async (offerId: string) => {
         try {
             addLog("Fetching offer template details...", "info");
-            const offerDetails = await apiClient(`/offer/${offerId}`);
+            const offerDetails = await apiClient(`/offers/${offerId}`);
             if (offerDetails) {
                 setPreviewOffer(offerDetails);
                 setShowPreview(true);
+                setShowSuccessDialog(false);
             }
         } catch (err) {
             addLog("Failed to fetch offer details for preview", "error");
         }
     };
 
-    const handleCheckNgrok = async () => {
-        setCheckingNgrok(true);
-        addLog("Testing ngrok tunnel connectivity...", "info");
-        try {
-            const data = await apiClient(`/demo/check-ngrok`);
-            setNgrokStatus(data);
-            if (data.status === 'online') {
-                addLog(`Ngrok is ONLINE [${data.url}]`, "success");
-            } else {
-                addLog("Ngrok is OFFLINE or not configured", "error");
-            }
-        } catch (err) {
-            addLog("Backend unreachable for tunnel check", "error");
-            setNgrokStatus({ status: 'offline', message: 'Could not connect to backend' });
-        } finally {
-            setCheckingNgrok(false);
-            setTimeout(() => setNgrokStatus(null), 5000);
-        }
-    };
 
-    const handleEnableOpenAI = async () => {
-        try {
-            await apiClient('/demo/settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    use_openai: true,
-                    local_model: "gemma3:latest"
-                })
-            });
-            refreshData();
-        } catch (err) {
-            console.error("Failed to enable OpenAI", err);
-        }
-    };
 
     if (error) {
         return (
             <div className="min-h-screen bg-[#050505] flex items-center justify-center">
                 <ConnectionError
                     onRetry={refreshData}
-                    onEnableOpenAI={handleEnableOpenAI}
                 />
             </div>
         );
@@ -184,18 +145,20 @@ export default function DemoPage() {
             <button
                 onClick={() => handleAction('/demo/reset-data')}
                 data-tooltip="Reset Database"
-                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-red-500/10 hover:text-red-500 transition-all border border-slate-200 dark:border-white/10"
+                className={cn(
+                    "p-2.5 rounded-xl transition-all border group relative overflow-hidden",
+                    readyBookings.cron_ready.length === 0 && !loading
+                        ? "bg-orange-500/20 text-orange-600 border-orange-500/50 animate-pulse scale-110 shadow-[0_0_20px_rgba(234,88,12,0.3)]"
+                        : "bg-slate-100 dark:bg-white/5 hover:bg-red-500/10 hover:text-red-500 border-slate-200 dark:border-white/10"
+                )}
             >
-                <Database className="w-4 h-4" />
+                <div className={cn(
+                    "absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/20 to-orange-500/0 -translate-x-full group-hover:animate-[shimmer_2s_infinite]",
+                    readyBookings.cron_ready.length === 0 && "animate-[shimmer_2s_infinite]"
+                )} />
+                <Database className={cn("w-4 h-4 relative z-10", loading && "animate-spin")} />
             </button>
             <div className="w-px h-6 bg-slate-200 dark:bg-white/10 mx-2" />
-            <button
-                onClick={() => handleAction('/demo/frontend-build')}
-                data-tooltip="Rebuild Layout Templates"
-                className="p-2.5 rounded-xl bg-slate-100 dark:bg-white/5 hover:bg-blue-500/10 hover:text-blue-500 transition-all border border-slate-200 dark:border-white/10"
-            >
-                <Play className="w-4 h-4" />
-            </button>
             <button
                 onClick={() => router.push('/tower')}
                 data-tooltip="Intelligence Hub (Tower)"
@@ -203,18 +166,7 @@ export default function DemoPage() {
             >
                 <Box className="w-4 h-4" />
             </button>
-            <button
-                onClick={handleCheckNgrok}
-                data-tooltip="Check Ngrok Tunnel"
-                className={cn(
-                    "p-2.5 rounded-xl transition-all border",
-                    ngrokStatus?.status === 'online'
-                        ? "bg-green-500/10 text-green-500 border-green-500/20"
-                        : "bg-slate-100 dark:bg-white/5 hover:bg-blue-500/10 hover:text-blue-500 border-slate-200 dark:border-white/10"
-                )}
-            >
-                <Globe className={cn("w-4 h-4", checkingNgrok && "animate-spin")} />
-            </button>
+
         </div>
     );
 
@@ -234,9 +186,11 @@ export default function DemoPage() {
                     </div>
 
                     <div className="flex flex-col items-end gap-2 text-right">
-                        <div className="px-5 py-2 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10">
-                            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 block mb-0.5">Static Demo State</span>
-                            <span className="text-lg font-black italic uppercase text-orange-600">Active - Local Only</span>
+                        <div className="px-5 py-2 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm">
+                            <span className="text-[10px] font-black uppercase text-slate-400 dark:text-gray-600 block mb-0.5">Session ID</span>
+                            <span className="text-xs font-mono text-orange-600 truncate max-w-[120px] block">
+                                {sessionId ? sessionId.slice(0, 8) : '...'}
+                            </span>
                         </div>
                     </div>
                 </div>

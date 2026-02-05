@@ -26,7 +26,7 @@ export default function SettingsPage() {
         try {
             setError(false);
             const hostId = 'demo_host_001';
-            const data = await apiClient(`/api/host/${hostId}/settings`);
+            const data = await apiClient(`/host/${hostId}/settings`);
             setUseOpenAI(Boolean(data.use_openai_for_copy));
             setLocalModel(data.local_llm_model || "gemma3:latest");
             setPmCompanyName(data.pm_company_name || "@luxury_stays");
@@ -54,7 +54,7 @@ export default function SettingsPage() {
         setSaving(true);
         try {
             const hostId = 'demo_host_001'; // Assuming a fixed hostId for demo purposes
-            await apiClient(`/api/host/${hostId}/settings`, {
+            await apiClient(`/host/${hostId}/settings`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

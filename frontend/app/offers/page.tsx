@@ -21,8 +21,6 @@ export default function OffersPage() {
     const [offers, setOffers] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
-    const [ngrokStatus, setNgrokStatus] = useState<any>(null);
-    const [checkingNgrok, setCheckingNgrok] = useState(false);
     const [showPreview, setShowPreview] = useState(false);
     const [selectedOffer, setSelectedOffer] = useState<any>(null);
 
@@ -60,25 +58,7 @@ export default function OffersPage() {
         }
     };
 
-    const handleCheckNgrok = async () => {
-        setCheckingNgrok(true);
-        addLog("Testing ngrok tunnel connectivity...", "info");
-        try {
-            const data = await apiClient(`/demo/check-ngrok`);
-            setNgrokStatus(data);
-            if (data.status === 'online') {
-                addLog(`Ngrok is ONLINE [${data.url}]`, "success");
-            } else {
-                addLog("Ngrok is OFFLINE or not configured", "error");
-            }
-        } catch (err) {
-            addLog("Backend unreachable for tunnel check", "error");
-            setNgrokStatus({ status: 'offline', message: 'Could not connect to backend' });
-        } finally {
-            setCheckingNgrok(false);
-            setTimeout(() => setNgrokStatus(null), 5000);
-        }
-    };
+
 
     const handleCancel = async (id: string) => {
         if (!confirm("Are you sure you want to cancel this offer? It will be marked as expired.")) return;
@@ -153,18 +133,7 @@ export default function OffersPage() {
             >
                 <Box className="w-4 h-4" />
             </button>
-            <button
-                onClick={handleCheckNgrok}
-                data-tooltip="Check Ngrok Tunnel"
-                className={cn(
-                    "p-2.5 rounded-xl transition-all border group relative",
-                    ngrokStatus?.status === 'online'
-                        ? "bg-green-500/10 text-green-500 border-green-500/20"
-                        : "bg-slate-100 dark:bg-white/5 hover:bg-blue-500/10 hover:text-blue-500 border-slate-200 dark:border-white/10"
-                )}
-            >
-                <Globe className={cn("w-4 h-4", checkingNgrok && "animate-spin")} />
-            </button>
+
         </div>
     );
 

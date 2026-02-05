@@ -1,8 +1,8 @@
 {
-    "rewrites": [
+    "crons": [
         {
-            "source": "/offer/:match*",
-            "destination": "https://trypanosomal-surflike-carmelia.ngrok-free.dev/offer/:match*"
+            "path": "/api/demo/cleanup",
+            "schedule": "0 0 * * *"
         }
     ]
 }

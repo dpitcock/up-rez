@@ -15,6 +15,41 @@ export default function EmailPreviewModal({ isOpen, onClose, offer }: EmailPrevi
 
     if (!isOpen || !offer) return null;
 
+    // Robust data access
+    const options = offer.options || offer.top3 || [];
+    const firstOption = options[0];
+    const guestName = offer.original_booking?.guest_name || offer.guest_name || 'Guest';
+    const originalPropName = offer.original_booking?.prop_name || offer.prop_name || 'Original Property';
+    const emailSubject = offer.email_subject || `✨ Your Stay at ${originalPropName} just got an upgrade!`;
+
+    const getImageUrl = (imagePath: string) => {
+        if (!imagePath) return null;
+        if (imagePath.startsWith('http')) return imagePath;
+        // Handle both /properties/prop_id.png and properties/prop_id.png
+        const cleanPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+        const baseUrl = (process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:3030').replace(/\/$/, '');
+        return `${baseUrl}${cleanPath}`;
+    };
+
+    // If images array is empty, fallback to ID-based path
+    const rawImagePath = firstOption?.images?.[0] || (firstOption?.prop_id ? `/properties/${firstOption.prop_id}.png` : null);
+    const previewImageUrl = getImageUrl(rawImagePath);
+
+    // Debugging image path
+    if (isOpen && firstOption) {
+        console.log('EmailPreviewModal Debug:', {
+            propName: firstOption.prop_name,
+            rawImagePath,
+            resolvedUrl: previewImageUrl,
+            pricing: firstOption.pricing,
+            aiCopy: firstOption?.ai_copy
+        });
+    }
+
+    const extraPerNight = firstOption?.pricing?.nights
+        ? (firstOption.pricing.revenue_lift / firstOption.pricing.nights)
+        : (firstOption?.pricing?.offer_adr - firstOption?.pricing?.from_adr);
+
     return (
         <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 sm:p-10">
             <div
@@ -51,51 +86,75 @@ export default function EmailPreviewModal({ isOpen, onClose, offer }: EmailPrevi
                         </div>
                         <div className="flex items-center gap-4 text-sm">
                             <span className="w-16 font-bold text-slate-400 dark:text-gray-500 uppercase text-[10px] tracking-widest">To</span>
-                            <span className="text-slate-900 dark:text-slate-200 font-bold">{offer.original_booking?.guest_name} &lt;{offer.original_booking?.guest_email || 'guest@example.com'}&gt;</span>
+                            <span className="text-slate-900 dark:text-slate-200 font-bold">{guestName} &lt;{offer.original_booking?.guest_email || 'guest@example.com'}&gt;</span>
                         </div>
                         <div className="flex items-center gap-4 text-sm">
                             <span className="w-16 font-bold text-slate-400 dark:text-gray-500 uppercase text-[10px] tracking-widest">Subject</span>
-                            <span className="text-orange-600 font-black italic uppercase tracking-tight italic uppercase">✨ Your Stay at {offer.original_booking?.prop_name} just got an upgrade!</span>
+                            <span className="text-orange-600 font-black italic uppercase tracking-tight">{emailSubject}</span>
                         </div>
                     </div>
 
                     {/* Email Content Mockup */}
                     <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-100 dark:border-white/5 rounded-3xl p-10 space-y-8 max-w-2xl mx-auto shadow-sm text-slate-900 dark:text-white">
-                        {offer.options?.[0]?.images?.[0] && (
+                        {previewImageUrl && (
                             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg border border-slate-200/50 dark:border-white/10 group">
                                 <img
-                                    src={offer.options[0].images[0]}
+                                    src={previewImageUrl}
                                     alt="Property Preview"
                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                                 />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
                                 <div className="absolute bottom-4 left-6">
-                                    <p className="text-white font-black italic uppercase tracking-widest text-sm shadow-sm">{offer.options[0].prop_name}</p>
+                                    <p className="text-white font-black italic uppercase tracking-widest text-sm shadow-sm">{firstOption?.prop_name}</p>
                                 </div>
                             </div>
                         )}
 
                         <div className="space-y-4">
-                            <h4 className="text-2xl font-black italic uppercase tracking-tighter leading-none">Elevate Your Mallorca Experience</h4>
+                            <h4 className="text-2xl font-black italic uppercase tracking-tighter leading-none">
+                                {firstOption?.ai_copy?.email_title || firstOption?.headline || "Elevate Your Experience"}
+                            </h4>
                             <p className="text-slate-600 dark:text-gray-400 leading-relaxed italic">
-                                Hello {offer.original_booking?.guest_name?.split(' ')[0] || 'Guest'},<br /><br />
-                                We noticed your upcoming stay at <strong>{offer.original_booking?.prop_name}</strong> and wanted to offer you something special.
-                                Because you booked directly with us, we've unlocked a few exclusive upgrade options for your dates.
+                                {firstOption?.ai_copy?.email_content ? (
+                                    firstOption.ai_copy.email_content
+                                ) : (
+                                    <>
+                                        Hello {guestName.split(' ')[0]},<br /><br />
+                                        We noticed your upcoming stay at <strong>{originalPropName}</strong> and wanted to offer you something special.
+                                        Based on your preferences, we've curated an exclusive upgrade opportunity for your dates.
+                                    </>
+                                )}
                             </p>
                         </div>
 
-                        <div className="space-y-3">
-                            {offer.options?.slice(0, 1).map((opt: any) => (
-                                <div key={opt.prop_id} className="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl flex items-center gap-4">
-                                    <div className="w-16 h-16 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-600 font-black text-xs italic">
-                                        +{opt.pricing?.extra_per_night}€
-                                    </div>
-                                    <div>
-                                        <p className="font-bold uppercase text-xs">{opt.prop_name}</p>
-                                        <p className="text-[10px] text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest">{opt.headline}</p>
-                                    </div>
+                        <div className="space-y-4">
+                            {firstOption?.ai_copy?.email_selling_points && (
+                                <ul className="space-y-2 mb-6">
+                                    {firstOption.ai_copy.email_selling_points.map((point: string, i: number) => (
+                                        <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-gray-400 italic">
+                                            <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                                            {point}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+
+                            <div className="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl flex items-center gap-4">
+                                <div className="w-16 h-16 rounded-xl bg-orange-500/10 flex flex-col items-center justify-center text-orange-600 font-black text-xs italic p-2">
+                                    <span className="text-lg font-black text-orange-500">+€{Math.round(extraPerNight || 0)}/night</span>
+                                    {firstOption?.pricing?.revenue_lift && (
+                                        <span className="text-[10px] text-gray-400 text-center mt-1">
+                                            €{firstOption.pricing.revenue_lift.toFixed(0)} total for {firstOption.pricing.nights || 0} nights
+                                        </span>
+                                    )}
                                 </div>
-                            ))}
+                                <div>
+                                    <p className="font-bold uppercase text-xs">{firstOption?.prop_name}</p>
+                                    <p className="text-[10px] text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest">
+                                        {firstOption?.ai_copy?.email_title || firstOption?.headline || firstOption?.summary}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
 
                         <button

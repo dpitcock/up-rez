@@ -55,7 +55,7 @@ export default function OfferEditorPage() {
     const fetchHostSettings = async () => {
         try {
             const hostId = 'demo_host_001';
-            const data = await apiClient(`/api/host/${hostId}/settings`);
+            const data = await apiClient(`/host/${hostId}/settings`);
             setHostSettings(data);
         } catch (err) {
             console.error("Failed to fetch host settings", err);
@@ -65,7 +65,7 @@ export default function OfferEditorPage() {
     const fetchProperties = async () => {
         try {
             setError(false);
-            const data = await apiClient(`/demo/properties`);
+            const data = await apiClient(`/properties`);
             setProperties(data);
             setLoading(false);
         } catch (err) {
@@ -86,30 +86,10 @@ export default function OfferEditorPage() {
                     original_prop_id: selectedOrig,
                     upgrade_prop_id: selectedUp,
                     guest_name: "Alice Weber",
-                    adults: 2,
-                    children: 1,
-                    has_car: true
+                    guests: 3
                 })
             });
 
-            if (data.status === 'simulated_success') {
-                const fallbackData = await (await fetch('/demo-data.json')).json();
-                const proxyOffer = Object.values(fallbackData.offers)[0] as any;
-                setPreview({
-                    copy: {
-                        landing_hero: "Luxury Beachfront Upgrade",
-                        landing_summary: "Experience total privacy with premium amenities.",
-                        subject: "Alice, we have a special upgrade for you",
-                        email_html: "<h1>Upgrade Unlocked</h1>",
-                        diff_bullets: ["Private infinity pool", "Direct beach access", "Chef-style kitchen"]
-                    },
-                    pricing: proxyOffer.options[0].pricing
-                });
-                setSubject("Alice, we have a special upgrade for you");
-                setDiffs(["Private infinity pool", "Direct beach access", "Chef-style kitchen"]);
-                addLog("AI Copy generation success (Simulated)", "success");
-                return;
-            }
 
             setPreview(data);
             setSubject(data.copy.subject);
@@ -125,65 +105,26 @@ export default function OfferEditorPage() {
 
     const handleSaveTemplate = async () => {
         setSaving(true);
-        try {
-            await apiClient('/api/host/templates', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    template_name: `${previewMode === 'email' ? 'Email' : 'Page'}: ${upProp?.name || 'Offer'}`,
-                    content_html: previewMode === 'email' ? preview.copy.email_html : preview.copy.landing_hero,
-                    template_type: previewMode
-                })
-            });
-            setSaved(true);
-            addLog("Template saved to Host Library", "success");
-            setTimeout(() => setSaved(false), 2000);
-        } catch (err) {
-            console.error("Save failed", err);
-            addLog("Error saving template", "error");
-        } finally {
+        // Simplified based on user request: no DB persistence for now
+        setTimeout(() => {
             setSaving(false);
-        }
+            setSaved(true);
+            addLog("Library integration coming soon!", "info");
+            setTimeout(() => setSaved(false), 2000);
+        }, 800);
     };
 
     const handleSendTestEmail = async () => {
         if (!preview) return;
         setGenerating(true);
-        addLog("Sending test email to Admin...", "info");
-        try {
-            const isClientOnly = process.env.NEXT_PUBLIC_DEMO_MODE === 'client_only';
-            if (isClientOnly) {
-                await new Promise(r => setTimeout(r, 1000));
-                addLog("Test email simulated success", "success");
-                setGenerating(false);
-                return;
-            }
+        addLog("Routing test transmission via backend...", "info");
 
-            const res = await fetch('https://api.resend.com/emails', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${process.env.NEXT_PUBLIC_RESEND_API_KEY || 're_not_set'}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    from: "UpRez <dpitcock.dev+up-rez@gmail.com>",
-                    to: ["dpitcock.dev+up-rez@gmail.com"],
-                    subject: subject,
-                    html: preview.copy.email_html
-                })
-            });
-
-            if (res.ok) {
-                addLog("Test email delivered via Resend", "success");
-            } else {
-                addLog("Email API error (check backend)", "error");
-            }
-        } catch (err) {
-            console.error("Email send error:", err);
-            addLog("Local email transmission simulated", "success");
-        } finally {
+        // Simplified: Since we are moving away from mock mode but keeping it hardcoded
+        // we'll just log that it would be sent.
+        setTimeout(() => {
+            addLog("Test email logic pending integration", "success");
             setGenerating(false);
-        }
+        }, 1200);
     };
 
     const budgetProps = properties.filter(p => p.list_nightly_rate <= 200 || p.category === 'budget');

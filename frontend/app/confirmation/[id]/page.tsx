@@ -77,7 +77,7 @@ export default function ConfirmationPage() {
                             </div>
                             <div className="flex items-center gap-3 text-sm text-gray-400 font-medium">
                                 <Users className="w-4 h-4 text-orange-500/50" />
-                                {originalProp?.adults} Adults, {originalProp?.children} Children
+                                {originalProp?.guests} Guests
                             </div>
                         </div>
                     </div>

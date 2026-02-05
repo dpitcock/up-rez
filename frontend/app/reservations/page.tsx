@@ -13,9 +13,13 @@ import {
     ArrowUpDown,
     CheckCircle2,
     XCircle,
-    Clock
+    Clock,
+    Plus,
+    Edit,
+    Trash2
 } from "lucide-react";
 import DashboardLayout from '@/components/DashboardLayout';
+import BookingModal from '@/components/BookingModal';
 import { apiClient } from '@/lib/api';
 
 interface Booking {
@@ -26,6 +30,7 @@ interface Booking {
     arrival_date: string;
     departure_date: string;
     status: string;
+    guests: number;
     total_paid: number;
     nights: number;
 }
@@ -34,6 +39,10 @@ export default function ReservationsPage() {
     const [bookings, setBookings] = useState<Booking[]>([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState<'create' | 'edit'>('create');
+    const [selectedBooking, setSelectedBooking] = useState<Booking | undefined>();
+    const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
     const fetchBookings = async () => {
         try {
@@ -56,6 +65,37 @@ export default function ReservationsPage() {
         b.prop_name.toLowerCase().includes(search.toLowerCase()) ||
         b.id.toLowerCase().includes(search.toLowerCase())
     );
+
+    const handleCreateNew = () => {
+        setModalMode('create');
+        setSelectedBooking(undefined);
+        setIsModalOpen(true);
+    };
+
+    const handleEdit = (booking: Booking) => {
+        setModalMode('edit');
+        setSelectedBooking(booking);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (deleteConfirm !== id) {
+            setDeleteConfirm(id);
+            return;
+        }
+
+        try {
+            await apiClient(`/bookings/${id}`, { method: 'DELETE' });
+            await fetchBookings();
+            setDeleteConfirm(null);
+        } catch (err) {
+            console.error("Failed to delete booking", err);
+        }
+    };
+
+    const handleModalSave = async () => {
+        await fetchBookings();
+    };
 
     const getStatusStyle = (status: string) => {
         switch (status.toLowerCase()) {
@@ -98,8 +138,8 @@ export default function ReservationsPage() {
                         </h1>
                     </div>
 
-                    <div className="flex flex-col items-end gap-2 text-right w-full md:w-auto">
-                        <div className="relative w-full md:w-72">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 w-full md:w-auto">
+                        <div className="relative w-full sm:w-72">
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                             <input
                                 type="text"
@@ -109,6 +149,13 @@ export default function ReservationsPage() {
                                 className="w-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl py-3 pl-12 pr-4 text-sm focus:outline-none focus:border-blue-500/50 transition-all shadow-sm"
                             />
                         </div>
+                        <button
+                            onClick={handleCreateNew}
+                            className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl font-black text-sm uppercase tracking-wider transition-all shadow-sm w-full sm:w-auto justify-center"
+                        >
+                            <Plus className="w-4 h-4" />
+                            Create New
+                        </button>
                     </div>
                 </div>
 
@@ -121,9 +168,10 @@ export default function ReservationsPage() {
                                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600">Guest / ID</th>
                                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600">Property</th>
                                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600">Stay Dates</th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600">Guests</th>
                                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600">Status</th>
                                     <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 text-right">Value</th>
-                                    <th className="px-8 py-5"></th>
+                                    <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-gray-600 text-right">Actions</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 dark:divide-white/[0.02]">
@@ -170,6 +218,11 @@ export default function ReservationsPage() {
                                                 </div>
                                             </td>
                                             <td className="px-8 py-6">
+                                                <div className="text-xs font-bold text-slate-600 dark:text-gray-400">
+                                                    {booking.guests} Guest{booking.guests !== 1 ? 's' : ''}
+                                                </div>
+                                            </td>
+                                            <td className="px-8 py-6">
                                                 <div className={cn(
                                                     "inline-flex items-center gap-1.5 px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest",
                                                     getStatusStyle(booking.status)
@@ -181,10 +234,28 @@ export default function ReservationsPage() {
                                             <td className="px-8 py-6 text-right font-black italic text-slate-900 dark:text-white">
                                                 €{booking.total_paid.toFixed(2)}
                                             </td>
-                                            <td className="px-8 py-6 text-right">
-                                                <button className="p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-slate-200 dark:hover:bg-white/10 transition-all">
-                                                    <ChevronRight className="w-4 h-4 text-slate-400" />
-                                                </button>
+                                            <td className="px-8 py-6">
+                                                <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <button
+                                                        onClick={() => handleEdit(booking)}
+                                                        className="p-2 rounded-lg hover:bg-blue-500/10 text-blue-600 transition-all"
+                                                        title="Edit booking"
+                                                    >
+                                                        <Edit className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDelete(booking.id)}
+                                                        className={cn(
+                                                            "p-2 rounded-lg transition-all",
+                                                            deleteConfirm === booking.id
+                                                                ? "bg-red-500 text-white"
+                                                                : "hover:bg-red-500/10 text-red-600"
+                                                        )}
+                                                        title={deleteConfirm === booking.id ? "Click again to confirm" : "Delete booking"}
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))
@@ -194,6 +265,19 @@ export default function ReservationsPage() {
                     </div>
                 </div>
             </div>
+
+            {/* Booking Modal */}
+            <BookingModal
+                isOpen={isModalOpen}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setSelectedBooking(undefined);
+                }}
+                onSave={handleModalSave}
+                booking={selectedBooking}
+                mode={modalMode}
+                existingBookings={bookings}
+            />
         </DashboardLayout>
     );
 }

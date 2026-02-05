@@ -26,6 +26,7 @@ services:
       - ./frontend:/app
       - /app/node_modules
       - /app/.next
+      - ./initial_data:/initial_data
     command: npm run dev -- -p 3030
     networks:
       - uprez-network

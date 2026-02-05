@@ -27,6 +27,7 @@ export interface Property {
 
 export interface Booking {
     id: string;
+    session_id?: string;
     host_id: string;
     prop_id: string;
     arrival_date: string;
@@ -34,15 +35,10 @@ export interface Booking {
     nights: number;
     guest_name: string;
     guest_email: string;
-    guest_country?: string;
-    adults: number;
-    children: number;
-    infants: number;
-    has_car: number;
+    guests: number;
     rate_code?: string;
     base_nightly_rate: number;
     total_paid: number;
-    channel?: string;
     status: string;
     created_at: string;
     updated_at?: string;
@@ -87,6 +83,7 @@ export interface UpgradeOption {
 
 export interface Offer {
     id: string;
+    session_id?: string;
     booking_id: string;
     status: string;
     expires_at: string;

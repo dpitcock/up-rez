@@ -31,8 +31,13 @@ export default function HostSettingsDashboard() {
         try {
             setError(false);
             const hostId = 'demo_host_001';
+            const sessionId = typeof window !== 'undefined' ? localStorage.getItem('demo-session-id') : null;
+
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (sessionId) headers['x-session-id'] = sessionId;
+
             const [settingsData, templatesData] = await Promise.all([
-                apiClient(`/api/host/${hostId}/settings`),
+                apiClient(`/api/host/${hostId}/settings`, { headers }),
                 apiClient(`/api/host/templates`)
             ]);
 
@@ -50,9 +55,14 @@ export default function HostSettingsDashboard() {
         setSaving(true);
         try {
             const hostId = 'demo_host_001';
+            const sessionId = typeof window !== 'undefined' ? localStorage.getItem('demo-session-id') : null;
+
+            const headers: HeadersInit = { 'Content-Type': 'application/json' };
+            if (sessionId) headers['x-session-id'] = sessionId;
+
             await apiClient(`/api/host/${hostId}/settings`, {
                 method: 'PATCH',
-                headers: { 'Content-Type': 'application/json' },
+                headers,
                 body: JSON.stringify(settings)
             });
             await fetchData();
@@ -300,7 +310,14 @@ export default function HostSettingsDashboard() {
                         className="w-full flex items-center justify-center gap-2 py-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/5 text-slate-500 dark:text-gray-500 hover:text-red-500 dark:hover:text-white hover:bg-red-50 dark:hover:bg-red-500/10 hover:border-red-200 dark:hover:border-red-500/20 transition-all group shadow-sm"
                         onClick={async () => {
                             const hostId = 'demo_host_001';
-                            await apiClient(`/api/host/${hostId}/settings/reset`, { method: 'POST' });
+                            const sessionId = typeof window !== 'undefined' ? localStorage.getItem('demo-session-id') : null;
+                            const headers: HeadersInit = {};
+                            if (sessionId) headers['x-session-id'] = sessionId;
+
+                            await apiClient(`/api/host/${hostId}/settings/reset`, {
+                                method: 'POST',
+                                headers
+                            });
                             fetchData();
                         }}
                     >

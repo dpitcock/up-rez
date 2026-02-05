@@ -49,12 +49,9 @@ function generateBookings() {
                 nights: nights,
                 guest_name: GUEST_NAMES[Math.floor(Math.random() * GUEST_NAMES.length)],
                 guest_email: `dpitcock.dev+${bookingId}@gmail.com`,
-                guest_country: ["US", "UK", "DE", "FR", "ES"][Math.floor(Math.random() * 5)],
-                adults: Math.floor(Math.random() * (prop.maxGuests || 2)) + 1,
-                children: Math.floor(Math.random() * 3),
+                guests: Math.floor(Math.random() * (prop.max_guests || 4)) + 1,
                 base_nightly_rate: pricePerNight,
                 total_paid: totalPaid,
-                channel: ["airbnb", "booking", "direct"][Math.floor(Math.random() * 3)],
                 status: 'confirmed',
                 created_at: new Date().toISOString()
             };

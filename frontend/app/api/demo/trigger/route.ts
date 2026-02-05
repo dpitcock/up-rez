@@ -4,14 +4,16 @@ import { generateOffer } from '@/lib/services/offerService';
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
+        const headerSessionId = req.headers.get('x-session-id');
         const { type, booking_id } = body;
+        const session_id = body.session_id || headerSessionId;
 
         if (!booking_id) {
             return NextResponse.json({ error: 'booking_id is required' }, { status: 400 });
         }
 
         if (type === 'cron' || type === 'cancellation') {
-            const offerId = await generateOffer(booking_id);
+            const offerId = await generateOffer(booking_id, session_id);
             if (offerId) {
                 return NextResponse.json({
                     status: 'ok',

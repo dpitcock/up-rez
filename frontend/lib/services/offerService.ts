@@ -3,6 +3,8 @@ import { Booking, Property, Offer, UpgradeOption, PricingDetails, HostSettings }
 import { v4 as uuidv4 } from 'uuid';
 import OpenAI from 'openai';
 import * as sgMail from '@sendgrid/mail';
+import React from 'react';
+import { UpgradeEmailTemplate } from '../email/UpgradeEmailTemplate';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -12,10 +14,10 @@ if (process.env.SENDGRID_API_KEY) {
     sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 }
 
-export async function generateOffer(bookingId: string): Promise<string | null> {
-    console.log(`\n=== Starting TS offer generation for booking ${bookingId} ===`);
+export async function generateOffer(bookingId: string, sessionId?: string): Promise<string | null> {
+    console.log(`\n=== Starting TS offer generation for booking ${bookingId} (Session: ${sessionId || 'None'}) ===`);
 
-    const booking = await db.getBooking(bookingId);
+    const booking = await db.getBooking(bookingId, sessionId);
     if (!booking) {
         console.error(`❌ Booking ${bookingId} not found`);
         return null;
@@ -53,6 +55,8 @@ export async function generateOffer(bookingId: string): Promise<string | null> {
         );
 
         const diffs = generatePropertyDiffs(originalProp, candidate);
+        const candidateImages = parseImages(candidate.images);
+        const images = candidateImages.length > 0 ? candidateImages : [`/properties/${candidate.id}.png`];
 
         scoredOptions.push({
             ranking: 0,
@@ -63,7 +67,7 @@ export async function generateOffer(bookingId: string): Promise<string | null> {
             diffs,
             headline: `Upgrade to ${candidate.name}`,
             summary: `Experience more space and better amenities.`,
-            images: parseImages(candidate.images),
+            images: images,
             ai_copy: null,
             amenities: parseAmenities(candidate.amenities),
             metadata: candidate.metadata || {},
@@ -89,7 +93,7 @@ export async function generateOffer(bookingId: string): Promise<string | null> {
         if (useOpenAI && idx === 0) {
             try {
                 const candidate = allProperties.find(p => p.id === opt.prop_id)!;
-                aiCopy = await generateAICopy(originalProp, candidate, opt.pricing, booking, opt.diffs);
+                aiCopy = await generateAICopy(originalProp, candidate, opt.pricing, booking, opt.diffs, hostSettings);
                 console.log(`✅ AI Copy generated for ${opt.prop_name}`);
             } catch (err) {
                 console.error(`❌ AI Generation failed for ${opt.prop_name}:`, err);
@@ -109,29 +113,54 @@ export async function generateOffer(bookingId: string): Promise<string | null> {
     expiresAt.setHours(expiresAt.getHours() + (hostSettings?.offer_validity_hours || 48));
 
     const bestOption = top3[0];
+    const baseUrl = (process.env.NEXT_PUBLIC_FRONTEND_URL || 'https://uprez.dpitcock.dev').replace(/\/$/, '');
+    const offerUrl = `${baseUrl}/offer/${offerId}`;
+    const companyName = hostSettings?.pm_company_name || hostSettings?.host_name || 'Your Host';
+
+    // Ensure we have a valid image URL for the email
+    const mainImage = bestOption.images?.[0];
+    const imageUrl = mainImage
+        ? (mainImage.startsWith('http') ? mainImage : `${baseUrl}${mainImage.startsWith('/') ? '' : '/'}${mainImage}`)
+        : `${baseUrl}/properties/${bestOption.prop_id}.png`;
+
+    // Calculate per-night upgrade fee
+    const upgradePerNight = Math.round(bestOption.pricing.revenue_lift / bestOption.pricing.nights);
+
+    const expiresStr = `${new Date(expiresAt).toLocaleDateString()} at ${new Date(expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+    const renderEmailHtml = (aiPayload?: any) => {
+        // Use local require to bypass build-time tree shaking checks for react-dom/server in App Router
+        const { renderToStaticMarkup } = require('react-dom/server');
+
+        return renderToStaticMarkup(
+            React.createElement(UpgradeEmailTemplate, {
+                guestName: booking.guest_name,
+                originalPropName: originalProp.name,
+                companyName: companyName,
+                upgradeOption: {
+                    prop_name: bestOption.prop_name,
+                    images: [imageUrl],
+                    summary: bestOption.summary,
+                    diffs: bestOption.diffs,
+                    pricing: {
+                        revenue_lift: bestOption.pricing.revenue_lift,
+                        nights: bestOption.pricing.nights
+                    }
+                },
+                offerUrl: offerUrl,
+                expiresAt: expiresStr,
+                aiContent: aiPayload ? {
+                    title: aiPayload.email_title,
+                    content: aiPayload.email_content,
+                    selling_points: aiPayload.email_selling_points,
+                    cta_text: aiPayload.email_cta
+                } : undefined
+            })
+        );
+    };
+
     const defaultSubject = `Exclusive Upgrade Opportunity: ${bestOption.prop_name}`;
-    const defaultEmailHtml = `
-        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee;">
-            <h2 style="color: #EF6C00;">Great news, ${booking.guest_name}!</h2>
-            <p>We have a special upgrade opportunity for your upcoming stay at <strong>${originalProp.name}</strong>.</p>
-            <div style="background: #fff9f2; padding: 15px; border-radius: 8px; margin: 20px 0;">
-                <h3 style="margin-top: 0;">${bestOption.prop_name}</h3>
-                <p>${bestOption.summary}</p>
-                <ul>
-                    ${bestOption.diffs.map(d => `<li>${d}</li>`).join('')}
-                </ul>
-                <p><strong>Offer Price:</strong> €${bestOption.pricing.offer_adr.toFixed(2)}/night</p>
-            </div>
-            <p>Click below to view the full details and claim your upgrade:</p>
-            <a href="${process.env.NEXT_PUBLIC_FRONTEND_URL}/offer/${offerId}" 
-               style="display: inline-block; background: #EF6C00; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-weight: bold;">
-               View My Upgrade Offer
-            </a>
-            <p style="font-size: 12px; color: #666; margin-top: 30px;">
-                This offer expires on ${new Date(expiresAt).toLocaleDateString()}.
-            </p>
-        </div>
-    `;
+    const emailHtml = renderEmailHtml(bestOption.ai_copy);
 
     const offer: Partial<Offer> = {
         id: offerId,
@@ -140,12 +169,12 @@ export async function generateOffer(bookingId: string): Promise<string | null> {
         top3,
         expires_at: expiresAt.toISOString(),
         email_subject: bestOption.ai_copy?.subject || defaultSubject,
-        email_body_html: bestOption.ai_copy?.email_html || defaultEmailHtml,
+        email_body_html: emailHtml,
         created_at: new Date().toISOString()
     };
 
     console.log(`💾 Saving offer ${offerId} to database...`);
-    await db.saveOffer(offer);
+    await db.saveOffer(offer, sessionId);
 
     // Trigger email
     const recipient = process.env.CONTACT_EMAIL || booking.guest_email;
@@ -155,13 +184,15 @@ export async function generateOffer(bookingId: string): Promise<string | null> {
     return offerId;
 }
 
-export async function generateOptionCopy(offerId: string, propId: string): Promise<any> {
+export async function generateOptionCopy(offerId: string, propId: string, sessionId?: string): Promise<any> {
     console.log(`\n=== Generating on-demand copy for offer ${offerId}, property ${propId} ===`);
 
-    const offer = await db.getOffer(offerId);
+    const offer = await db.getOffer(offerId); // Offer ID is unique UUID, so no session scoping needed for lookup?
+    // Wait, getOffer does strictly ID lookup.
+    // If offer ID is UUID, it's globally unique.
     if (!offer) throw new Error('Offer not found');
 
-    const booking = await db.getBooking(offer.booking_id);
+    const booking = await db.getBooking(offer.booking_id, sessionId);
     if (!booking) throw new Error('Booking not found');
 
     const originalProp = await db.getProperty(booking.prop_id);
@@ -190,10 +221,46 @@ export async function generateOptionCopy(offerId: string, propId: string): Promi
     await db.saveOffer({
         ...offer,
         top3
-    });
+    }, sessionId);
 
     console.log(`✅ On-demand copy generated and saved for ${propId}`);
     return aiCopy;
+}
+
+export async function acceptOffer(offerId: string, propId: string, sessionId?: string): Promise<any> {
+    console.log(`\n=== Accepting offer ${offerId}, property ${propId} ===`);
+
+    const offer = await db.getOffer(offerId);
+    if (!offer) throw new Error('Offer not found');
+    if (offer.status !== 'active') throw new Error(`Offer is already ${offer.status}`);
+
+    const booking = await db.getBooking(offer.booking_id, sessionId);
+    if (!booking) throw new Error('Booking not found');
+
+    const top3 = offer.top3 as UpgradeOption[];
+    const option = top3.find(o => o.prop_id === propId);
+    if (!option) throw new Error('Selected property not found in offer options');
+
+    // 1. Update Offer Status
+    await db.updateOfferStatus(offerId, 'accepted', propId);
+
+    // 2. Update Booking
+    await db.updateBooking(offer.booking_id, {
+        prop_id: propId,
+        status: 'upgraded',
+        upgraded_from_prop_id: booking.prop_id,
+        base_nightly_rate: option.pricing.offer_adr,
+        total_paid: option.pricing.offer_total,
+        upgrade_at: new Date().toISOString()
+    });
+
+    console.log(`✅ Offer ${offerId} accepted. Booking ${offer.booking_id} updated to property ${propId}.`);
+
+    return {
+        success: true,
+        message: 'Upgrade successful',
+        booking_id: offer.booking_id
+    };
 }
 
 function computeScore(orig: Property, cand: Property, booking: Booking): number {
@@ -214,9 +281,15 @@ function computeScore(orig: Property, cand: Property, booking: Booking): number 
 }
 
 function calculateOfferPricing(fromAdr: number, toAdr: number, nights: number, discountPct: number, fromTotal: number): PricingDetails {
-    const offerAdr = fromAdr + (toAdr - fromAdr) * (1 - discountPct);
-    const offerTotal = offerAdr * nights;
-    const listTotal = toAdr * nights;
+    // formula: 30% off net difference of the costs of reservations
+    // ie: (NewTotal - OriginalTotal) * 0.70
+    const stayTotalAtListRate = toAdr * nights;
+    const currentTotal = fromTotal;
+    const netDifference = stayTotalAtListRate - currentTotal;
+
+    const upgradeFee = netDifference * 0.70;
+    const offerTotal = currentTotal + upgradeFee;
+    const offerAdr = offerTotal / nights;
 
     return {
         currency: 'EUR',
@@ -226,10 +299,10 @@ function calculateOfferPricing(fromAdr: number, toAdr: number, nights: number, d
         nights,
         from_total: fromTotal,
         offer_total: offerTotal,
-        list_total: listTotal,
-        discount_percent: discountPct * 100,
-        discount_amount_total: listTotal - offerTotal,
-        revenue_lift: offerTotal - fromTotal
+        list_total: stayTotalAtListRate,
+        discount_percent: 30,
+        discount_amount_total: stayTotalAtListRate - offerTotal,
+        revenue_lift: upgradeFee
     };
 }
 
@@ -241,16 +314,37 @@ function generatePropertyDiffs(orig: Property, cand: Property): string[] {
     return diffs.slice(0, 3);
 }
 
-async function generateAICopy(orig: Property, cand: Property, pricing: PricingDetails, booking: Booking, diffs: string[]) {
-    const prompt = `Generate a luxury upgrade offer for ${booking.guest_name}. 
-    Original: ${orig.name} at ${pricing.from_adr}€/night.
-    Upgrade: ${cand.name} at ${pricing.offer_adr}€/night (Discounted from ${pricing.to_adr_list}€).
-    Diffs: ${diffs.join(', ')}.
-    Return JSON: { "subject": "...", "email_html": "...", "landing_hero": "...", "landing_summary": "...", "diff_bullets": ["...", "...", "..."] }`;
+async function generateAICopy(orig: Property, cand: Property, pricing: PricingDetails, booking: Booking, diffs: string[], hostSettings?: HostSettings | null) {
+    const companyName = hostSettings?.pm_company_name || hostSettings?.host_name || 'your host';
+    const upgradePerNight = Math.round(pricing.revenue_lift / pricing.nights);
+
+    const prompt = `Generate a luxury upgrade offer for ${booking.guest_name} from ${companyName}. 
+    
+    Original property: ${orig.name} at ${pricing.from_adr}€/night (Total paid: €${pricing.from_total})
+    Upgrade property: ${cand.name} at ${pricing.to_adr_list}€/night list rate
+    
+    PRICING (IMPORTANT):
+    - Upgrade fee: €${upgradePerNight}/night (€${pricing.revenue_lift} total for ${pricing.nights} nights)
+    - This is the ADDITIONAL cost to upgrade, not the new total price
+    - Display as: "Upgrade for just €${upgradePerNight}/night" or similar language that emphasizes the incremental cost
+    
+    Property differences: ${diffs.join(', ')}.
+    
+    Return JSON with the following structure:
+    { 
+      "subject": "Email subject line", 
+      "email_title": "Primary greeting/title in the email (e.g. Great news, [Name]!)",
+      "email_content": "A short, persuasive paragraph about why this upgrade is perfect for them.",
+      "email_selling_points": ["Point 1", "Point 2", "Point 3"],
+      "email_cta": "CTA Button text (e.g. VIEW MY UPGRADE)",
+      "landing_hero": "Hero headline for the webpage", 
+      "landing_summary": "Summary text for the webpage", 
+      "diff_bullets": ["Bullet 1", "Bullet 2", "Bullet 3"] 
+    }`;
 
     const response = await openai.chat.completions.create({
         model: "gpt-4o-mini",
-        messages: [{ role: "user", content: prompt }],
+        messages: [{ role: "system", content: "You are a luxury concierge content generator." }, { role: "user", content: prompt }],
         response_format: { type: "json_object" }
     });
 

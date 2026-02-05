@@ -37,7 +37,7 @@ export default function PayPage() {
 
         try {
             // Match the property ID of the first (primary) option for this demo
-            const res = await apiClient(`/offer/${id}/accept`, {
+            const res = await apiClient(`/offers/${id}/accept`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ prop_id: offer.options[0].prop_id })

@@ -9,6 +9,7 @@ import { AlertCircle, Clock, CheckCircle2, ChevronRight, Home, Users, Bed, Bath,
 import { ConnectionError } from "@/components/ConnectionError";
 import Chatbot from '@/components/Chatbot';
 import { cn } from '@/lib/utils';
+import { getSessionId } from '@/lib/session';
 
 export default function OfferPage() {
     const params = useParams();
@@ -22,6 +23,11 @@ export default function OfferPage() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [showDetails, setShowDetails] = useState(true);
     const [generatingOptionId, setGeneratingOptionId] = useState<string | null>(null);
+    const [currentSessionId, setCurrentSessionId] = useState<string>('');
+
+    useEffect(() => {
+        setCurrentSessionId(getSessionId());
+    }, []);
 
     const loadOffer = async () => {
         if (!id) return;
@@ -42,27 +48,13 @@ export default function OfferPage() {
         loadOffer();
     }, [id]);
 
-    const handleEnableOpenAI = async () => {
-        try {
-            await apiClient('/demo/settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    use_openai: true,
-                    local_model: "gemma3:latest"
-                })
-            });
-            loadOffer();
-        } catch (err) {
-            console.error("Failed to enable OpenAI", err);
-        }
-    };
+
 
     const handleOptionClick = async (option: any, index: number) => {
         if (!option.ai_copy) {
             setGeneratingOptionId(option.prop_id);
             try {
-                const response = await apiClient(`/offer/${id}/generate-option`, {
+                const response = await apiClient(`/offers/${id}/generate-option`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prop_id: option.prop_id })
@@ -91,23 +83,7 @@ export default function OfferPage() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    useEffect(() => {
-        const enableOpenAI = async () => {
-            try {
-                await apiClient('/demo/settings', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        use_openai: true,
-                        local_model: "gemma3:latest"
-                    })
-                });
-            } catch (err) {
-                console.error("Failed to enable OpenAI", err);
-            }
-        };
-        enableOpenAI();
-    }, []);
+
 
     if (loading) {
         return (
@@ -125,7 +101,6 @@ export default function OfferPage() {
             <main className="min-h-screen bg-[#050505] flex items-center justify-center p-8">
                 <ConnectionError
                     onRetry={loadOffer}
-                    onEnableOpenAI={handleEnableOpenAI}
                 />
             </main>
         );
@@ -140,7 +115,7 @@ export default function OfferPage() {
                     </div>
                     <h1 className="text-4xl font-black text-white mb-4 italic uppercase">Link Expired</h1>
                     <p className="text-gray-500 text-lg mb-8 max-w-md mx-auto">This upgrade invitation has either expired or been withdrawn. Your original booking remains confirmed.</p>
-                    <Link href="/dashboard" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-black uppercase text-xs tracking-widest rounded-2xl transition-all transform hover:scale-105">
+                    <Link href="/demo" className="inline-flex items-center gap-2 px-8 py-4 bg-white text-black font-black uppercase text-xs tracking-widest rounded-2xl transition-all transform hover:scale-105">
                         Return to Dashboard
                     </Link>
                 </div>
@@ -149,6 +124,53 @@ export default function OfferPage() {
     }
 
     const { original_booking, options, status, expires_at } = offer;
+
+    if (status === 'accepted') {
+        const isOwnAcceptance = offer.session_id === currentSessionId;
+
+        return (
+            <main className="min-h-screen bg-[#050505] flex items-center justify-center p-8 text-white">
+                <div className={cn(
+                    "max-w-2xl w-full rounded-[3rem] p-16 text-center border space-y-8 shadow-[0_0_100px_-20px_rgba(0,0,0,0.15)]",
+                    isOwnAcceptance
+                        ? "border-green-500/20 bg-green-500/[0.02] shadow-[0_0_100px_-20px_rgba(34,197,94,0.15)]"
+                        : "border-red-500/20 bg-red-500/[0.02] shadow-[0_0_100px_-20px_rgba(239,68,68,0.15)]"
+                )}>
+                    <div className={cn(
+                        "w-24 h-24 rounded-full flex items-center justify-center mx-auto border shadow-inner",
+                        isOwnAcceptance
+                            ? "bg-green-600/10 border-green-500/20"
+                            : "bg-red-600/10 border-red-500/20"
+                    )}>
+                        {isOwnAcceptance ? (
+                            <CheckCircle2 className="w-12 h-12 text-green-500" />
+                        ) : (
+                            <Clock className="w-12 h-12 text-red-500" />
+                        )}
+                    </div>
+                    <div className="space-y-4">
+                        <h1 className="text-5xl font-black italic uppercase tracking-tighter text-white leading-tight">
+                            {isOwnAcceptance ? "Upgrade" : "Offer"} <br />
+                            <span className={isOwnAcceptance ? "text-green-500" : "text-red-500"}>
+                                {isOwnAcceptance ? "Confirmed!" : "Already Claimed"}
+                            </span>
+                        </h1>
+                        <p className="text-gray-400 text-lg font-medium italic max-w-md mx-auto">
+                            {isOwnAcceptance
+                                ? `You have successfully upgraded your stay at ${original_booking.prop_name}. We can't wait to host you in your new luxury space.`
+                                : `This exclusive upgrade for ${original_booking.prop_name} has already been claimed by another guest. High-demand units like these move quickly!`}
+                        </p>
+                    </div>
+                    <div className="pt-4">
+                        <Link href="/demo" className="inline-flex items-center gap-3 px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all transform hover:scale-105">
+                            Return to Dashboard
+                            <ChevronRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+                </div>
+            </main>
+        );
+    }
 
     if (status === 'expired') {
         return (
@@ -167,7 +189,7 @@ export default function OfferPage() {
                         </p>
                     </div>
                     <div className="pt-4">
-                        <Link href="/dashboard" className="inline-flex items-center gap-3 px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all transform hover:scale-105">
+                        <Link href="/demo" className="inline-flex items-center gap-3 px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-3xl text-[10px] font-black uppercase tracking-[0.3em] transition-all transform hover:scale-105">
                             Return to Dashboard
                             <ChevronRight className="w-4 h-4" />
                         </Link>
@@ -248,11 +270,11 @@ export default function OfferPage() {
                                     <div className="relative z-10">
                                         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-2">The Exclusive Deal</p>
                                         <div className="flex items-baseline gap-2">
-                                            <span className="text-4xl font-black text-white italic">+€{currentOption.pricing?.extra_per_night || 0}</span>
+                                            <span className="text-4xl font-black text-white italic">+€{Math.round((currentOption.pricing?.revenue_lift || 0) / (currentOption.pricing?.nights || 1))}</span>
                                             <span className="text-gray-500 text-xs font-bold uppercase tracking-widest">per night</span>
                                         </div>
                                         <p className="mt-4 text-xs text-gray-400 font-medium max-w-[200px]">
-                                            Upgrade your entire {original_booking.nights}-night stay for just <span className="text-white font-bold">€{currentOption.pricing?.total_extra || 0}</span> today.
+                                            Upgrade your entire {currentOption.pricing?.nights || original_booking.nights}-night stay for just <span className="text-white font-bold">€{Math.round(currentOption.pricing?.revenue_lift || 0)}</span> today.
                                         </p>
                                     </div>
                                 </div>
@@ -494,7 +516,7 @@ export default function OfferPage() {
                                                                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">See More</span>
                                                                 </div>
                                                             ) : (
-                                                                <p className="text-lg font-black text-white">+€{Math.round(opt.pricing.offer_adr - (original_booking.current_adr || 0))}<span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-1">/nt</span></p>
+                                                                <p className="text-lg font-black text-white">+€{Math.round((opt.pricing?.revenue_lift || 0) / (opt.pricing?.nights || 1))}<span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-1">/nt</span></p>
                                                             )}
                                                         </div>
                                                     </div>
