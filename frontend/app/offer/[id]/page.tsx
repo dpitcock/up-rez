@@ -10,6 +10,8 @@ import { ConnectionError } from "@/components/ConnectionError";
 import Chatbot from '@/components/Chatbot';
 import { cn } from '@/lib/utils';
 import { getSessionId } from '@/lib/session';
+import { EasyRenderer } from '@/components/EasyRenderer';
+import { getOfferContext, defaultTemplate } from '@/lib/templateUtils';
 
 export default function OfferPage() {
     const params = useParams();
@@ -247,286 +249,70 @@ export default function OfferPage() {
                     </div>
                 </div>
 
-                {/* MAIN CONTENT AREA */}
+                {/* MAIN CONTENT AREA - Powered by Easyblocks */}
                 <div className="space-y-20">
-                    {/* HERO FOCUS OFFER VIEW */}
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                        {/* Offer Logic & CTA */}
-                        <div className="space-y-8">
-                            <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-10 space-y-10">
-                                <div>
-                                    <h3 className="text-xs font-black uppercase text-gray-500 tracking-[0.2em] mb-4">Why this upgrade?</h3>
-                                    <p className="text-2xl text-white font-black leading-tight italic uppercase tracking-tighter mb-4">
-                                        {currentOption.headline || "Elevated Experience"}
-                                    </p>
-                                    <p className="text-lg text-gray-400 font-medium leading-relaxed italic">"{currentOption.summary}"</p>
-                                </div>
+                    <EasyRenderer
+                        templateJson={offer.template || defaultTemplate}
+                        mode="landing"
+                        data={getOfferContext(offer, original_booking, options)}
+                    />
+                </div>
 
-                                {/* Incremental Price Deal Box */}
-                                <div className="bg-orange-600/10 border border-orange-500/20 rounded-3xl p-8 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-4 opacity-10">
-                                        <Sparkles className="w-16 h-16 text-orange-500" />
-                                    </div>
-                                    <div className="relative z-10">
-                                        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-orange-500 mb-2">The Exclusive Deal</p>
-                                        <div className="flex items-baseline gap-2">
-                                            <span className="text-4xl font-black text-white italic">+€{Math.round((currentOption.pricing?.revenue_lift || 0) / (currentOption.pricing?.nights || 1))}</span>
-                                            <span className="text-gray-500 text-xs font-bold uppercase tracking-widest">per night</span>
-                                        </div>
-                                        <p className="mt-4 text-xs text-gray-400 font-medium max-w-[200px]">
-                                            Upgrade your entire {currentOption.pricing?.nights || original_booking.nights}-night stay for just <span className="text-white font-bold">€{Math.round(currentOption.pricing?.revenue_lift || 0)}</span> today.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 gap-4">
-                                    {currentOption.diffs?.slice(0, 3).map((diff: string, i: number) => (
-                                        <div key={i} className="flex items-center gap-4 bg-white/[0.03] p-4 rounded-2xl border border-white/5">
-                                            <div className="w-8 h-8 rounded-full bg-orange-500/10 flex items-center justify-center flex-shrink-0">
-                                                <CheckCircle2 className="w-4 h-4 text-orange-500" />
-                                            </div>
-                                            <span className="text-sm font-bold text-gray-200">{diff}</span>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div className="flex flex-col gap-4">
-                                    <button
-                                        onClick={() => router.push(`/pay/${id}?option=${currentOption.prop_id}`)}
-                                        className="w-full py-6 rounded-3xl bg-orange-600 hover:bg-orange-500 text-white font-black uppercase tracking-[0.2em] transition-all transform hover:scale-[1.02] shadow-[0_20px_50px_-12px_rgba(234,88,12,0.4)] flex items-center justify-center gap-3"
-                                    >
-                                        Accept Upgrade
-                                        <ChevronRight className="w-5 h-5" />
-                                    </button>
-
-                                    <button
-                                        onClick={() => setShowDetails(!showDetails)}
-                                        className="w-full py-4 rounded-3xl bg-white/5 border border-white/10 text-white font-black uppercase text-[10px] tracking-[0.2em] hover:bg-white/10 transition-all flex items-center justify-center gap-2"
-                                    >
-                                        {showDetails ? "Hide Property Details" : "Explore Full Property Details & Gallery"}
-                                        <ChevronRight className={`w-4 h-4 transition-transform duration-300 ${showDetails ? 'rotate-90' : ''}`} />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Property Image Focus */}
-                        <div className="relative group lg:h-full">
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent z-10 rounded-[3rem] pointer-events-none" />
-                            <div className="relative aspect-[4/5] rounded-[3rem] overflow-hidden border border-white/10 shadow-2xl">
-                                {currentOption.images?.[0] ? (
-                                    <Image
-                                        src={getImageUrl(currentOption.images[0]) || ""}
-                                        alt={currentOption.prop_name}
-                                        fill
-                                        className="object-cover transition-transform duration-700 group-hover:scale-110"
-                                        priority
-                                    />
-                                ) : (
-                                    <div className="w-full h-full bg-white/5 flex items-center justify-center italic text-gray-500">
-                                        Preview visual loading...
-                                    </div>
-                                )}
-                            </div>
-
-                            {/* Floating Metadata */}
-                            <div className="absolute bottom-10 left-10 z-20">
-                                <h2 className="text-3xl font-black text-white italic uppercase tracking-tighter mb-2">{currentOption.prop_name}</h2>
-                                <div className="flex items-center gap-3">
-                                    <div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-[10px] font-black uppercase tracking-widest text-white">
-                                        {currentOption.location}
-                                    </div>
-                                    <div className="px-3 py-1 rounded-full bg-orange-600 border border-orange-500 text-[10px] font-black uppercase tracking-widest text-white shadow-lg">
-                                        Top Choice
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                {/* OTHER OPTIONS SECTION */}
+                <div className="space-y-10 pt-20 border-t border-white/5">
+                    <div className="text-center">
+                        <h3 className="text-2xl font-black italic uppercase tracking-tight mb-2">View other alternatives</h3>
+                        <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">Your curated shortlist of pre-approved upgrades</p>
                     </div>
 
-                    {/* COLLAPSIBLE DATA-READY PROPERTY SPEC SHEET */}
-                    {showDetails && (
-                        <div className="animate-in fade-in slide-in-from-top-4 duration-700 space-y-12 bg-white/[0.01] border border-white/5 rounded-[3rem] p-12">
-                            <div className="flex items-center justify-between border-b border-white/10 pb-8">
-                                <div>
-                                    <h3 className="text-3xl font-black italic uppercase tracking-tighter text-orange-500">Property Specifications</h3>
-                                    <p className="text-gray-500 text-xs font-bold uppercase tracking-[0.2em] mt-1">Verified unit data & host requirements</p>
-                                </div>
-                                <div className="hidden md:flex gap-4">
-                                    <div className="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-widest text-gray-400">
-                                        ID: {currentOption.prop_id}
-                                    </div>
-                                    <div className="px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 text-[10px] font-black uppercase tracking-widest text-orange-500">
-                                        {currentOption.category?.replace(/_/g, ' ') || "Luxury"} Tier
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="space-y-16">
-                                {/* Core Data Specs */}
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-y-12 gap-x-8">
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <Users className="w-4 h-4" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest">Max Guests</p>
-                                        </div>
-                                        <p className="font-bold text-xl">{currentOption.max_guests || 0} Pax</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <Bed className="w-4 h-4" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest">Bedrooms</p>
-                                        </div>
-                                        <p className="font-bold text-xl">{currentOption.bedrooms || 0} Units</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <Bath className="w-4 h-4" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest">Bathrooms</p>
-                                        </div>
-                                        <p className="font-bold text-xl">{currentOption.baths || 0} Rooms</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <Maximize className="w-4 h-4" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest">Living Area</p>
-                                        </div>
-                                        <p className="font-bold text-xl">{currentOption.size_sqm || 0} m²</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <Layers className="w-4 h-4" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest">Elevation</p>
-                                        </div>
-                                        <p className="font-bold text-xl">{currentOption.floor === 0 ? 'Ground' : `${currentOption.floor}th`} Lv</p>
-                                    </div>
-                                    <div className="space-y-2">
-                                        <div className="flex items-center gap-2 text-gray-600">
-                                            <ShieldCheck className="w-4 h-4" />
-                                            <p className="text-[10px] font-black uppercase tracking-widest">Accessibility</p>
-                                        </div>
-                                        <p className="font-bold text-xl">{currentOption.elevator ? 'Elevator' : 'Stairs Only'}</p>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-                                    {/* Suitability Matrix */}
-                                    <div className="space-y-8">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center gap-3">
-                                            <div className="h-px w-8 bg-white/10" />
-                                            Guest Suitability Matrix
-                                        </h4>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            {Object.entries(currentOption.suitability || {}).map(([key, value]: [string, any]) => (
-                                                <div key={key} className={`flex items-center justify-between p-4 rounded-2xl border transition-all ${value ? 'border-green-500/10 bg-green-500/[0.02] text-green-500' : 'border-white/5 bg-white/[0.01] text-gray-600'}`}>
-                                                    <span className="text-[10px] font-black uppercase tracking-widest">
-                                                        {key.replace(/([A-Z])/g, ' $1').replace(/Allowed/g, '')}
-                                                    </span>
-                                                    {value ? <CheckCircle2 className="w-4 h-4" /> : <AlertCircle className="w-4 h-4 opacity-30" />}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                        {otherOptions.map((opt: any) => {
+                            const optIndex = options.indexOf(opt);
+                            return (
+                                <div
+                                    key={opt.prop_id}
+                                    onClick={() => handleOptionClick(opt, optIndex)}
+                                    className={cn(
+                                        "group cursor-pointer bg-[#0A0A0A] border rounded-[2rem] overflow-hidden transition-all transform hover:-translate-y-1 shadow-2xl",
+                                        generatingOptionId === opt.prop_id ? "border-orange-500/50 scale-[0.98]" : "border-white/5 hover:border-white/20"
+                                    )}
+                                >
+                                    <div className="relative h-56 overflow-hidden">
+                                        <img
+                                            src={getImageUrl(opt.images[0]) || ""}
+                                            className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
+                                            alt={opt.prop_name}
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent group-hover:via-transparent transition-all" />
+                                        <div className="absolute bottom-6 left-6 right-6">
+                                            <div className="flex justify-between items-end">
+                                                <div>
+                                                    <h4 className="font-black italic uppercase text-xl leading-none">{opt.prop_name}</h4>
+                                                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{opt.beds} Bed · {opt.location?.split(',')[0] || "Luxury Unit"}</p>
                                                 </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Operational Rules */}
-                                    <div className="space-y-8">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center gap-3">
-                                            <div className="h-px w-8 bg-white/10" />
-                                            House Rules & Operations
-                                        </h4>
-                                        <div className="grid grid-cols-1 gap-3">
-                                            {Object.entries(currentOption.house_rules || {}).map(([key, value]: [string, any]) => (
-                                                <div key={key} className="flex justify-between items-center p-4 rounded-2xl bg-white/[0.02] border border-white/5 hover:border-white/10 transition-colors">
-                                                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">{key.replace(/([A-Z])/g, ' $1')}</span>
-                                                    <span className="text-xs font-bold text-white italic">{typeof value === 'boolean' ? (value ? 'Yes' : 'No') : value}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Amenities Cloud */}
-                                <div className="space-y-8">
-                                    <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-gray-500 flex items-center gap-3">
-                                        <div className="h-px w-8 bg-white/10" />
-                                        Extended Amenity Profile
-                                    </h4>
-                                    <div className="flex flex-wrap gap-3">
-                                        {currentOption.amenities?.map((amn: string, i: number) => (
-                                            <div key={i} className="px-6 py-3 border border-white/5 rounded-2xl bg-white/[0.01] text-[10px] font-bold uppercase tracking-widest hover:border-orange-500/30 transition-all hover:bg-orange-500/5 cursor-default flex items-center gap-3">
-                                                <div className="w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_8px_rgba(234,88,12,0.8)]" />
-                                                {amn.replace(/_/g, ' ')}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {currentOption.description_long && (
-                                    <div className="space-y-6 pt-12 border-t border-white/5">
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.3em] text-orange-500">Unit Narrative</h4>
-                                        <p className="text-gray-400 leading-relaxed max-w-4xl italic text-lg font-medium">"{currentOption.description_long}"</p>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* OTHER OPTIONS SECTION */}
-                    <div className="space-y-10 pt-20 border-t border-white/5">
-                        <div className="text-center">
-                            <h3 className="text-2xl font-black italic uppercase tracking-tight mb-2">View other alternatives</h3>
-                            <p className="text-gray-500 font-bold text-xs uppercase tracking-widest">Your curated shortlist of pre-approved upgrades</p>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-                            {otherOptions.map((opt: any) => {
-                                const optIndex = options.indexOf(opt);
-                                return (
-                                    <div
-                                        key={opt.prop_id}
-                                        onClick={() => handleOptionClick(opt, optIndex)}
-                                        className={cn(
-                                            "group cursor-pointer bg-[#0A0A0A] border rounded-[2rem] overflow-hidden transition-all transform hover:-translate-y-1 shadow-2xl",
-                                            generatingOptionId === opt.prop_id ? "border-orange-500/50 scale-[0.98]" : "border-white/5 hover:border-white/20"
-                                        )}
-                                    >
-                                        <div className="relative h-56 overflow-hidden">
-                                            <img
-                                                src={getImageUrl(opt.images[0]) || ""}
-                                                className="w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-700"
-                                                alt={opt.prop_name}
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent group-hover:via-transparent transition-all" />
-                                            <div className="absolute bottom-6 left-6 right-6">
-                                                <div className="flex justify-between items-end">
-                                                    <div>
-                                                        <h4 className="font-black italic uppercase text-xl leading-none">{opt.prop_name}</h4>
-                                                        <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">{opt.beds} Bed · {opt.location?.split(',')[0] || "Luxury Unit"}</p>
-                                                    </div>
-                                                    <div className="text-right">
-                                                        <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1 italic">
-                                                            {opt.ai_copy ? "Only Upgrade" : "Secret Deal"}
-                                                        </p>
-                                                        <div className="flex items-center justify-end gap-2">
-                                                            {generatingOptionId === opt.prop_id ? (
-                                                                <div className="w-4 h-4 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
-                                                            ) : !opt.ai_copy ? (
-                                                                <div className="flex items-baseline gap-1">
-                                                                    <span className="text-lg font-black text-white/40">???</span>
-                                                                    <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">See More</span>
-                                                                </div>
-                                                            ) : (
-                                                                <p className="text-lg font-black text-white">+€{Math.round((opt.pricing?.revenue_lift || 0) / (opt.pricing?.nights || 1))}<span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-1">/nt</span></p>
-                                                            )}
-                                                        </div>
+                                                <div className="text-right">
+                                                    <p className="text-[10px] font-black text-orange-500 uppercase tracking-widest mb-1 italic">
+                                                        {opt.ai_copy ? "Only Upgrade" : "Secret Deal"}
+                                                    </p>
+                                                    <div className="flex items-center justify-end gap-2">
+                                                        {generatingOptionId === opt.prop_id ? (
+                                                            <div className="w-4 h-4 rounded-full border-2 border-orange-500 border-t-transparent animate-spin" />
+                                                        ) : !opt.ai_copy ? (
+                                                            <div className="flex items-baseline gap-1">
+                                                                <span className="text-lg font-black text-white/40">???</span>
+                                                                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest italic">See More</span>
+                                                            </div>
+                                                        ) : (
+                                                            <p className="text-lg font-black text-white">+€{Math.round((opt.pricing?.revenue_lift || 0) / (opt.pricing?.nights || 1))}<span className="text-[10px] text-gray-500 font-bold uppercase tracking-widest ml-1">/nt</span></p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                );
-                            })}
-                        </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 </div>
             </div>
@@ -557,6 +343,6 @@ export default function OfferPage() {
                 offer={offer}
                 guestName={original_booking.guest_name}
             />
-        </main>
+        </main >
     );
 }

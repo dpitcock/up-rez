@@ -37,17 +37,29 @@ export async function POST() {
             SELECT count(*) FROM deleted;
         `;
 
+        const deletedSettings = await sql`
+            WITH deleted AS (
+                DELETE FROM host_settings
+                WHERE session_id IS NOT NULL
+                AND created_at < ${cutoff}
+                RETURNING host_id
+            )
+            SELECT count(*) FROM deleted;
+        `;
+
         const offersCount = deletedOffers[0]?.count || 0;
         const bookingsCount = deletedBookings[0]?.count || 0;
+        const settingsCount = deletedSettings[0]?.count || 0;
 
-        console.log(`✅ Cleanup Complete. Deleted ${offersCount} offers and ${bookingsCount} bookings.`);
+        console.log(`✅ Cleanup Complete. Deleted ${offersCount} offers, ${bookingsCount} bookings, and ${settingsCount} host settings.`);
 
         return NextResponse.json({
             status: 'ok',
             message: `Cleanup successful. Removed data older than ${thresholdHours} hours.`,
             stats: {
                 deleted_offers: Number(offersCount),
-                deleted_bookings: Number(bookingsCount)
+                deleted_bookings: Number(bookingsCount),
+                deleted_settings: Number(settingsCount)
             }
         });
 

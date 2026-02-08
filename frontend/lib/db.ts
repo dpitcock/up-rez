@@ -79,21 +79,28 @@ export const db = {
 
             await sql`
                 INSERT INTO host_settings (
-                    host_id, session_id, host_name, pm_company_name,
+                    host_id, session_id, host_name, host_phone, pm_company_name,
                     min_revenue_lift_eur_per_night, max_discount_pct,
                     min_adr_ratio, max_adr_multiplier,
                     channel_fee_pct, change_fee_eur,
-                    use_openai_for_copy, created_at, updated_at
+                    active_email_template_id, active_landing_template_id,
+                    max_distance_to_beach_m, offer_validity_hours,
+                    use_openai_for_copy, offers_sent_this_month, revenue_lifted_this_month,
+                    created_at, updated_at
                 )
                 VALUES (
-                    ${hostId}, ${sessId}, ${settings.host_name}, ${settings.pm_company_name},
+                    ${hostId}, ${sessId}, ${settings.host_name}, ${settings.host_phone}, ${settings.pm_company_name},
                     ${settings.min_revenue_lift_eur_per_night}, ${settings.max_discount_pct},
                     ${settings.min_adr_ratio}, ${settings.max_adr_multiplier},
                     ${settings.channel_fee_pct}, ${settings.change_fee_eur},
-                    ${settings.use_openai_for_copy}, ${now}, ${now}
+                    ${settings.active_email_template_id}, ${settings.active_landing_template_id},
+                    ${settings.max_distance_to_beach_m}, ${settings.offer_validity_hours},
+                    ${settings.use_openai_for_copy}, ${settings.offers_sent_this_month || 0}, ${settings.revenue_lifted_this_month || 0},
+                    ${now}, ${now}
                 )
                 ON CONFLICT (host_id, session_id) DO UPDATE SET
                     host_name = EXCLUDED.host_name,
+                    host_phone = EXCLUDED.host_phone,
                     pm_company_name = EXCLUDED.pm_company_name,
                     min_revenue_lift_eur_per_night = EXCLUDED.min_revenue_lift_eur_per_night,
                     max_discount_pct = EXCLUDED.max_discount_pct,
@@ -101,7 +108,13 @@ export const db = {
                     max_adr_multiplier = EXCLUDED.max_adr_multiplier,
                     channel_fee_pct = EXCLUDED.channel_fee_pct,
                     change_fee_eur = EXCLUDED.change_fee_eur,
+                    active_email_template_id = EXCLUDED.active_email_template_id,
+                    active_landing_template_id = EXCLUDED.active_landing_template_id,
+                    max_distance_to_beach_m = EXCLUDED.max_distance_to_beach_m,
+                    offer_validity_hours = EXCLUDED.offer_validity_hours,
                     use_openai_for_copy = EXCLUDED.use_openai_for_copy,
+                    offers_sent_this_month = EXCLUDED.offers_sent_this_month,
+                    revenue_lifted_this_month = EXCLUDED.revenue_lifted_this_month,
                     updated_at = EXCLUDED.updated_at
             `;
         } catch (e) {

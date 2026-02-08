@@ -9,7 +9,7 @@ COPY package*.json ./
 RUN apk add --no-cache python3 make g++
 
 # Install dependencies
-RUN npm install
+RUN npm install --legacy-peer-deps
 
 # Copy app files
 COPY . .

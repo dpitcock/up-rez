@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { cn } from "@/lib/utils";
 import {
@@ -15,6 +15,9 @@ import { ConnectionError } from "@/components/ConnectionError";
 import { apiClient } from '@/lib/api';
 import DashboardLayout from '@/components/DashboardLayout';
 import { useLogs } from '@/context/LogContext';
+import { EasyblocksEditor } from '@easyblocks/editor';
+import { UpRezBlocks } from '@/components/UpRezBlocks/registry';
+import { defaultTemplate } from '@/lib/templateUtils';
 
 interface Property {
     id: string;
@@ -361,13 +364,15 @@ export default function OfferEditorPage() {
                         "relative bg-white dark:bg-[#0D0D0D] rounded-[2.5rem] border border-slate-200 dark:border-white/10 overflow-hidden shadow-2xl transition-all duration-700 mx-auto",
                         deviceMode === 'mobile' ? "w-[360px] h-[640px]" : "w-full min-h-[700px] h-[900px]"
                     )}>
-                        {!preview && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-50 dark:bg-black/60 backdrop-blur-md">
-                                <div className="w-16 h-16 rounded-2xl bg-orange-600/20 flex items-center justify-center text-orange-600 mb-6 animate-pulse">
-                                    <Sparkles className="w-8 h-8" />
-                                </div>
-                                <h3 className="text-xl font-black text-slate-900 dark:text-white uppercase italic tracking-tight">Awaiting Generation</h3>
-                                <p className="text-slate-400 dark:text-gray-600 text-[10px] font-black uppercase tracking-widest mt-2 px-12 text-center leading-loose">Configure upgrade properties in the sub-header and trigger AI build</p>
+                        {!preview && !showLivePreview && (
+                            <div className="h-full flex flex-col bg-white">
+                                <EasyblocksEditor
+                                    {...({
+                                        components: UpRezBlocks,
+                                        document: defaultTemplate,
+                                        rootComponent: "Container"
+                                    } as any)}
+                                />
                             </div>
                         )}
 
@@ -379,10 +384,13 @@ export default function OfferEditorPage() {
                                         <div className="text-[9px] text-slate-400 uppercase font-black tracking-widest mb-1 leading-none">AI Subject Optimization</div>
                                         <input
                                             value={subject}
-                                            onChange={(e) => setSubject(e.target.value)}
+                                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSubject(e.target.value)}
                                             className="text-lg font-bold text-slate-900 truncate bg-transparent w-full outline-none focus:text-orange-600 transition-colors"
                                         />
                                     </div>
+                                </div>
+                                <div className="p-4 bg-yellow-50 border-b border-yellow-100 text-[10px] text-yellow-700 font-bold uppercase tracking-widest text-center">
+                                    Preview Mode - Static HTML
                                 </div>
                                 <div className="flex-1 overflow-y-auto p-12 text-black bg-white">
                                     <div className="max-w-2xl mx-auto border border-slate-100 shadow-sm rounded-xl overflow-hidden" dangerouslySetInnerHTML={{ __html: preview.copy.email_html }} />
@@ -392,6 +400,8 @@ export default function OfferEditorPage() {
 
                         {preview && previewMode === 'landing' && (
                             <div className="h-full overflow-y-auto bg-black p-12 text-white font-sans selection:bg-orange-600">
+                                {/* Keeping the manual preview for "Generated" state for now, 
+                                     but normally this would also use EasyRenderer or the Editor in 'preview' mode */}
                                 <div className="max-w-3xl mx-auto space-y-12">
                                     <div className="flex justify-between items-center opacity-40">
                                         <div className="font-black text-lg italic tracking-tighter uppercase">UPREZ</div>

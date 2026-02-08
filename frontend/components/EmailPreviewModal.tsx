@@ -3,6 +3,8 @@
 import React from 'react';
 import { X, Mail, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { EasyRenderer } from '@/components/EasyRenderer';
+import { getOfferContext, defaultTemplate } from '@/lib/templateUtils';
 
 interface EmailPreviewModalProps {
     isOpen: boolean;
@@ -96,81 +98,11 @@ export default function EmailPreviewModal({ isOpen, onClose, offer }: EmailPrevi
 
                     {/* Email Content Mockup */}
                     <div className="bg-slate-50 dark:bg-white/[0.01] border border-slate-100 dark:border-white/5 rounded-3xl p-10 space-y-8 max-w-2xl mx-auto shadow-sm text-slate-900 dark:text-white">
-                        {previewImageUrl && (
-                            <div className="relative aspect-video rounded-2xl overflow-hidden shadow-lg border border-slate-200/50 dark:border-white/10 group">
-                                <img
-                                    src={previewImageUrl}
-                                    alt="Property Preview"
-                                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/0 to-transparent" />
-                                <div className="absolute bottom-4 left-6">
-                                    <p className="text-white font-black italic uppercase tracking-widest text-sm shadow-sm">{firstOption?.prop_name}</p>
-                                </div>
-                            </div>
-                        )}
-
-                        <div className="space-y-4">
-                            <h4 className="text-2xl font-black italic uppercase tracking-tighter leading-none">
-                                {firstOption?.ai_copy?.email_title || firstOption?.headline || "Elevate Your Experience"}
-                            </h4>
-                            <p className="text-slate-600 dark:text-gray-400 leading-relaxed italic">
-                                {firstOption?.ai_copy?.email_content ? (
-                                    firstOption.ai_copy.email_content
-                                ) : (
-                                    <>
-                                        Hello {guestName.split(' ')[0]},<br /><br />
-                                        We noticed your upcoming stay at <strong>{originalPropName}</strong> and wanted to offer you something special.
-                                        Based on your preferences, we've curated an exclusive upgrade opportunity for your dates.
-                                    </>
-                                )}
-                            </p>
-                        </div>
-
-                        <div className="space-y-4">
-                            {firstOption?.ai_copy?.email_selling_points && (
-                                <ul className="space-y-2 mb-6">
-                                    {firstOption.ai_copy.email_selling_points.map((point: string, i: number) => (
-                                        <li key={i} className="flex items-start gap-2 text-sm text-slate-600 dark:text-gray-400 italic">
-                                            <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1.5 shrink-0" />
-                                            {point}
-                                        </li>
-                                    ))}
-                                </ul>
-                            )}
-
-                            <div className="p-4 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl flex items-center gap-4">
-                                <div className="w-16 h-16 rounded-xl bg-orange-500/10 flex flex-col items-center justify-center text-orange-600 font-black text-xs italic p-2">
-                                    <span className="text-lg font-black text-orange-500">+€{Math.round(extraPerNight || 0)}/night</span>
-                                    {firstOption?.pricing?.revenue_lift && (
-                                        <span className="text-[10px] text-gray-400 text-center mt-1">
-                                            €{firstOption.pricing.revenue_lift.toFixed(0)} total for {firstOption.pricing.nights || 0} nights
-                                        </span>
-                                    )}
-                                </div>
-                                <div>
-                                    <p className="font-bold uppercase text-xs">{firstOption?.prop_name}</p>
-                                    <p className="text-[10px] text-slate-500 dark:text-gray-500 font-bold uppercase tracking-widest">
-                                        {firstOption?.ai_copy?.email_title || firstOption?.headline || firstOption?.summary}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <button
-                            onClick={() => {
-                                router.push(`/offer/${offer.id}`);
-                                onClose();
-                            }}
-                            className="w-full py-4 bg-orange-600 hover:bg-orange-500 rounded-2xl font-black text-sm uppercase tracking-widest text-white transition-all transform hover:scale-[1.02] shadow-xl shadow-orange-600/20 flex items-center justify-center gap-3"
-                        >
-                            View Personalized Upgrades
-                            <ChevronRight className="w-4 h-4" />
-                        </button>
-
-                        <p className="text-[10px] text-center text-slate-400 dark:text-gray-600 font-bold uppercase tracking-[0.2em]">
-                            Special offer valid for 48 hours only
-                        </p>
+                        <EasyRenderer
+                            templateJson={offer.template || defaultTemplate}
+                            mode="email"
+                            data={getOfferContext(offer, offer.original_booking, options)}
+                        />
                     </div>
                 </div>
 

@@ -34,7 +34,6 @@ export default function DashboardLayout({ children, subHeader }: DashboardLayout
         { name: 'Properties', href: '/properties', icon: Home },
         { name: 'Performance', href: '/analytics', icon: LineChart },
         { name: 'Market Analysis', href: '/tower', icon: BarChart3 },
-        { name: 'AI Settings', href: '/ai-settings', icon: Sparkles },
         { name: 'Host Settings', href: '/settings', icon: Settings },
     ];
 

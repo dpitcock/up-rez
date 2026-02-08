@@ -46,6 +46,134 @@ graph TD
     API -- "HTML Offer Delivery" --> SG
 ```
 
+## UI Flow Diagram
+
+### Guest Journey
+
+```mermaid
+graph TD
+    Start([Guest Books Standard Room]) --> Trigger{Trigger Event}
+    
+    Trigger -->|7 Days Before Arrival| Cron[Cron Job Runs]
+    Trigger -->|Premium Room Cancelled| Cancel[Cancellation Detected]
+    
+    Cron --> Engine[UpRez Engine Analyzes]
+    Cancel --> Engine
+    
+    Engine --> Match{Premium Room<br/>Available?}
+    Match -->|No| End1([No Action])
+    Match -->|Yes| Generate[Generate Offer]
+    
+    Generate --> AI[AI Generates Copy]
+    AI --> Email[📧 Email Sent]
+    
+    Email --> Guest[Guest Receives Email]
+    Guest --> Click{Guest Clicks<br/>CTA}
+    
+    Click -->|Ignore| Expire[Offer Expires]
+    Click -->|Open| Landing[🎯 Landing Page]
+    
+    Landing --> Explore{Guest Actions}
+    Explore -->|View Details| Details[Property Specs]
+    Explore -->|Ask Questions| Chat[💬 AI Concierge Chat]
+    Explore -->|Compare Options| Switch[Switch Property]
+    Explore -->|Accept| Payment[💳 Payment Page]
+    
+    Details --> Explore
+    Chat --> Explore
+    Switch --> Landing
+    
+    Payment --> Confirm[✅ Confirmation Page]
+    Confirm --> AutoExpire[Other Offers<br/>Auto-Expired]
+    AutoExpire --> End2([Booking Updated])
+    
+    Expire --> End3([Offer Closed])
+    
+    style Email fill:#e3f2fd
+    style Landing fill:#fff3e0
+    style Chat fill:#f3e5f5
+    style Payment fill:#e8f5e9
+    style Confirm fill:#c8e6c9
+```
+
+### Host Dashboard Flow
+
+```mermaid
+graph TD
+    Host([Host/PM Login]) --> Dashboard[📊 Demo Dashboard]
+    
+    Dashboard --> View{Choose Action}
+    
+    View -->|Monitor| Stats[View Stats Card]
+    View -->|Review| Offers[📋 Offers Table]
+    View -->|Manage| Settings[⚙️ Settings]
+    View -->|Test| Trigger[🚀 Trigger Offer]
+    
+    Stats --> Metrics[Revenue Lift<br/>Conversion Rate<br/>Active Offers]
+    
+    Offers --> OfferActions{Offer Actions}
+    OfferActions -->|Preview| EmailPrev[📧 Email Preview]
+    OfferActions -->|View| PublicPage[🔗 Public Landing Page]
+    OfferActions -->|Cancel| ExpireOffer[🚫 Expire Offer]
+    
+    Settings --> AIConfig[AI Copy Settings]
+    Settings --> EmailConfig[Email Templates]
+    Settings --> HostInfo[Host Information]
+    
+    Trigger --> SelectBooking[Select Booking]
+    SelectBooking --> TriggerType{Trigger Type}
+    TriggerType -->|Cron| CronTrigger[Simulate 7-Day Check]
+    TriggerType -->|Cancellation| CancelTrigger[Simulate Cancellation]
+    
+    CronTrigger --> OfferGen[Offer Generated]
+    CancelTrigger --> OfferGen
+    OfferGen --> Notification[✅ Success Notification]
+    
+    EmailPrev --> Dashboard
+    PublicPage --> Dashboard
+    ExpireOffer --> Refresh[Refresh Table]
+    Refresh --> Offers
+    
+    style Dashboard fill:#e3f2fd
+    style Offers fill:#fff3e0
+    style Settings fill:#f3e5f5
+    style OfferGen fill:#c8e6c9
+```
+
+### Data Flow: Offer Generation
+
+```mermaid
+sequenceDiagram
+    participant Cron as Cron Job
+    participant API as API Route
+    participant DB as Database
+    participant AI as OpenAI
+    participant Email as SendGrid
+    participant Guest as Guest Email
+
+    Cron->>API: POST /api/demo/trigger
+    API->>DB: Fetch eligible bookings
+    DB-->>API: Booking data
+    
+    API->>DB: Find available upgrades
+    DB-->>API: Premium properties
+    
+    API->>API: Calculate fit scores
+    API->>API: Rank top 3 options
+    
+    API->>AI: Generate personalized copy
+    AI-->>API: Headline, summary, features
+    
+    API->>DB: Save offer record
+    DB-->>API: Offer ID
+    
+    API->>Email: Send HTML email
+    Email-->>Guest: 📧 Upgrade invitation
+    
+    API-->>Cron: ✅ Success response
+```
+
+
 ## Quick Start (Local Development)
 
 ### Prerequisites
@@ -142,6 +270,14 @@ up-rez/
 ├── initial_data/               # Reference Specs & Specs
 └── docker-compose.yml          # Container config for local dev
 ```
+
+## Core AI Logic & Prompting
+
+The AI behavior of UpRez is consolidated into specific service layers for easy auditing and refinement of prompts:
+
+- **Offer Copywriting**: Found in `frontend/lib/services/offerService.ts`. Look for the `generateAICopy` function. This prompt handles the transformation of property delta (e.g., "more beds") into high-converting sales copy.
+- **AI Concierge (RAG)**: Found in `frontend/lib/services/ragService.ts`. Look for the `queryRag` function. This prompt uses a Retrieval-Augmented Generation approach to answer guest questions using property-specific knowledge.
+- **Companion Bot**: Found in `frontend/app/api/chat/route.ts`. This contains the system prompt for the real-time guest companion that manages interactions on the landing pages.
 
 ## License
 

@@ -10,6 +10,7 @@ import {
     Layout, Mail, Sparkles, ShieldCheck, BarChart3
 } from "lucide-react";
 
+import { useLogs } from '@/context/LogContext';
 import { ConnectionError } from "@/components/ConnectionError";
 import { apiClient } from '@/lib/api';
 
@@ -17,15 +18,28 @@ import DashboardLayout from '@/components/DashboardLayout';
 
 export default function HostSettingsDashboard() {
     const router = useRouter();
+    const { addLog } = useLogs();
     const [settings, setSettings] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [templates, setTemplates] = useState<any[]>([]);
     const [error, setError] = useState(false);
+    const [isDirty, setIsDirty] = useState(false);
 
     useEffect(() => {
         fetchData();
     }, []);
+
+    // Auto-save logic
+    useEffect(() => {
+        if (!isDirty || !settings) return;
+
+        const timer = setTimeout(() => {
+            handleSave(true); // pass true to indicate it's an auto-save
+        }, 1500);
+
+        return () => clearTimeout(timer);
+    }, [settings, isDirty]);
 
     const fetchData = async () => {
         try {
@@ -37,8 +51,8 @@ export default function HostSettingsDashboard() {
             if (sessionId) headers['x-session-id'] = sessionId;
 
             const [settingsData, templatesData] = await Promise.all([
-                apiClient(`/api/host/${hostId}/settings`, { headers }),
-                apiClient(`/api/host/templates`)
+                apiClient(`/host/${hostId}/settings`, { headers }),
+                apiClient(`/host/templates`)
             ]);
 
             setSettings(settingsData);
@@ -51,7 +65,7 @@ export default function HostSettingsDashboard() {
         }
     };
 
-    const handleSave = async () => {
+    const handleSave = async (isAuto = false) => {
         setSaving(true);
         try {
             const hostId = 'demo_host_001';
@@ -60,17 +74,30 @@ export default function HostSettingsDashboard() {
             const headers: HeadersInit = { 'Content-Type': 'application/json' };
             if (sessionId) headers['x-session-id'] = sessionId;
 
-            await apiClient(`/api/host/${hostId}/settings`, {
+            await apiClient(`/host/${hostId}/settings`, {
                 method: 'PATCH',
                 headers,
                 body: JSON.stringify(settings)
             });
-            await fetchData();
+
+            setIsDirty(false);
+            addLog(
+                `Host Settings ${isAuto ? 'Auto-Saved' : 'Synchronized'}`,
+                'success'
+            );
+
+            if (!isAuto) await fetchData();
         } catch (err) {
             console.error("Save failed", err);
+            addLog("Failed to persist settings to cluster", 'error');
         } finally {
             setSaving(false);
         }
+    };
+
+    const updateSetting = (key: string, value: any) => {
+        setSettings({ ...settings, [key]: value });
+        setIsDirty(true);
     };
 
     if (loading) return (
@@ -106,8 +133,8 @@ export default function HostSettingsDashboard() {
                         Visual Editor
                     </button>
                     <button
-                        onClick={handleSave}
-                        disabled={saving}
+                        onClick={() => handleSave(false)}
+                        disabled={saving || settings.max_discount_pct >= 1}
                         className="px-8 py-2.5 bg-orange-600 hover:bg-orange-500 rounded-xl font-black text-[10px] uppercase tracking-[0.2em] text-white transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-orange-600/30"
                     >
                         {saving ? "Deploying..." : "Sync Cluster"}
@@ -134,7 +161,8 @@ export default function HostSettingsDashboard() {
                                     <input
                                         type="number"
                                         value={settings.min_revenue_lift_eur_per_night}
-                                        onChange={(e) => setSettings({ ...settings, min_revenue_lift_eur_per_night: Number(e.target.value) })}
+                                        onChange={(e) => updateSetting('min_revenue_lift_eur_per_night', Number(e.target.value))}
+                                        onBlur={() => isDirty && handleSave(true)}
                                         className="flex-1 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 text-slate-900 dark:text-white"
                                     />
                                     <span className="text-slate-400 dark:text-gray-500 font-bold">€</span>
@@ -144,13 +172,20 @@ export default function HostSettingsDashboard() {
                                 <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Maximum Discount Allowed</label>
                                 <div className="space-y-4">
                                     <div className="flex justify-between items-center">
-                                        <span className="text-xl font-black text-orange-400">{(settings.max_discount_pct * 100).toFixed(0)}%</span>
+                                        <div className="flex items-baseline gap-2">
+                                            <span className={`text-xl font-black ${settings.max_discount_pct >= 1 ? 'text-red-500' : 'text-orange-400'}`}>
+                                                {(settings.max_discount_pct * 100).toFixed(0)}%
+                                            </span>
+                                            {settings.max_discount_pct >= 1 && (
+                                                <span className="text-[10px] font-black text-red-500 uppercase tracking-widest animate-pulse">Disabled</span>
+                                            )}
+                                        </div>
                                         <span className="text-[10px] text-gray-600">CAP</span>
                                     </div>
                                     <input
-                                        type="range" min="0" max="0.5" step="0.05"
+                                        type="range" min="0" max="1" step="0.01"
                                         value={settings.max_discount_pct}
-                                        onChange={(e) => setSettings({ ...settings, max_discount_pct: Number(e.target.value) })}
+                                        onChange={(e) => updateSetting('max_discount_pct', Number(e.target.value))}
                                         className="w-full accent-orange-500 bg-transparent"
                                     />
                                 </div>
@@ -163,7 +198,8 @@ export default function HostSettingsDashboard() {
                                 <input
                                     type="number" step="0.05"
                                     value={settings.min_adr_ratio}
-                                    onChange={(e) => setSettings({ ...settings, min_adr_ratio: Number(e.target.value) })}
+                                    onChange={(e) => updateSetting('min_adr_ratio', Number(e.target.value))}
+                                    onBlur={() => isDirty && handleSave(true)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 text-slate-900 dark:text-white"
                                 />
                             </div>
@@ -172,7 +208,8 @@ export default function HostSettingsDashboard() {
                                 <input
                                     type="number" step="0.25"
                                     value={settings.max_adr_multiplier}
-                                    onChange={(e) => setSettings({ ...settings, max_adr_multiplier: Number(e.target.value) })}
+                                    onChange={(e) => updateSetting('max_adr_multiplier', Number(e.target.value))}
+                                    onBlur={() => isDirty && handleSave(true)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 text-slate-900 dark:text-white"
                                 />
                             </div>
@@ -196,7 +233,7 @@ export default function HostSettingsDashboard() {
                                 </h3>
                                 <select
                                     value={settings.active_email_template_id || ""}
-                                    onChange={(e) => setSettings({ ...settings, active_email_template_id: e.target.value })}
+                                    onChange={(e) => updateSetting('active_email_template_id', e.target.value)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 appearance-none cursor-pointer text-slate-900 dark:text-white"
                                 >
                                     <option value="" className="bg-white dark:bg-[#111]">Auto-Generated (Default)</option>
@@ -212,7 +249,7 @@ export default function HostSettingsDashboard() {
                                 </h3>
                                 <select
                                     value={settings.active_landing_template_id || ""}
-                                    onChange={(e) => setSettings({ ...settings, active_landing_template_id: e.target.value })}
+                                    onChange={(e) => updateSetting('active_landing_template_id', e.target.value)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-orange-500/50 appearance-none cursor-pointer text-slate-900 dark:text-white"
                                 >
                                     <option value="" className="bg-white dark:bg-[#111]">Dynamic Showcase (Default)</option>
@@ -239,7 +276,8 @@ export default function HostSettingsDashboard() {
                                 <input
                                     type="text"
                                     value={settings.host_name || ""}
-                                    onChange={(e) => setSettings({ ...settings, host_name: e.target.value })}
+                                    onChange={(e) => updateSetting('host_name', e.target.value)}
+                                    onBlur={() => isDirty && handleSave(true)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-green-500/50 text-slate-900 dark:text-white"
                                     placeholder="e.g. Blue Lagoon Rentals"
                                 />
@@ -249,9 +287,21 @@ export default function HostSettingsDashboard() {
                                 <input
                                     type="text"
                                     value={settings.host_phone || ""}
-                                    onChange={(e) => setSettings({ ...settings, host_phone: e.target.value })}
+                                    onChange={(e) => updateSetting('host_phone', e.target.value)}
+                                    onBlur={() => isDirty && handleSave(true)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-green-500/50 text-slate-900 dark:text-white"
                                     placeholder="+34 600 000 000"
+                                />
+                            </div>
+                            <div className="space-y-3">
+                                <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">PM Company Name</label>
+                                <input
+                                    type="text"
+                                    value={settings.pm_company_name || ""}
+                                    onChange={(e) => updateSetting('pm_company_name', e.target.value)}
+                                    onBlur={() => isDirty && handleSave(true)}
+                                    className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-4 text-sm focus:outline-none focus:border-green-500/50 text-slate-900 dark:text-white"
+                                    placeholder="e.g. Vacation Pros"
                                 />
                             </div>
                         </div>
@@ -272,7 +322,8 @@ export default function HostSettingsDashboard() {
                                 <input
                                     type="number"
                                     value={settings.channel_fee_pct * 100}
-                                    onChange={(e) => setSettings({ ...settings, channel_fee_pct: Number(e.target.value) / 100 })}
+                                    onChange={(e) => updateSetting('channel_fee_pct', Number(e.target.value) / 100)}
+                                    onBlur={() => isDirty && handleSave(true)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-900 dark:text-white"
                                 />
                             </div>
@@ -281,7 +332,8 @@ export default function HostSettingsDashboard() {
                                 <input
                                     type="number"
                                     value={settings.change_fee_eur}
-                                    onChange={(e) => setSettings({ ...settings, change_fee_eur: Number(e.target.value) })}
+                                    onChange={(e) => updateSetting('change_fee_eur', Number(e.target.value))}
+                                    onBlur={() => isDirty && handleSave(true)}
                                     className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-3 text-sm text-slate-900 dark:text-white"
                                 />
                             </div>
@@ -314,7 +366,7 @@ export default function HostSettingsDashboard() {
                             const headers: HeadersInit = {};
                             if (sessionId) headers['x-session-id'] = sessionId;
 
-                            await apiClient(`/api/host/${hostId}/settings/reset`, {
+                            await apiClient(`/host/${hostId}/settings/reset`, {
                                 method: 'POST',
                                 headers
                             });

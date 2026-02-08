@@ -1,0 +1,19 @@
+{
+    "host_id": "demo_host_001",
+    "host_name": "Premium Property Management",
+    "host_phone": "+34 600 000 000",
+    "pm_company_name": "Premium Stays",
+    "min_revenue_lift_eur_per_night": 15.0,
+    "max_discount_pct": 0.45,
+    "min_adr_ratio": 1.05,
+    "max_adr_multiplier": 2.5,
+    "channel_fee_pct": 0.15,
+    "change_fee_eur": 30.0,
+    "active_email_template_id": null,
+    "active_landing_template_id": null,
+    "max_distance_to_beach_m": 600,
+    "offer_validity_hours": 24,
+    "use_openai_for_copy": true,
+    "offers_sent_this_month": 12,
+    "revenue_lifted_this_month": 450.0
+}

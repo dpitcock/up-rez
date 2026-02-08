@@ -1,10 +1,12 @@
 import { db } from '../db';
-import { Booking, Property, Offer, UpgradeOption, PricingDetails, HostSettings } from '@/types';
+import { Booking, Property, Offer, UpgradeOption, PricingDetails, HostSettings } from '../../types';
 import { v4 as uuidv4 } from 'uuid';
 import OpenAI from 'openai';
 import * as sgMail from '@sendgrid/mail';
 import React from 'react';
-import { UpgradeEmailTemplate } from '../email/UpgradeEmailTemplate';
+
+import { EasyRenderer } from '../../components/EasyRenderer';
+import { getOfferContext, defaultTemplate, getAcceptanceContext, defaultAcceptanceTemplate } from '../templateUtils';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -50,8 +52,9 @@ export async function generateOffer(bookingId: string, sessionId?: string): Prom
             booking.base_nightly_rate,
             candidate.list_nightly_rate,
             booking.nights,
-            hostSettings?.max_discount_pct || 0.40,
-            booking.total_paid
+            hostSettings?.max_discount_pct ?? 0.45,
+            booking.total_paid,
+            hostSettings?.min_revenue_lift_eur_per_night ?? 15.00
         );
 
         const diffs = generatePropertyDiffs(originalProp, candidate);
@@ -128,39 +131,16 @@ export async function generateOffer(bookingId: string, sessionId?: string): Prom
 
     const expiresStr = `${new Date(expiresAt).toLocaleDateString()} at ${new Date(expiresAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
-    const renderEmailHtml = (aiPayload?: any) => {
-        // Use local require to bypass build-time tree shaking checks for react-dom/server in App Router
-        const { renderToStaticMarkup } = require('react-dom/server');
-
-        return renderToStaticMarkup(
-            React.createElement(UpgradeEmailTemplate, {
-                guestName: booking.guest_name,
-                originalPropName: originalProp.name,
-                companyName: companyName,
-                upgradeOption: {
-                    prop_name: bestOption.prop_name,
-                    images: [imageUrl],
-                    summary: bestOption.summary,
-                    diffs: bestOption.diffs,
-                    pricing: {
-                        revenue_lift: bestOption.pricing.revenue_lift,
-                        nights: bestOption.pricing.nights
-                    }
-                },
-                offerUrl: offerUrl,
-                expiresAt: expiresStr,
-                aiContent: aiPayload ? {
-                    title: aiPayload.email_title,
-                    content: aiPayload.email_content,
-                    selling_points: aiPayload.email_selling_points,
-                    cta_text: aiPayload.email_cta
-                } : undefined
-            })
-        );
-    };
-
-    const defaultSubject = `Exclusive Upgrade Opportunity: ${bestOption.prop_name}`;
-    const emailHtml = renderEmailHtml(bestOption.ai_copy);
+    const context = getOfferContext({ id: offerId, expires_at: expiresAt.toISOString() } as Offer, booking, top3);
+    // @ts-ignore - Dynamic require to avoid build errors in Next.js App Router
+    const { renderToStaticMarkup } = require('react-dom/server');
+    const emailHtml = renderToStaticMarkup(
+        React.createElement(EasyRenderer, {
+            templateJson: defaultTemplate,
+            mode: 'email',
+            data: context
+        })
+    );
 
     const offer: Partial<Offer> = {
         id: offerId,
@@ -168,7 +148,7 @@ export async function generateOffer(bookingId: string, sessionId?: string): Prom
         status: 'active',
         top3,
         expires_at: expiresAt.toISOString(),
-        email_subject: bestOption.ai_copy?.subject || defaultSubject,
+        email_subject: bestOption.ai_copy?.subject || `Exclusive Upgrade Opportunity: ${bestOption.prop_name}`,
         email_body_html: emailHtml,
         created_at: new Date().toISOString()
     };
@@ -206,8 +186,10 @@ export async function generateOptionCopy(offerId: string, propId: string, sessio
     const candidateProp = await db.getProperty(propId);
     if (!candidateProp) throw new Error('Candidate property not found');
 
-    // Generate AI copy
-    const aiCopy = await generateAICopy(originalProp, candidateProp, option.pricing, booking, option.diffs);
+    const hostSettings = await db.getHostSettings(booking.host_id || 'demo_host_001');
+
+    // Generate AI copy with host settings context if available
+    const aiCopy = await generateAICopy(originalProp, candidateProp, option.pricing, booking, option.diffs, hostSettings);
 
     // Update the option in the list
     top3[optionIndex] = {
@@ -236,6 +218,8 @@ export async function acceptOffer(offerId: string, propId: string, sessionId?: s
 
     const booking = await db.getBooking(offer.booking_id, sessionId);
     if (!booking) throw new Error('Booking not found');
+
+    const hostSettings = await db.getHostSettings(booking.host_id || 'demo_host_001');
 
     const top3 = offer.top3 as UpgradeOption[];
     const option = top3.find(o => o.prop_id === propId);
@@ -277,6 +261,13 @@ export async function acceptOffer(offerId: string, propId: string, sessionId?: s
         // Don't fail the acceptance if this step fails - log and continue
     }
 
+    // 4. Send Confirmation Email
+    try {
+        await sendAcceptanceEmail(booking, option, hostSettings);
+    } catch (err) {
+        console.error('⚠️ Failed to send acceptance email:', err);
+    }
+
     console.log(`✅ Offer ${offerId} accepted. Booking ${offer.booking_id} updated to property ${propId}.`);
 
     return {
@@ -286,7 +277,7 @@ export async function acceptOffer(offerId: string, propId: string, sessionId?: s
     };
 }
 
-function computeScore(orig: Property, cand: Property, booking: Booking): number {
+export function computeScore(orig: Property, cand: Property, booking: Booking): number {
     let score = 5.0;
 
     // Better amenities
@@ -303,16 +294,40 @@ function computeScore(orig: Property, cand: Property, booking: Booking): number 
     return Math.min(10, score);
 }
 
-function calculateOfferPricing(fromAdr: number, toAdr: number, nights: number, discountPct: number, fromTotal: number): PricingDetails {
-    // formula: 30% off net difference of the costs of reservations
-    // ie: (NewTotal - OriginalTotal) * 0.70
+export function calculateOfferPricing(
+    fromAdr: number,
+    toAdr: number,
+    nights: number,
+    maxDiscountPct: number,
+    fromTotal: number,
+    minLiftPerNight: number = 15
+): PricingDetails {
     const stayTotalAtListRate = toAdr * nights;
     const currentTotal = fromTotal;
-    const netDifference = stayTotalAtListRate - currentTotal;
 
-    const upgradeFee = netDifference * 0.70;
-    const offerTotal = currentTotal + upgradeFee;
+    // The maximum possible lift (rack rate difference)
+    const rawTotalDifference = stayTotalAtListRate - currentTotal;
+    const rawLiftPerNight = rawTotalDifference / nights;
+
+    // Apply the configured discount
+    const discountedLiftPerNight = rawLiftPerNight * (1 - maxDiscountPct);
+
+    // Guardrail: Ensure we don't go below minLiftPerNight, 
+    // but also don't exceed the raw difference (don't charge more than rack rate)
+    const finalLiftPerNight = Math.max(
+        discountedLiftPerNight,
+        Math.min(rawLiftPerNight, minLiftPerNight)
+    );
+
+    const upgradeFeeTotal = finalLiftPerNight * nights;
+    const offerTotal = currentTotal + upgradeFeeTotal;
     const offerAdr = offerTotal / nights;
+
+    // Calculate effective discount percentage for the UI
+    const totalDiscountAmount = Math.max(0, stayTotalAtListRate - offerTotal);
+    const effectiveDiscountPercent = stayTotalAtListRate > 0
+        ? Math.round((totalDiscountAmount / stayTotalAtListRate) * 100)
+        : 0;
 
     return {
         currency: 'EUR',
@@ -323,13 +338,13 @@ function calculateOfferPricing(fromAdr: number, toAdr: number, nights: number, d
         from_total: fromTotal,
         offer_total: offerTotal,
         list_total: stayTotalAtListRate,
-        discount_percent: 30,
-        discount_amount_total: stayTotalAtListRate - offerTotal,
-        revenue_lift: upgradeFee
+        discount_percent: effectiveDiscountPercent,
+        discount_amount_total: totalDiscountAmount,
+        revenue_lift: upgradeFeeTotal
     };
 }
 
-function generatePropertyDiffs(orig: Property, cand: Property): string[] {
+export function generatePropertyDiffs(orig: Property, cand: Property): string[] {
     const diffs: string[] = [];
     if (cand.beds > orig.beds) diffs.push(`${cand.beds - orig.beds} Extra Bedroom(s)`);
     if (cand.baths > orig.baths) diffs.push(`Additional Bathroom`);
@@ -374,6 +389,44 @@ async function generateAICopy(orig: Property, cand: Property, pricing: PricingDe
     return JSON.parse(response.choices[0].message.content || '{}');
 }
 
+async function sendAcceptanceEmail(booking: Booking, option: UpgradeOption, hostSettings: HostSettings | null) {
+    if (process.env.EMAIL_ENABLED !== 'true') return;
+
+    if (!process.env.SENDGRID_API_KEY) {
+        console.error('❌ SENDGRID_API_KEY is missing (Acceptance Email)');
+        return;
+    }
+
+    const recipient = process.env.CONTACT_EMAIL || booking.guest_email;
+    const companyName = hostSettings?.pm_company_name || hostSettings?.host_name || 'Your Host';
+
+    const context = getAcceptanceContext(booking, option, hostSettings);
+    // @ts-ignore
+    const { renderToStaticMarkup } = require('react-dom/server');
+    const emailHtml = renderToStaticMarkup(
+        React.createElement(EasyRenderer, {
+            templateJson: defaultAcceptanceTemplate,
+            mode: 'email',
+            data: context
+        })
+    );
+
+    const msg = {
+        to: recipient,
+        from: process.env.SENDGRID_FROM_EMAIL || 'dpitcock.dev@gmail.com',
+        subject: `Upgrade Confirmed: ${option.prop_name}`,
+        text: `Hi ${booking.guest_name}, Great news! Your upgrade to ${option.prop_name} has been confirmed. Total Paid: €${option.pricing.offer_total}. Dates: ${new Date(booking.arrival_date).toLocaleDateString()} - ${new Date(booking.departure_date).toLocaleDateString()}. Best, ${companyName}`,
+        html: emailHtml
+    };
+
+    try {
+        await sgMail.send(msg);
+        console.log(`✅ Acceptance email sent to ${recipient}`);
+    } catch (error: any) {
+        console.error('❌ SendGrid Error (Acceptance):', error.response?.body || error.message);
+    }
+}
+
 async function sendOfferEmail(offer: Offer, booking: Booking) {
     if (process.env.EMAIL_ENABLED !== 'true') {
         console.log('ℹ️ Email sending is disabled (EMAIL_ENABLED != true)');
@@ -411,18 +464,33 @@ export async function sendTestEmail(to: string) {
         throw new Error('Email is disabled in configuration');
     }
 
+    // @ts-ignore
+    const { renderToStaticMarkup } = require('react-dom/server');
+    const emailHtml = renderToStaticMarkup(
+        React.createElement(EasyRenderer, {
+            templateJson: {
+                root: {
+                    children: [
+                        {
+                            component: 'Hero',
+                            props: {
+                                headline: 'UpRez Integration Active',
+                                subheadline: 'If you see this, your SendGrid configuration is correct.'
+                            }
+                        }
+                    ]
+                }
+            },
+            mode: 'email',
+            data: {}
+        })
+    );
+
     const msg = {
         to,
         from: process.env.SENDGRID_FROM_EMAIL || 'dpitcock.dev@gmail.com',
         subject: 'UpRez Integration Test',
-        html: `
-            <div style="font-family: sans-serif; padding: 20px;">
-                <h1 style="color: #EF6C00;">UpRez Integration Active</h1>
-                <p>If you see this, your SendGrid configuration is correct.</p>
-                <hr/>
-                <p style="font-size: 12px; color: #666;">Time: ${new Date().toISOString()}</p>
-            </div>
-        `,
+        html: emailHtml
     };
 
     return sgMail.send(msg);
@@ -443,3 +511,6 @@ function parseAmenities(am: any): string[] {
     }
     return [];
 }
+
+
+

@@ -24,6 +24,18 @@ export async function POST(req: NextRequest) {
         await sql`ALTER TABLE offers ADD COLUMN IF NOT EXISTS session_id TEXT`;
         await sql`CREATE INDEX IF NOT EXISTS idx_offers_session_id ON offers(session_id)`;
 
+        // Ensure host_settings has all new columns
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS host_phone TEXT`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS pm_company_name TEXT`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS active_email_template_id TEXT`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS active_landing_template_id TEXT`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS max_distance_to_beach_m INTEGER DEFAULT 600`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS offer_validity_hours INTEGER DEFAULT 24`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS use_openai_for_copy BOOLEAN DEFAULT TRUE`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS offers_sent_this_month INTEGER DEFAULT 0`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS revenue_lifted_this_month REAL DEFAULT 0`;
+        await sql`ALTER TABLE host_settings ADD COLUMN IF NOT EXISTS updated_at TEXT`;
+
         // 0. Ensure properties table has 'type' column
         await sql`ALTER TABLE properties ADD COLUMN IF NOT EXISTS type TEXT`;
 
@@ -75,14 +87,21 @@ export async function POST(req: NextRequest) {
             host_id TEXT NOT NULL,
             session_id TEXT NOT NULL DEFAULT '',
             host_name TEXT,
+            host_phone TEXT,
             pm_company_name TEXT,
-            min_revenue_lift_eur_per_night REAL DEFAULT 30.00,
-            max_discount_pct REAL DEFAULT 0.40,
-            min_adr_ratio REAL DEFAULT 1.15,
-            max_adr_multiplier REAL DEFAULT 3.0,
+            min_revenue_lift_eur_per_night REAL DEFAULT 15.00,
+            max_discount_pct REAL DEFAULT 0.45,
+            min_adr_ratio REAL DEFAULT 1.05,
+            max_adr_multiplier REAL DEFAULT 2.5,
             channel_fee_pct REAL DEFAULT 0.15,
-            change_fee_eur REAL DEFAULT 50.00,
-            use_openai_for_copy BOOLEAN DEFAULT FALSE,
+            change_fee_eur REAL DEFAULT 30.00,
+            active_email_template_id TEXT,
+            active_landing_template_id TEXT,
+            max_distance_to_beach_m INTEGER DEFAULT 600,
+            offer_validity_hours INTEGER DEFAULT 24,
+            use_openai_for_copy BOOLEAN DEFAULT TRUE,
+            offers_sent_this_month INTEGER DEFAULT 0,
+            revenue_lifted_this_month REAL DEFAULT 0,
             created_at TEXT NOT NULL,
             updated_at TEXT NOT NULL,
             PRIMARY KEY (host_id, session_id)
@@ -94,9 +113,11 @@ export async function POST(req: NextRequest) {
 
         const propertiesPath = path.join(process.cwd(), '..', 'initial_data', 'json', 'properties.json');
         const bookingsPath = path.join(process.cwd(), '..', 'initial_data', 'json', 'bookings.json');
+        const hostSettingsPath = path.join(process.cwd(), '..', 'initial_data', 'json', 'host_settings.json');
 
         const propertiesData = JSON.parse(fs.readFileSync(propertiesPath, 'utf8'));
         const bookingsData = JSON.parse(fs.readFileSync(bookingsPath, 'utf8'));
+        const hostSettingsData = JSON.parse(fs.readFileSync(hostSettingsPath, 'utf8'));
 
         const now = new Date().toISOString();
 
@@ -161,35 +182,55 @@ export async function POST(req: NextRequest) {
         // Host Settings
         // Global settings (always present)
         await sql`INSERT INTO host_settings (
-            host_id, session_id, host_name, pm_company_name, 
+            host_id, session_id, host_name, host_phone, pm_company_name, 
             max_discount_pct, min_revenue_lift_eur_per_night,
             min_adr_ratio, max_adr_multiplier, channel_fee_pct, change_fee_eur,
-            use_openai_for_copy, created_at, updated_at
+            active_email_template_id, active_landing_template_id,
+            max_distance_to_beach_m, offer_validity_hours,
+            use_openai_for_copy, offers_sent_this_month, revenue_lifted_this_month,
+            created_at, updated_at
         )
         VALUES (
-            'demo_host_001', '', 'Premium Property Management', 'Premium Stays',
-            0.40, 30.00, 1.15, 3.0, 0.15, 50.00,
-            TRUE, ${now}, ${now}
+            ${hostSettingsData.host_id}, '', ${hostSettingsData.host_name}, ${hostSettingsData.host_phone}, ${hostSettingsData.pm_company_name},
+            ${hostSettingsData.max_discount_pct}, ${hostSettingsData.min_revenue_lift_eur_per_night},
+            ${hostSettingsData.min_adr_ratio}, ${hostSettingsData.max_adr_multiplier}, ${hostSettingsData.channel_fee_pct}, ${hostSettingsData.change_fee_eur},
+            ${hostSettingsData.active_email_template_id}, ${hostSettingsData.active_landing_template_id},
+            ${hostSettingsData.max_distance_to_beach_m}, ${hostSettingsData.offer_validity_hours},
+            ${hostSettingsData.use_openai_for_copy}, ${hostSettingsData.offers_sent_this_month}, ${hostSettingsData.revenue_lifted_this_month},
+            ${now}, ${now}
         )
         ON CONFLICT (host_id, session_id) DO NOTHING`;
 
         // Session-scoped settings (if sessionId provided)
         if (sessionId) {
             await sql`INSERT INTO host_settings (
-                host_id, session_id, host_name, pm_company_name,
+                host_id, session_id, host_name, host_phone, pm_company_name,
                 max_discount_pct, min_revenue_lift_eur_per_night,
                 min_adr_ratio, max_adr_multiplier, channel_fee_pct, change_fee_eur,
-                use_openai_for_copy, created_at, updated_at
+                active_email_template_id, active_landing_template_id,
+                max_distance_to_beach_m, offer_validity_hours,
+                use_openai_for_copy, offers_sent_this_month, revenue_lifted_this_month,
+                created_at, updated_at
             )
             VALUES (
-                'demo_host_001', ${sessionId}, 'Premium Property Management', 'Premium Stays',
-                0.40, 30.00, 1.15, 3.0, 0.15, 50.00,
-                TRUE, ${now}, ${now}
+                ${hostSettingsData.host_id}, ${sessionId}, ${hostSettingsData.host_name}, ${hostSettingsData.host_phone}, ${hostSettingsData.pm_company_name},
+                ${hostSettingsData.max_discount_pct}, ${hostSettingsData.min_revenue_lift_eur_per_night},
+                ${hostSettingsData.min_adr_ratio}, ${hostSettingsData.max_adr_multiplier}, ${hostSettingsData.channel_fee_pct}, ${hostSettingsData.change_fee_eur},
+                ${hostSettingsData.active_email_template_id}, ${hostSettingsData.active_landing_template_id},
+                ${hostSettingsData.max_distance_to_beach_m}, ${hostSettingsData.offer_validity_hours},
+                ${hostSettingsData.use_openai_for_copy}, 0, 0,
+                ${now}, ${now}
             )
             ON CONFLICT (host_id, session_id) DO UPDATE SET
                 host_name = EXCLUDED.host_name,
+                host_phone = EXCLUDED.host_phone,
                 pm_company_name = EXCLUDED.pm_company_name,
                 max_discount_pct = EXCLUDED.max_discount_pct,
+                min_revenue_lift_eur_per_night = EXCLUDED.min_revenue_lift_eur_per_night,
+                min_adr_ratio = EXCLUDED.min_adr_ratio,
+                max_adr_multiplier = EXCLUDED.max_adr_multiplier,
+                channel_fee_pct = EXCLUDED.channel_fee_pct,
+                change_fee_eur = EXCLUDED.change_fee_eur,
                 updated_at = EXCLUDED.updated_at`;
         }
 
